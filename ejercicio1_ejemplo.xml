@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Ejercicio 1 — Tráfico simultáneo desde el norte
+  3 aeronaves simultáneas con diferentes STARS
+-->
+<scenario name="Ejercicio 1 — Tráfico Norte">
+
+  <!-- Vuelo 1: desde el norte vía EROLO -->
+  <flight time="14:00"
+          callsign="LXP201"
+          type="A321"
+          star="EROLO8A"
+          flAct="F300"
+          flCcl="F260"
+          flReq="F100" />
+
+  <!-- Vuelo 2: desde el norte vía SIMOK -->
+  <flight time="14:05"
+          callsign="LAN401"
+          type="A320"
+          star="SIMOK7B"
+          flAct="F340"
+          flCcl="F300"
+          flReq="F240" />
+
+  <!-- Vuelo 3: desde el norte vía ASIMO -->
+  <flight time="14:10"
+          callsign="SKY220"
+          type="A321"
+          star="ASIMO7D"
+          flAct="F280"
+          flCcl="F240"
+          flReq="F160" />
+
+</scenario>

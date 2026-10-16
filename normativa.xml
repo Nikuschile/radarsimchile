@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  normativa.xml — Fraseología aeronáutica establecida (DAP-11 / DAN-11 DGAC Chile)
+  Usado por el piloto IA para readbacks y diluciones (preguntas de confirmación).
+
+  Estructura:
+    <phraseology>
+      <readback>     → frases de confirmación del piloto (readback)
+      <dilucion>     → frases de dilución / pregunta de confirmación
+      <correccion>   → frases para corregir desviaciones a la fraseología
+      <fixes>        → lista de fixes con nombre pronunciado como palabra
+    </phraseology>
+
+  Atributos:
+    id     → clave interna usada por el código
+    es     → texto en español (fraseología aeronáutica estándar, sin modismos)
+    en     → texto en inglés (ICAO)
+    rate   → factor de velocidad (opcional, 1.0 = normal)
+-->
+<phraseology version="1.0" source="DAP-11_00-ED-10 / DAN-11-ED2">
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       READBACKS — Confirmación del piloto tras recibir instrucción del ATCL
+       Fraseología establecida según DAP-11 Cap. 12 y DAN-11-ED2 §4.4
+       ════════════════════════════════════════════════════════════════════════ -->
+  <readback>
+
+    <!-- Rumbos -->
+    <item id="hdg_left" es="{cs}, virando izquierda rumbo {val}" en="{cs}, turning left heading {val}" />
+    <item id="hdg_right" es="{cs}, virando derecha rumbo {val}" en="{cs}, turning right heading {val}" />
+    <item id="hdg" es="{cs}, rumbo {val}" en="{cs}, heading {val}" />
+    <item id="hdg_maintain" es="{cs}, manteniendo rumbo {val}" en="{cs}, maintaining heading {val}" />
+
+    <!-- Niveles de vuelo: {nivel} colaciona con la regla de tres rangos
+         (050→"cinco mil pies" ... 100→"diez mil pies", 110+→"nivel de vuelo") -->
+    <item id="climb" es="{cs}, autorizado ascenso para {nivel}" en="{cs}, cleared to climb to {nivel}" />
+    <item id="descend" es="{cs}, autorizado descenso para {nivel}" en="{cs}, cleared to descend to {nivel}" />
+    <item id="level" es="{cs}, manteniendo {nivel}" en="{cs}, maintaining {nivel}" />
+    <item id="alt" es="{cs}, manteniendo {val} pies" en="{cs}, maintaining {val} feet" />
+
+    <!-- Velocidades -->
+    <item id="spd_red" es="{cs}, reduciendo a {val} nudos" en="{cs}, reducing speed to {val} knots" />
+    <item id="spd_inc" es="{cs}, aumentando a {val} nudos" en="{cs}, increasing speed to {val} knots" />
+    <item id="spd_mnt" es="{cs}, manteniendo {val} nudos" en="{cs}, maintaining {val} knots" />
+
+    <!-- Velocidad Mach (comparativa: aumentando/reduciendo/manteniendo) -->
+    <item id="mach_inc" es="{cs}, aumentando velocidad Mach punto {val}" en="{cs}, increasing speed to Mach point {val}" />
+    <item id="mach_red" es="{cs}, reduciendo velocidad Mach punto {val}" en="{cs}, reducing speed to Mach point {val}" />
+    <item id="mach_mnt" es="{cs}, manteniendo velocidad Mach punto {val}" en="{cs}, maintaining Mach point {val}" />
+
+    <!-- Reportes solicitados -->
+    <item id="reportfix" es="{cs}, notificaré pasando {fix}" en="{cs}, will report passing {fix}" />
+    <item id="reporthold" es="{cs}, notificaré establecido en el patrón de espera" en="{cs}, will report established in the hold" />
+
+    <!-- Directos y fixes -->
+    <item id="direct" es="{cs}, directo {fix}" en="{cs}, direct {fix}" />
+    <item id="hold" es="{cs}, sobre {fix} ingreso a patrón de espera publicado" en="{cs}, at {fix} entering the published hold" />
+    <item id="inheld" es="{cs}, establecido en espera sobre {fix}" en="{cs}, established holding at {fix}" />
+    <item id="leave" es="{cs}, abandonando patrón de espera sobre {fix}, reanudo {star} o volando directo a {fix}" en="{cs}, leaving the hold at {fix}, resuming {star} or flying direct to {fix}" />
+    <item id="resume" es="{cs}, reanudando STAR" en="{cs}, resuming STAR" />
+
+    <!-- Localizador / ILS -->
+    <item id="loc" es="{cs}, interceptando localizador pista {val}" en="{cs}, intercepting the ILS runway {val}" />
+    <item id="estloc" es="{cs}, establecido en localizador pista {val}" en="{cs}, established on the ILS runway {val}" />
+
+    <!-- Cambio de pista -->
+    <item id="switch" es="{cs}, cambio a pista {val}" en="{cs}, runway change confirmed, runway {val}" />
+
+    <!-- Transferencia -->
+    <item id="twr" es="{cs}, contacto Santiago Torre uno uno ocho coma uno" en="{cs}, contact tower one one eight decimal one" />
+
+    <!-- Ident -->
+    <item id="ident" es="{cs}, ident" en="{cs}, ident" />
+
+  </readback>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       DILUCIONES — Preguntas de confirmación del piloto
+       Usadas cuando el piloto necesita aclarar o confirmar una instrucción
+       antes de ejecutarla (fraseología de dilución según DAP-11 §12.2)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <dilucion>
+
+    <!-- Confirmación de hold pattern -->
+    <item id="dil_hold"
+      es="{cs}, ¿me confirma autorizado a {fix} patrón de espera publicado, nivel de vuelo {fl}?"
+      en="{cs}, confirm authorized to {fix} published hold, flight level {fl}?" />
+
+    <!-- Confirmación de cambio de nivel -->
+    <item id="dil_level"
+      es="{cs}, ¿confirma cambio de nivel a {val}?"
+      en="{cs}, confirm level change to {val}?" />
+
+    <!-- Confirmación de rumbo -->
+    <item id="dil_hdg"
+      es="{cs}, ¿confirma rumbo {val}?"
+      en="{cs}, confirm heading {val}?" />
+
+    <!-- Confirmación de velocidad -->
+    <item id="dil_spd"
+      es="{cs}, ¿confirma velocidad {val} nudos?"
+      en="{cs}, confirm speed {val} knots?" />
+
+    <!-- Confirmación de directo -->
+    <item id="dil_direct"
+      es="{cs}, ¿confirma directo a {fix}?"
+      en="{cs}, confirm direct to {fix}?" />
+
+    <!-- Confirmación de pista -->
+    <item id="dil_rwy"
+      es="{cs}, ¿confirma pista {val}?"
+      en="{cs}, confirm runway {val}?" />
+
+    <!-- Confirmación de transferencia -->
+    <item id="dil_twr"
+      es="{cs}, ¿confirma frecuencia torre 118.1?"
+      en="{cs}, confirm tower frequency 118.1?" />
+
+    <!-- Pregunta genérica de aclaración -->
+    <item id="dil_clarify"
+      es="{cs}, ¿puede repetir la instrucción?"
+      en="{cs}, say again the instruction?" />
+
+  </dilucion>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       CORRECCIONES — Frases para corregir desviaciones a la fraseología
+       El controlador usa estas para corregir al piloto cuando se desvía del
+       estándar establecido (DAP-11 §12.2.23)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <correccion>
+
+    <!-- Corregir readback incorrecto -->
+    <item id="corr_readback"
+      es="CORRECCIÓN: {cs}, repita el readback. Instrucción fue: {instr}"
+      en="CORRECTION: {cs}, readback. Instruction was: {instr}" />
+
+    <!-- Corregir número de vuelo -->
+    <item id="corr_callsign"
+      es="CORRECCIÓN: {cs}, su callsign es {correct}"
+      en="CORRECTION: {cs}, your callsign is {correct}" />
+
+    <!-- Corregir rumbo -->
+    <item id="corr_hdg"
+      es="CORRECCIÓN: {cs}, rumbo {val}, no {wrong}"
+      en="CORRECTION: {cs}, heading {val}, not {wrong}" />
+
+    <!-- Corregir nivel -->
+    <item id="corr_fl"
+      es="CORRECCIÓN: {cs}, nivel de vuelo {val}, no {wrong}"
+      en="CORRECTION: {cs}, flight level {val}, not {wrong}" />
+
+    <!-- Corregir velocidad -->
+    <item id="corr_spd"
+      es="CORRECCIÓN: {cs}, velocidad {val} nudos, no {wrong}"
+      en="CORRECTION: {cs}, speed {val} knots, not {wrong}" />
+
+    <!-- Corregir fix -->
+    <item id="corr_fix"
+      es="CORRECCIÓN: {cs}, directo a {val}, no {wrong}"
+      en="CORRECTION: {cs}, direct to {val}, not {wrong}" />
+
+    <!-- Negar y repetir -->
+    <item id="corr_negate"
+      es="NEGATIVO. {cs}, {instr}"
+      en="NEGATIVE. {cs}, {instr}" />
+
+  </correccion>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       INSTRUCCIONES — Frases del controlador (ATCL)
+       Fraseología para ingreso y abandono de patrón de espera (DAP-11 §12.3)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <instruccion>
+
+    <!-- Autorización de ingreso a espera con expectativa de aproximación -->
+    <item id="hold_clear"
+      es="autorizado hasta {fix}, mantenga patrón de espera publicado, prevea autorización de aproximación a las {val}"
+      en="cleared to {fix}, hold as published, expect approach clearance at {val}" />
+
+    <!-- Abandono de espera por vectores -->
+    <item id="leave_vec"
+      es="vectores para abandonar espera"
+      en="vectors to leave the hold" />
+
+    <!-- Abandono de espera continuando vía STAR -->
+    <item id="leave_via"
+      es="abandone espera sobre {fix}, continúe vía {star}"
+      en="leave the hold at {fix}, continue via {star}" />
+
+  </instruccion>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       FIXES — Lista de fixes con nombre pronunciado como palabra
+       (no se deletrean: "ugola" no "U G O L A")
+       ════════════════════════════════════════════════════════════════════════ -->
+  <fixes>
+    <fix name="UGOLA" pron="ugola" />
+    <fix name="TEGEB" pron="tegeb" />
+    <fix name="SEDPA" pron="sedpa" />
+    <fix name="PUMAR" pron="pumar" />
+    <fix name="EROLO" pron="erolo" />
+    <fix name="MORPA" pron="morpa" />
+    <fix name="DABIT" pron="dabit" />
+    <fix name="KADAK" pron="kadak" />
+    <fix name="VTN" pron="vtn" />
+    <fix name="SAG" pron="sag" />
+    <fix name="DIT" pron="dit" />
+    <fix name="NAN" pron="nan" />
+    <fix name="TUC" pron="tuc" />
+    <fix name="COR" pron="cor" />
+    <fix name="CHC" pron="chc" />
+    <fix name="ANF" pron="anf" />
+    <fix name="LTC" pron="ltc" />
+    <fix name="TGU" pron="tgu" />
+    <fix name="GAV" pron="gav" />
+    <fix name="PRC" pron="prc" />
+  </fixes>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PATRONES DE ESPERA — Hold patterns publicados
+       ════════════════════════════════════════════════════════════════════════ -->
+  <hold_patterns>
+    <pattern name="UGOLA" inbound="177" turn="left" alt="7000" />
+    <pattern name="MORPA" inbound="21" turn="left" alt="7000" />
+    <pattern name="DABIT" inbound="177" turn="right" alt="8000" />
+    <pattern name="KADAK" inbound="21" turn="right" alt="8000" />
+    <pattern name="VTN" inbound="177" turn="left" alt="9000" />
+    <pattern name="TEGEB" inbound="177" turn="left" alt="7000" />
+    <pattern name="SEDPA" inbound="21" turn="right" alt="8000" />
+  </hold_patterns>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       FRASEOLOGÍA ESTABLECIDA — Referencia completa (DAP-11 §12.3)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <establecida>
+
+    <!-- Control de área -->
+    <grupo id="area">
+      <frase es="Área de control {name}" en="Airspace {name}" />
+      <frase es="Cumple con instrucciones de {name}" en="Comply with {name} instructions" />
+    </grupo>
+
+    <!-- Control de aproximación -->
+    <grupo id="approach">
+      <frase es="Control de aproximación {name}" en="Approach {name}" />
+      <frase es="Para {pista}, descendiendo a {nivel}" en="For {runway}, descending to {level}" />
+    </grupo>
+
+    <!-- Control de aeródromo -->
+    <grupo id="aerodrome">
+      <frase es="Torre de {aeropuerto}" en="{airport} Tower" />
+      <frase es="Pista {num}, alineación y despegue" en="Runway {num}, line up and wait" />
+    </grupo>
+
+    <!-- Coordinación entre dependencias -->
+    <grupo id="coord">
+      <frase es="Coordinado con {name}" en="Coordination with {name}" />
+      <frase es="Tráfico coordinado" en="Traffic coordinated" />
+    </grupo>
+
+  </establecida>
+
+</phraseology>

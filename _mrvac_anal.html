@@ -1,0 +1,310 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Análisis MRVAC SCSE</title>
+<body style="background:#111;color:#ddd;font:12px monospace">
+<canvas id="cv" width="2480" height="2480" style="width:980px;height:980px;border:1px solid #444"></canvas>
+<pre id="out">cargando…</pre>
+<script>
+const W=2480, WIN=124, PX=WIN?W/WIN:0; // 20 px por NM, ventana [-62,62]
+const SER={x:-20.606,y:208.719};        // origen radar (VOR SER)
+const DECL=-1.451;                      // true = mag + DECL
+// Semillas polares (rumbo MAG / DME) leídas de la cartilla
+const SEEDS=[
+  ['JUKOT',    75,  3],
+  ['LOMAS',   190,  8],
+  ['SOCOS',   260, 28],
+  ['OSTION',  300, 30],
+  ['TILGO',   355, 25],
+  ['KESAN',    20, 22],
+  ['CEGAN',    18, 12],
+  ['CONDOR',   74, 33],
+  ['SIERRA',   76, 20],
+  ['TERMAS',   94, 33],
+  ['DAKOL',   168, 24],
+  ['SINER',   176, 50],
+  ['COSTA',   225, 28],
+];
+function toPx(xnm,ynm){ return [ (xnm+62)*PX, (62-ynm)*PX ]; }
+function toNM(px,py){ return [ px/PX-62, 62-py/PX ]; }
+
+function circle3(a,b,c){
+  const d=2*(a[0]*(b[1]-c[1])+b[0]*(c[1]-a[1])+c[0]*(a[1]-b[1]));
+  if(Math.abs(d)<1e-9) return null;
+  const ux=((a[0]**2+a[1]**2)*(b[1]-c[1])+(b[0]**2+b[1]**2)*(c[1]-a[1])+(c[0]**2+c[1]**2)*(a[1]-b[1]))/d;
+  const uy=((a[0]**2+a[1]**2)*(c[0]-b[0])+(b[0]**2+b[1]**2)*(a[0]-c[0])+(c[0]**2+c[1]**2)*(b[0]-a[0]))/d;
+  return [ux,uy,Math.hypot(a[0]-ux,a[1]-uy)];
+}
+function kasa(pts){
+  let sx=0,sy=0,sxx=0,syy=0,sxy=0,sxz=0,syz=0,n=pts.length;
+  for(const p of pts){ sx+=p[0];sy+=p[1];sxx+=p[0]*p[0];syy+=p[1]*p[1];sxy+=p[0]*p[1];sxz+=p[0]*(p[0]*p[0]+p[1]*p[1]);syz+=p[1]*(p[0]*p[0]+p[1]*p[1]); }
+  const A=[[sxx,sxy,sx],[sxy,syy,sy],[sx,sy,n]];
+  const B=[sxz/2,syz/2,(sxx+syy)/2];
+  // gauss 3x3
+  const M=[A[0].concat([B[0]]),A[1].concat([B[1]]),A[2].concat([B[2]])];
+  for(let i=0;i<3;i++){
+    let piv=i; for(let r=i+1;r<3;r++) if(Math.abs(M[r][i])>Math.abs(M[piv][i])) piv=r;
+    [M[i],M[piv]]=[M[piv],M[i]];
+    if(Math.abs(M[i][i])<1e-12) return null;
+    for(let r=0;r<3;r++){ if(r===i) continue; const f=M[r][i]/M[i][i]; for(let c=i;c<4;c++) M[r][c]-=f*M[i][c]; }
+  }
+  const cx=M[0][3]/M[0][0], cy=M[1][3]/M[1][1];
+  let r=0; for(const p of pts) r+=Math.hypot(p[0]-cx,p[1]-cy); r/=pts.length;
+  return [cx,cy,r];
+}
+// marching squares: máscara binaria -> bucles de contorno [[px,py],…]
+function contours(mask,w,h){
+  const segs=[]; // por clave de arista -> extremos
+  const hkey=(x,y)=>y*(w+1)+x;       // arista horizontal entre (x,y)-(x+1,y)
+  const vkey=(x,y)=>(h+1)*(w+1)+y*(w+1)+x; // arista vertical (x,y)-(x,y+1)
+  function at(x,y){ return (x<0||y<0||x>=w||y>=h)?0:mask[y*w+x]; }
+  for(let y=-1;y<h;y++)for(let x=-1;x<w;x++){
+    const v0=at(x,y),v1=at(x+1,y),v2=at(x+1,y+1),v3=at(x,y+1);
+    const c=(v0?1:0)|(v1?2:0)|(v2?4:0)|(v3?8:0);
+    if(c===0||c===15)continue;
+    const T=()=>[hkey(x+1,y)], B=()=>[hkey(x+1,y+1)], L=()=>[vkey(x,y+1)], R=()=>[vkey(x+1,y+1)];
+    const TM=[0,0,0,0];
+    // puntos medios de aristas: top=(x+0.5,y), right=(x+1,y+0.5), bottom=(x+0.5,y+1), left=(x,y+0.5)
+    const pts={t:[x+0.5,y],r:[x+1,y+0.5],b:[x+0.5,y+1],l:[x,y+0.5]};
+    let pairs=[];
+    switch(c){
+      case 1:case 14: pairs=[['l','t']]; break;
+      case 2:case 13: pairs=[['t','r']]; break;
+      case 3:case 12: pairs=[['l','r']]; break;
+      case 4:case 11: pairs=[['r','b']]; break;
+      case 6:case 9:  pairs=[['t','b']]; break;
+      case 7:case 8:  pairs=[['l','b']]; break;
+      case 5:  pairs=[['l','t'],['r','b']]; break;
+      case 10: pairs=[['t','r'],['b','l']]; break;
+    }
+    for(const [A,Bn] of pairs){
+      const ka=(A==='t')?hkey(x+1,y):(A==='b')?hkey(x+1,y+1):(A==='l')?vkey(x,y+1):vkey(x+1,y+1);
+      const kb=(Bn==='t')?hkey(x+1,y):(Bn==='b')?hkey(x+1,y+1):(Bn==='l')?vkey(x,y+1):vkey(x+1,y+1);
+      segs.push({ka,kb,pa:pts[A],pb:pts[Bn]});
+    }
+  }
+  // trazar bucles
+  const adj=new Map();
+  for(let i=0;i<segs.length;i++){
+    const s=segs[i];
+    if(!adj.has(s.ka))adj.set(s.ka,[]); if(!adj.has(s.kb))adj.set(s.kb,[]);
+    adj.get(s.ka).push(i); adj.get(s.kb).push(i);
+  }
+  const used=new Uint8Array(segs.length);
+  const loops=[];
+  for(let i=0;i<segs.length;i++){
+    if(used[i])continue;
+    used[i]=1;
+    const loop=[segs[i].pa,segs[i].pb];
+    let prev=s0=i, cur=s0, endKey=segs[i].ka, curKey=segs[i].kb;
+    // caminar
+    let guard=0;
+    while(guard++<200000){
+      if(curKey===endKey) break;
+      const cands=adj.get(curKey)||[];
+      let nxt=-1;
+      for(const j of cands){ if(!used[j]){ nxt=j; break; } }
+      if(nxt<0) break;
+      used[nxt]=1;
+      const s=segs[nxt];
+      const nextKey=(s.ka===curKey)?s.kb:s.ka;
+      const nextPt=(s.ka===curKey)?s.pb:s.pa;
+      loop.push(nextPt);
+      curKey=nextKey;
+    }
+    if(loop.length>=8) loops.push(loop);
+  }
+  return loops;
+}
+function dpSimplify(pts,eps){
+  const keep=new Uint8Array(pts.length); keep[0]=keep[pts.length-1]=1;
+  const stack=[[0,pts.length-1]];
+  while(stack.length){
+    const [i0,i1]=stack.pop();
+    if(i1<=i0+1)continue;
+    let maxd=-1,idx=-1;
+    const [ax,ay]=pts[i0],[bx,by]=pts[i1];
+    const dx=bx-ax,dy=by-ay,len=Math.hypot(dx,dy)||1;
+    for(let i=i0+1;i<i1;i++){
+      const d=Math.abs((pts[i][0]-ax)*dy-(pts[i][1]-ay)*dx)/len;
+      if(d>maxd){maxd=d;idx=i;}
+    }
+    if(maxd>eps){ keep[idx]=1; stack.push([i0,idx],[idx,i1]); }
+  }
+  return pts.filter((p,i)=>keep[i]);
+}
+async function main(){
+  const geom=await (await fetch('_mrvac_geom.json')).json();
+  const tma=await (await fetch('_tma_scse.json')).json();
+  const out=document.getElementById('out');
+  // ── 1. puntos gruesos ──
+  const thick=geom.segs.filter(s=>s.w>=1.5);
+  const pts=thick.flatMap(s=>[[s.x1,s.y1],[s.x2,s.y2]]);
+  // ── 2. RANSAC círculo exterior ──
+  let best=null, rnd=(n)=>Math.floor(Math.random()*n);
+  for(let it=0;it<5000;it++){
+    const a=pts[rnd(pts.length)],b=pts[rnd(pts.length)],c=pts[rnd(pts.length)];
+    const f=circle3(a,b,c); if(!f)continue;
+    if(!(f[2]>3000&&f[2]<20000))continue;
+    let inl=0;
+    for(const p of pts){ if(Math.abs(Math.hypot(p[0]-f[0],p[1]-f[1])-f[2])<f[2]*0.02) inl++; }
+    if(!best||inl>best[0]) best=[inl,f];
+  }
+  if(!best){ out.textContent='FALLO fit'; return; }
+  // refinamiento kasa sobre inliers
+  let [cx,cy,R]=best[1];
+  for(let pass=0;pass<3;pass++){
+    const inl=pts.filter(p=>Math.abs(Math.hypot(p[0]-cx,p[1]-cy)-R)<R*0.02);
+    const k=kasa(inl);
+    if(k){ cx=k[0]; cy=k[1]; R=k[2]; }
+  }
+  const s=Math.abs(R)/40; // unidades por NM
+  // ── 3. orientación (lóbulo 60NM = sur) ──
+  let lobe=[],la=0;
+  for(const p of pts){ const d=Math.hypot(p[0]-cx,p[1]-cy); if(d>Math.abs(R)*1.4&&d<Math.abs(R)*1.6){ lobe.push(p); la+=Math.atan2(p[1]-cy,p[0]-cx); } }
+  la=lobe.length?la/lobe.length:-Math.PI/2;
+  // en espacio usuario: sur = -90° si y sube; si el lóbulo sale en +90° hay que invertir y
+  const flipY=(Math.sin(la)>0.5);
+  const diag={inliers:best[0],R:Math.round(Math.abs(R)),s:+s.toFixed(2),lobePts:lobe.length,lobeAngle:+(la*180/Math.PI).toFixed(1),flipY};
+  // NM <- página
+  const p2n=(px,py)=>[ (px-cx)/s, (flipY?(cy-py):(py-cy))/s ];
+  const n2p=(x,y)=>[ cx+x*s, cy+(flipY?-y:y)*s ];
+  // ── 4. máscaras ──
+  const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,W);
+  // muros (trazos gruesos)
+  ctx.strokeStyle='#fff'; ctx.lineWidth=1.6; ctx.lineCap='round';
+  ctx.beginPath();
+  for(const sg of thick){
+    const a=toPx((sg.x1-cx)/s, (flipY?(cy-sg.y1):(sg.y1-cy))/s);
+    const b=toPx((sg.x2-cx)/s, (flipY?(cy-sg.y2):(sg.y2-cy))/s);
+    ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
+  }
+  ctx.stroke();
+  const wallData=ctx.getImageData(0,0,W,W).data;
+  // TMA (azul) como máscara de recorte
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,W);
+  ctx.fillStyle='#fff'; ctx.beginPath();
+  tma.forEach((p,i)=>{ const q=toPx(p[0],p[1]); i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); });
+  ctx.closePath(); ctx.fill();
+  const tmaData=ctx.getImageData(0,0,W,W).data;
+  // bloqueado = muro O fuera de TMA
+  const N=W*W;
+  let blocked=new Uint8Array(N);
+  for(let i=0;i<N;i++){ const wpx=wallData[i*4]>60, inside=tmaData[i*4]>60; blocked[i]=(wpx||!inside)?1:0; }
+  // cierre morfológico (radio 3) sella huecos muro↔borde TMA
+  function dilate(src,r){ const t=new Uint8Array(N);
+    for(let y=0;y<W;y++)for(let x=0;x<W;x++){ if(!src[y*W+x])continue;
+      for(let dy=-r;dy<=r;dy++){ const yy=y+dy; if(yy<0||yy>=W)continue;
+        for(let dx=-r;dx<=r;dx++){ const xx=x+dx; if(xx<0||xx>=W)continue; t[yy*W+xx]=1; } } }
+    return t; }
+  function erode(src,r){ const t=new Uint8Array(N);
+    for(let y=0;y<W;y++)for(let x=0;x<W;x++){ if(src[y*W+x])continue;
+      let full=1;
+      for(let dy=-r;dy<=r&&full;dy++){ const yy=y+dy; if(yy<0||yy>=W){full=0;break;}
+        for(let dx=-r;dx<=r;dx++){ const xx=x+dx; if(xx<0||xx>=W){full=0;break;}
+          if(!src[yy*W+xx]){full=0;break;} } }
+      if(full)t[y*W+x]=1; }
+    return t; }
+  blocked=erode(dilate(blocked,3),3);
+  // ── 5. flood por semillas ──
+  const labels=new Int32Array(N).fill(-1);
+  const regions=[]; // {id,name,area,cx,cy}
+  const seedPx={};
+  let collision=[];
+  for(const [name,mag,d] of SEEDS){
+    const phi=(mag+DECL)*Math.PI/180;
+    const xn=d*Math.sin(phi), yn=d*Math.cos(phi);
+    const q=toPx(xn,yn);
+    seedPx[name]=q;
+    let sx=Math.round(q[0]),sy=Math.round(q[1]);
+    // buscar pixel libre cercano (radio 40 px)
+    let found=-1;
+    for(let r=0;r<40&&found<0;r++){
+      for(let dy=-r;dy<=r&&found<0;dy++)for(let dx=-r;dx<=r;dx++){
+        const xx=sx+dx,yy=sy+dy;
+        if(xx<0||yy<0||xx>=W||yy>=W)continue;
+        if(!blocked[yy*W+xx]&&labels[yy*W+xx]<0){ found=yy*W+xx; break; }
+      }
+    }
+    if(found<0){ collision.push(name+':sin-pixel-libre'); continue; }
+    const id=regions.length;
+    let stack=[found], area=0, sxs=0,sys=0;
+    labels[found]=id;
+    while(stack.length){
+      const i=stack.pop(); const x=i%W, y=(i/W)|0;
+      area++; sxs+=x; sys+=y;
+      const nb=[i-1,i+1,i-W,i+W];
+      if(x>0&&!blocked[i-1]&&labels[i-1]<0){labels[i-1]=id;stack.push(i-1);}
+      if(x<W-1&&!blocked[i+1]&&labels[i+1]<0){labels[i+1]=id;stack.push(i+1);}
+      if(y>0&&!blocked[i-W]&&labels[i-W]<0){labels[i-W]=id;stack.push(i-W);}
+      if(y<W-1&&!blocked[i+W]&&labels[i+W]<0){labels[i+W]=id;stack.push(i+W);}
+    }
+    regions.push({id,name,area,cx:sxs/area,cy:sys/area});
+    const mine=regions.filter(rr=>rr.name===name);
+    // colisión: si otra semilla cayó en esta región (su BFS partió desde otro label) no pasa — cada BFS es región nueva; colisión real = semilla de otro nombre dentro de píxeles ya etiquetados
+  }
+  // detectar semillas cuya región contiene a otra semilla (región compartida): reetiquetado por proximidad no aplica; chequeo: semilla B cae en píxel ya etiquetado por A
+  const labelAt={};
+  for(const [name,mag,d] of SEEDS){
+    const q=seedPx[name]; if(!q)continue;
+    const i=(Math.round(q[1])*W+Math.round(q[0]));
+    const lb=(i>=0&&i<N)?labels[i]:-1;
+    labelAt[name]=lb;
+  }
+  const seen={};
+  for(const n in labelAt){ const lb=labelAt[n]; if(lb<0)continue; if(seen[lb])collision.push(seen[n]+'='+n+' (misma región)'); else seen[lb]=n; }
+  // ── 6. contornos por región sembrada ──
+  const sectors={};
+  for(const reg of regions){
+    const m=new Uint8Array(N);
+    for(let i=0;i<N;i++) if(labels[i]===reg.id) m[i]=1;
+    const loops=contours(m,W,W);
+    if(!loops.length){ diag['miss_'+reg.name]='sin contorno'; continue; }
+    // mayor bucle
+    let big=loops[0]; for(const l of loops) if(l.length>big.length) big=l;
+    let nm=big.map(p=>toNM(p[0],p[1]));
+    nm=dpSimplify(nm,0.12);
+    // eliminar puntos duplicados consecutivos (incl. cierre)
+    const ded=[]; for(const p of nm){ const q=ded[ded.length-1]; if(!q||Math.hypot(p[0]-q[0],p[1]-q[1])>1e-6) ded.push(p); }
+    if(ded.length>1){ const a=ded[0],b=ded[ded.length-1]; if(Math.hypot(a[0]-b[0],a[1]-b[1])<1e-6) ded.pop(); }
+    sectors[reg.name]={pts:ded, area:reg.area, centroid:toNM(reg.cx,reg.cy)};
+  }
+  // ── 7. dibujo depuración ──
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,W);
+  // muros
+  ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.2; ctx.beginPath();
+  for(const sg of thick){
+    const a=toPx((sg.x1-cx)/s, (flipY?(cy-sg.y1):(sg.y1-cy))/s);
+    const b=toPx((sg.x2-cx)/s, (flipY?(cy-sg.y2):(sg.y2-cy))/s);
+    ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
+  }
+  ctx.stroke();
+  // rellenos por región
+  const colors=['#e33','#3e3','#39f','#ee3','#e3e','#0ee','#f80','#8f8','#f08','#88f','#ccc','#0f8','#fff'];
+  for(const reg of regions){
+    ctx.fillStyle=colors[reg.id%colors.length];
+    ctx.globalAlpha=.32;
+    ctx.beginPath();
+    for(let y=0;y<W;y++)for(let x=0;x<W;x++){ if(labels[y*W+x]===reg.id){ ctx.rect(x,y,1,1); } }
+    ctx.fill();
+    ctx.globalAlpha=1;
+  }
+  // TMA azul
+  ctx.strokeStyle='#3af'; ctx.lineWidth=2; ctx.beginPath();
+  tma.forEach((p,i)=>{ const q=toPx(p[0],p[1]); i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); });
+  ctx.closePath(); ctx.stroke();
+  // semillas + nombres
+  ctx.font='bold 26px monospace'; ctx.fillStyle='#ff0'; ctx.textAlign='center';
+  for(const [name] of SEEDS){
+    const q=seedPx[name]; if(!q)continue;
+    ctx.beginPath(); ctx.arc(q[0],q[1],7,0,7); ctx.fillStyle='#f44'; ctx.fill(); ctx.fillStyle='#ff0';
+    ctx.fillText(name,q[0],q[1]-14);
+  }
+  const summary={diag, regions:regions.map(r=>({name:r.name,areaPx:r.area,centNM:toNM(r.cx,r.cy).map(v=>+v.toFixed(1))})), collision, sectors:Object.fromEntries(Object.entries(sectors).map(([k,v])=>[k,{n:v.pts.length,areaPx:v.area,cent:v.centroid.map(x=>+x.toFixed(1))}]))};
+  window.__sectors={...Object.fromEntries(Object.entries(sectors).map(([k,v])=>[k,v.pts.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)])])), __diag:summary};
+  out.textContent=JSON.stringify(summary,null,1);
+  document.title='LISTO';
+}
+main().catch(e=>{ document.getElementById('out').textContent='ERROR: '+e.message+'\n'+e.stack; document.title='ERROR'; });
+</script>
+</body>

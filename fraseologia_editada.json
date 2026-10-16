@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "version": 1,
+    "fuente_base_original": "normativa.xml (fraseología establecida DAP-11/DAN-11 DGAC Chile)",
+    "descripcion": "Fraseología radar ATC — fuente ÚNICA editable. Consolida TODO lo que antes vivía en normativa.xml + el diccionario de respaldo JS (readbacks en/es, diluciones, correcciones, fixes, patrones de espera). Si falta este archivo, la app carga normativa.xml y ofrece regenerarlo.",
+    "instrucciones": "Este archivo es de SOLO LECTURA para el simulador pero EDITABLE desde el panel FRASES (CONFIG → FRASES). Los placeholders {cs},{val},{fl},{nivel},{fix},{star} NO se renombran: el simulador depende de ellos. Una frase completa ES + EN con misma clave = sin duplicidades.",
+    "idiomas": ["es", "en"],
+    "placeholders": [
+      { "token": "{cs}",  "descripcion": "Indicativo de la aeronave (ej. LAN112)", "ejemplos": ["LAN112", "CMP106"] },
+      { "token": "{val}", "descripcion": "Valor numérico dinámico (rumbo, nivel, velocidad, VS, hora)", "ejemplos": ["180", "350", "140", "F200", "15:30"] },
+      { "token": "{fl}",  "descripcion": "Nivel de vuelo en formato hablado (p.ej. 'nivel de vuelo 140')", "ejemplos": ["nivel de vuelo 140"] },
+      { "token": "{nivel}", "descripcion": "Colación del nivel autorizado con la regla de tres rangos: 050→'cinco mil pies' ... 100→'diez mil pies', 110+→'nivel de vuelo uno uno cero'", "ejemplos": ["cinco mil pies", "diez mil pies", "nivel de vuelo uno uno cero"] },
+      { "token": "{fix}", "descripcion": "Nombre de fix/punto significativo (ej. UGOLA)", "ejemplos": ["UGOLA", "VILUM"] },
+      { "token": "{star}", "descripcion": "Nombre de la STAR (ej. EROLO8A)", "ejemplos": ["EROLO8A", "PUMAR1A"] }
+    ]
+  },
+
+  "readbacks": [
+    { "id": "hdg_left",   "categoria": "rumbos", "es": "{cs}, virando izquierda rumbo {val}",  "en": "{cs}, turning left heading {val}",  "variables": ["{cs}","{val}"], "keyword_es": ["virando izquierda","rumbo"], "keyword_en": ["turning left","heading"] },
+    { "id": "hdg_right",  "categoria": "rumbos", "es": "{cs}, virando derecha rumbo {val}",   "en": "{cs}, turning right heading {val}", "variables": ["{cs}","{val}"], "keyword_es": ["virando derecha","rumbo"], "keyword_en": ["turning right","heading"] },
+    { "id": "hdg",        "categoria": "rumbos", "es": "{cs}, rumbo {val}",                   "en": "{cs}, heading {val}",               "variables": ["{cs}","{val}"], "keyword_es": ["rumbo"], "keyword_en": ["heading"] },
+    { "id": "hdg_maintain","categoria":"rumbos","es": "{cs}, manteniendo rumbo {val}",         "en": "{cs}, maintaining heading {val}",   "variables": ["{cs}","{val}"], "keyword_es": ["manteniendo rumbo"], "keyword_en": ["maintaining heading"] },
+
+    { "id": "climb",   "categoria": "niveles", "es": "{cs}, autorizado ascenso para {nivel}", "en": "{cs}, cleared to climb to {nivel}", "variables": ["{cs}","{nivel}"], "keyword_es": ["autorizado ascenso","nivel"], "keyword_en": ["cleared climb","flight level"] },
+    { "id": "descend", "categoria": "niveles", "es": "{cs}, autorizado descenso para {nivel}", "en": "{cs}, cleared to descend to {nivel}", "variables": ["{cs}","{nivel}"], "keyword_es": ["autorizado descenso","nivel"], "keyword_en": ["cleared descend","flight level"] },
+    { "id": "level",   "categoria": "niveles", "es": "{cs}, manteniendo {nivel}", "en": "{cs}, maintaining {nivel}", "variables": ["{cs}","{nivel}"], "keyword_es": ["manteniendo nivel"], "keyword_en": ["maintaining flight level"] },
+    { "id": "alt",     "categoria": "niveles", "es": "{cs}, manteniendo {val} pies", "en": "{cs}, maintaining {val} feet", "variables": ["{cs}","{val}"], "keyword_es": ["manteniendo","pies"], "keyword_en": ["maintaining","feet"] },
+    { "id": "qnh",     "categoria": "niveles", "es": "{cs}, Q-N-H {val}", "en": "{cs}, Q-N-H {val}", "variables": ["{cs}","{val}"], "keyword_es": ["qnh"], "keyword_en": ["qnh"] },
+
+    { "id": "spd_red", "categoria": "velocidad", "es": "{cs}, reduciendo a {val} nudos", "en": "{cs}, reducing speed to {val} knots", "variables": ["{cs}","{val}"], "keyword_es": ["reduciendo","nudos"], "keyword_en": ["reducing","knots"] },
+    { "id": "spd_inc", "categoria": "velocidad", "es": "{cs}, aumentando a {val} nudos", "en": "{cs}, increasing speed to {val} knots", "variables": ["{cs}","{val}"], "keyword_es": ["aumentando","nudos"], "keyword_en": ["increasing","knots"] },
+    { "id": "spd_mnt", "categoria": "velocidad", "es": "{cs}, manteniendo {val} nudos", "en": "{cs}, maintaining {val} knots", "variables": ["{cs}","{val}"], "keyword_es": ["manteniendo","nudos"], "keyword_en": ["maintaining","knots"] },
+
+    { "id": "mach_inc", "categoria": "velocidad", "es": "{cs}, aumentando velocidad Mach punto {val}", "en": "{cs}, increasing speed to Mach point {val}", "variables": ["{cs}","{val}"], "keyword_es": ["aumentando","mach"], "keyword_en": ["increasing","mach"] },
+    { "id": "mach_red", "categoria": "velocidad", "es": "{cs}, reduciendo velocidad Mach punto {val}", "en": "{cs}, reducing speed to Mach point {val}", "variables": ["{cs}","{val}"], "keyword_es": ["reduciendo","mach"], "keyword_en": ["reducing","mach"] },
+    { "id": "mach_mnt", "categoria": "velocidad", "es": "{cs}, manteniendo velocidad Mach punto {val}", "en": "{cs}, maintaining Mach point {val}", "variables": ["{cs}","{val}"], "keyword_es": ["manteniendo","mach"], "keyword_en": ["maintaining","mach"] },
+
+    { "id": "reportfix",   "categoria": "informes", "es": "{cs}, notificaré pasando {fix}", "en": "{cs}, will report passing {fix}",   "variables": ["{cs}","{fix}"], "keyword_es": ["notificaré","pasando"], "keyword_en": ["report","passing"] },
+    { "id": "reporthold",  "categoria": "informes", "es": "{cs}, notificaré establecido en espera sobre {fix}", "en": "{cs}, will report established in the hold at {fix}", "variables": ["{cs}","{fix}"], "keyword_es": ["notificaré","espera"], "keyword_en": ["report","established","hold"] },
+
+    { "id": "direct", "categoria": "directos", "es": "{cs}, directo {fix}", "en": "{cs}, direct {fix}", "variables": ["{cs}","{fix}"], "keyword_es": ["directo"], "keyword_en": ["direct"] },
+    { "id": "hold",   "categoria": "esperas", "es": "{cs}, sobre {fix} ingreso a patrón de espera publicado", "en": "{cs}, at {fix} entering the published hold", "variables": ["{cs}","{fix}"], "keyword_es": ["ingreso","espera"], "keyword_en": ["entering","hold"] },
+    { "id": "inheld", "categoria": "esperas", "es": "{cs}, establecido en espera sobre {fix}", "en": "{cs}, established holding at {fix}", "variables": ["{cs}","{fix}"], "keyword_es": ["establecido","espera"], "keyword_en": ["established","hold"] },
+    { "id": "leave",  "categoria": "esperas", "es": "{cs}, abandonando patrón de espera sobre {fix}, reanudo {star} o volando directo a {fix}", "en": "{cs}, leaving the hold at {fix}, resuming {star} or flying direct to {fix}", "variables": ["{cs}","{fix}","{star}"], "keyword_es": ["abandonando","espera"], "keyword_en": ["leaving","hold"] },
+    { "id": "resume", "categoria": "esperas", "es": "{cs}, reanudando STAR", "en": "{cs}, resuming STAR", "variables": ["{cs}"], "keyword_es": ["reanudando"], "keyword_en": ["resuming"] },
+
+    { "id": "loc",    "categoria": "aproximacion", "es": "{cs}, interceptando localizador pista {val}",  "en": "{cs}, intercepting the ILS runway {val}",  "variables": ["{cs}","{val}"], "keyword_es": ["interceptando","localizador","pista"], "keyword_en": ["intercepting","localizer","runway"] },
+    { "id": "estloc", "categoria": "aproximacion", "es": "{cs}, establecido en localizador pista {val}", "en": "{cs}, established on the ILS runway {val}", "variables": ["{cs}","{val}"], "keyword_es": ["establecido","localizador","pista"], "keyword_en": ["established","localizer","runway"] },
+    { "id": "switch", "categoria": "aproximacion", "es": "{cs}, cambio a pista {val}", "en": "{cs}, runway change confirmed, runway {val}", "variables": ["{cs}","{val}"], "keyword_es": ["cambio","pista"], "keyword_en": ["runway change"] },
+    { "id": "goaround", "categoria": "aproximacion", "es": "{cs}, frustrando aproximación", "en": "{cs}, going around", "variables": ["{cs}"], "keyword_es": ["frustrando","aproximación"], "keyword_en": ["going around"] },
+    { "id": "twr",    "categoria": "transferencia", "es": "{cs}, contacto Santiago Torre uno uno ocho coma uno", "en": "{cs}, contact Santiago Tower one one eight decimal one", "variables": ["{cs}"], "keyword_es": ["contacto","torre"], "keyword_en": ["contact","tower"] },
+    { "id": "ident",  "categoria": "identificacion", "es": "{cs}, ident", "en": "{cs}, ident", "variables": ["{cs}"], "keyword_es": ["ident"], "keyword_en": ["ident"] },
+    { "id": "switch_twr","categoria":"transferencia","es":"{cs}, cambie a torre Santiago uno uno ocho coma uno","en":"{cs}, contact Santiago Tower one one eight decimal one","variables":["{cs}"],"keyword_es":["cambie","torre","118.1"],"keyword_en":["contact","tower","118.1"]}
+  ],
+
+  "diluciones": [
+    { "id": "dil_hold",   "categoria": "confirmacion", "es": "{cs}, ¿me confirma autorizado a {fix} patrón de espera publicado, nivel de vuelo {fl}?", "en": "{cs}, confirm authorized to {fix} published hold, flight level {fl}?", "variables": ["{cs}","{fix}","{fl}"], "keyword_es": ["confirma","autorizado","espera"], "keyword_en": ["confirm","authorized","hold"] },
+    { "id": "dil_level",  "categoria": "confirmacion", "es": "{cs}, ¿confirma cambio de nivel a {val}?", "en": "{cs}, confirm level change to {val}?", "variables": ["{cs}","{val}"], "keyword_es": ["confirma","cambio","nivel"], "keyword_en": ["confirm","level"] },
+    { "id": "dil_hdg",    "categoria": "confirmacion", "es": "{cs}, ¿confirma rumbo {val}?", "en": "{cs}, confirm heading {val}?", "variables": ["{cs}","{val}"], "keyword_es": ["confirma","rumbo"], "keyword_en": ["confirm","heading"] },
+    { "id": "dil_spd",    "categoria": "confirmacion", "es": "{cs}, ¿confirma velocidad {val} nudos?", "en": "{cs}, confirm speed {val} knots?", "variables": ["{cs}","{val}"], "keyword_es": ["confirma","velocidad"], "keyword_en": ["confirm","speed"] },
+    { "id": "dil_direct", "categoria": "confirmacion", "es": "{cs}, ¿confirma directo a {fix}?", "en": "{cs}, confirm direct to {fix}?", "variables": ["{cs}","{fix}"], "keyword_es": ["confirma","directo"], "keyword_en": ["confirm","direct"] },
+    { "id": "dil_rwy",    "categoria": "confirmacion", "es": "{cs}, ¿confirma pista {val}?", "en": "{cs}, confirm runway {val}?", "variables": ["{cs}","{val}"], "keyword_es": ["confirma","pista"], "keyword_en": ["confirm","runway"] },
+    { "id": "dil_twr",    "categoria": "confirmacion", "es": "{cs}, ¿confirma frecuencia torre uno uno ocho coma uno?", "en": "{cs}, confirm tower frequency one one eight decimal one?", "variables": ["{cs}"], "keyword_es": ["confirma","torre"], "keyword_en": ["confirm","tower"] },
+    { "id": "dil_clarify","categoria": "confirmacion", "es": "{cs}, ¿puede repetir la instrucción?", "en": "{cs}, say again the instruction?", "variables": ["{cs}"], "keyword_es": ["repetir","instrucción"], "keyword_en": ["say again"] }
+  ],
+
+  "correcciones": [
+    { "id": "corr_readback","categoria":"correcciones","es":"CORRECCIÓN: {cs}, repita el readback. Instrucción fue: {instr}","en":"CORRECTION: {cs}, readback. Instruction was: {instr}","variables":["{cs}","{instr}"],"keyword_es":["corrección","repita","readback"],"keyword_en":["correction","readback"] },
+    { "id": "corr_callsign","categoria":"correcciones","es":"CORRECCIÓN: {cs}, su callsign es {correct}","en":"CORRECTION: {cs}, your callsign is {correct}","variables":["{cs}","{correct}"],"keyword_es":["corrección","callsign"],"keyword_en":["correction","callsign"] },
+    { "id": "corr_hdg","categoria":"correcciones","es":"CORRECCIÓN: {cs}, rumbo {val}, no {wrong}","en":"CORRECTION: {cs}, heading {val}, not {wrong}","variables":["{cs}","{val}","{wrong}"],"keyword_es":["corrección","rumbo"],"keyword_en":["correction","heading"] },
+    { "id": "corr_fl","categoria":"correcciones","es":"CORRECCIÓN: {cs}, nivel de vuelo {val}, no {wrong}","en":"CORRECTION: {cs}, flight level {val}, not {wrong}","variables":["{cs}","{val}","{wrong}"],"keyword_es":["corrección","nivel"],"keyword_en":["correction","flight level"] },
+    { "id": "corr_spd","categoria":"correcciones","es":"CORRECCIÓN: {cs}, velocidad {val} nudos, no {wrong}","en":"CORRECTION: {cs}, speed {val} knots, not {wrong}","variables":["{cs}","{val}","{wrong}"],"keyword_es":["corrección","velocidad"],"keyword_en":["correction","speed"] },
+    { "id": "corr_fix","categoria":"correcciones","es":"CORRECCIÓN: {cs}, directo a {val}, no {wrong}","en":"CORRECTION: {cs}, direct to {val}, not {wrong}","variables":["{cs}","{val}","{wrong}"],"keyword_es":["corrección","directo"],"keyword_en":["correction","direct"] },
+    { "id": "corr_negate","categoria":"correcciones","es":"NEGATIVO. {cs}, {instr}","en":"NEGATIVE. {cs}, {instr}","variables":["{cs}","{instr}"],"keyword_es":["negativo"],"keyword_en":["negative"] }
+  ],
+
+  "instrucciones": [
+    { "id": "hold_clear", "categoria": "esperas", "es": "autorizado hasta {fix}, mantenga patrón de espera publicado, prevea autorización de aproximación a las {val}", "en": "cleared to {fix}, hold as published, expect approach clearance at {val}", "variables": ["{fix}","{val}"], "keyword_es": ["autorizado","patrón de espera","prevea"], "keyword_en": ["cleared","hold as published","expect approach clearance"] },
+    { "id": "leave_vec", "categoria": "esperas", "es": "vectores para abandonar espera", "en": "vectors to leave the hold", "variables": [], "keyword_es": ["vectores","abandonar"], "keyword_en": ["vectors","leave"] },
+    { "id": "leave_via", "categoria": "esperas", "es": "abandone espera sobre {fix}, continúe vía {star}", "en": "leave the hold at {fix}, continue via {star}", "variables": ["{fix}","{star}"], "keyword_es": ["abandone","espera","vía"], "keyword_en": ["leave","hold","continue via"] }
+  ],
+
+  "fixes_pron": [
+    { "fix": "UGOLA", "pron": "ugola" }, { "fix": "TEGEB", "pron": "tegeb" },
+    { "fix": "SEDPA", "pron": "sedpa" }, { "fix": "PUMAR", "pron": "pumar" },
+    { "fix": "EROLO", "pron": "erolo" }, { "fix": "MORPA", "pron": "morpa" },
+    { "fix": "DABIT", "pron": "dabit" }, { "fix": "KADAK", "pron": "kadak" },
+    { "fix": "VTN",   "pron": "vtn" },   { "fix": "SAG",   "pron": "sag" },
+    { "fix": "DIT",   "pron": "dit" },   { "fix": "NAN",   "pron": "nan" },
+    { "fix": "TUC",   "pron": "tuc" },   { "fix": "COR",   "pron": "cor" },
+    { "fix": "CHC",   "pron": "chc" },   { "fix": "ANF",   "pron": "anf" },
+    { "fix": "LTC",   "pron": "ltc" },   { "fix": "TGU",   "pron": "tgu" },
+    { "fix": "GAV",   "pron": "gav" },   { "fix": "PRC",   "pron": "prc" }
+  ],
+
+  "hold_patterns": [
+    { "nombre": "UGOLA", "inbound": 177, "turn": "left",  "alt": 7000 },
+    { "nombre": "MORPA", "inbound": 21,  "turn": "left",  "alt": 7000 },
+    { "nombre": "DABIT", "inbound": 177, "turn": "right", "alt": 8000 },
+    { "nombre": "KADAK", "inbound": 21,  "turn": "right", "alt": 8000 },
+    { "nombre": "VTN",   "inbound": 177, "turn": "left",  "alt": 9000 },
+    { "nombre": "TEGEB", "inbound": 177, "turn": "left",  "alt": 7000 },
+    { "nombre": "SEDPA", "inbound": 21,  "turn": "right", "alt": 8000 }
+  ],
+
+  "lenguaje": {
+    "descripcion": "Lenguaje implícito — sinónimos/palabras clave para detectar la INTENCIÓN del controlador (nlpAction). Se combinan con OR. Prefijos cortos cubren variantes: 'gir' → gire/gira/girar. Acentos opcionales: 'patrón' ≡ 'patron'. Editable desde FRASES → LENGUAJE.",
+    "acciones": {
+      "hdg": ["rumbo", "heading", "hdg", "fly", "vire", "vira", "gir", "turn", "curso", "proa", "steer"],
+      "climb": ["sub", "asciend", "ascend", "climb", "trep", "subir", "go up"],
+      "descend": ["baj", "desciend", "descend", "descent", "go down"],
+      "spd": ["velocidad", "speed", "reduce", "reduzc", "disminu", "slow", "aument", "increase", "nudos", "knots"],
+      "direct": ["directo", "diríjase", "dirígete", "direct", "proceed direct", "go direct", "vaya directo", "ve directo", "vaya", "ve a", "go to"],
+      "hold": ["espera", "espere", "esperando", "hold", "holding", "patrón de espera"]
+    }
+  },
+
+  "establecida_referencia": [
+    { "categoria": "area", "es": "Área de control {name}", "en": "Airspace {name}" },
+    { "categoria": "area", "es": "Cumple con instrucciones de {name}", "en": "Comply with {name} instructions" },
+    { "categoria": "approach", "es": "Control de aproximación {name}", "en": "Approach {name}" },
+    { "categoria": "approach", "es": "Para {pista}, descendiendo a {nivel}", "en": "For {runway}, descending to {level}" },
+    { "categoria": "aerodrome", "es": "Torre de {aeropuerto}", "en": "{airport} Tower" },
+    { "categoria": "aerodrome", "es": "Pista {num}, alineación y despegue", "en": "Runway {num}, line up and wait" },
+    { "categoria": "coord", "es": "Coordinado con {name}", "en": "Coordination with {name}" },
+    { "categoria": "coord", "es": "Tráfico coordinado", "en": "Traffic coordinated" }
+  ]
+}

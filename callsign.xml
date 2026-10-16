@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  callsign.xml — Base de datos de distintivos de llamada (callsigns)
+  Uso: responder a la instrucción ATC por el distintivo de llamada.
+  Formato del callsign en frecuencia:
+    CIVIL:    DISTINTIVO + 3 a 4 dígitos   (ej: LXP 1234  →  "LANEX 1234")
+    MILITAR:  NOMBRE DE COMBATE + 3 a 4 dígitos (ej: "APACHE 12", "CACIQUE 55")
+  Referencia: ICAO Doc 8585 (designadores) / AIP Chile
+  Generado: 2026-08-07
+-->
+<callsignDatabase>
+  <!-- ════════════════════════════════════════════
+       CHILE
+       ════════════════════════════════════════════ -->
+  <airline icao="LAN" country="CL" name="LATAM Airlines Chile (ex LAN Airlines)" callsign="LAN"/>
+  <airline icao="LXP" country="CL" name="LATAM Express (ex LAN Express)" callsign="LANEX"/>
+  <airline icao="LCO" country="CL" name="LATAM Cargo Chile (ex LAN Cargo)" callsign="LAN CARGO"/>
+  <airline icao="SKU" country="CL" name="Sky Airline" callsign="SKY"/>
+  <airline icao="JAT" country="CL" name="JetSMART Airlines" callsign="JETSMART"/>
+  <airline icao="DAP" country="CL" name="Aerovías DAP" callsign="DAP"/>
+  <airline icao="LDE" country="CL" name="Ladeco (histórica)" callsign="LADECO"/>
+  
+
+  <!-- ════════════════════════════════════════════
+       GRUPO LATAM (operan a SCEL)
+       ════════════════════════════════════════════ -->
+  <airline icao="TAM" country="BR" name="LATAM Brasil (TAM Linhas Aéreas)" callsign="THAM"/>
+  <airline icao="LPE" country="PE" name="LATAM Perú" callsign="LAN PERU"/>
+  <airline icao="LXE" country="EC" name="LATAM Ecuador" callsign="LAN ECUADOR"/>
+  <airline icao="ARE" country="CO" name="LATAM Colombia" callsign="LAN COLOMBIA"/>
+
+  <!-- ════════════════════════════════════════════
+       SUDAMÉRICA
+       ════════════════════════════════════════════ -->
+  <airline icao="ARG" country="AR" name="Aerolíneas Argentinas" callsign="ARGENTINA"/>
+  <airline icao="FBA" country="AR" name="Flybondi" callsign="FLYBONDI"/>
+  <airline icao="BOV" country="BO" name="Boliviana de Aviación" callsign="BOLIVIANA"/>
+  <airline icao="GLO" country="BR" name="GOL Linhas Aéreas" callsign="GOL TRANSPORTE"/>
+  <airline icao="AZU" country="BR" name="Azul Linhas Aéreas" callsign="AZUL"/>
+  <airline icao="AVA" country="CO" name="Avianca" callsign="AVIANCA"/>
+  <airline icao="CMP" country="PA" name="Copa Airlines" callsign="COPA"/>
+  <airline icao="PAR" country="PY" name="Paranair" callsign="PARANAIR"/>
+
+  <!-- ════════════════════════════════════════════
+       NORTEAMÉRICA / MÉXICO
+       ════════════════════════════════════════════ -->
+  <airline icao="AAL" country="US" name="American Airlines" callsign="AMERICAN"/>
+  <airline icao="DAL" country="US" name="Delta Air Lines" callsign="DELTA"/>
+  <airline icao="UAL" country="US" name="United Airlines" callsign="UNITED"/>
+  <airline icao="FDX" country="US" name="FedEx Express" callsign="FEDEX"/>
+  <airline icao="UPS" country="US" name="UPS Airlines" callsign="UPS"/>
+  <airline icao="ACA" country="CA" name="Air Canada" callsign="AIR CANADA"/>
+  <airline icao="AMX" country="MX" name="Aeroméxico" callsign="AEROMEXICO"/>
+  <airline icao="VOI" country="MX" name="Volaris" callsign="VOLARIS"/>
+  <airline icao="VIV" country="MX" name="Viva Aerobus" callsign="VIVA AEROBUS"/>
+
+  <!-- ════════════════════════════════════════════
+       EUROPA
+       ════════════════════════════════════════════ -->
+  <airline icao="BAW" country="GB" name="British Airways" callsign="SPEEDBIRD"/>
+  <airline icao="DLH" country="DE" name="Lufthansa" callsign="LUFTHANSA"/>
+  <airline icao="SWR" country="CH" name="Swiss International Air Lines" callsign="SWISS"/>
+  <airline icao="AFR" country="FR" name="Air France" callsign="AIRFRANS"/>
+  <airline icao="KLM" country="NL" name="KLM Royal Dutch Airlines" callsign="KLM"/>
+  <airline icao="IBE" country="ES" name="Iberia" callsign="IBERIA"/>
+  <airline icao="THY" country="TR" name="Turkish Airlines" callsign="TURKISH"/>
+
+  <!-- ════════════════════════════════════════════
+       ORIENTE MEDIO / ASIA / OCEANÍA
+       ════════════════════════════════════════════ -->
+  <airline icao="UAE" country="AE" name="Emirates" callsign="EMIRATES"/>
+  <airline icao="QTR" country="QA" name="Qatar Airways" callsign="QATARI"/>
+  <airline icao="QFA" country="AU" name="Qantas" callsign="QANTAS"/>
+  
+  <!-- ════════════════════════════════════════════
+       FUERZA AÉREA
+       Nombre de combate: puede VARIAR según misión/unidad.
+       El estándar de transporte es "FACH" + dígitos (ej: FACH 400).
+       ════════════════════════════════════════════ -->
+  <military>
+    <force code="FACH" country="CL" name="Fuerza Aérea de Chile" callsign="FACH">
+      <combatName>APACHE</combatName>
+      <combatName>MENTOR</combatName>
+      <combatName>BARTITECH</combatName>
+      <combatName>MONRA</combatName>
+      <combatName>BARUA</combatName>
+      <combatName>CACIQUE</combatName>
+    </force>
+  </military>
+</callsignDatabase>

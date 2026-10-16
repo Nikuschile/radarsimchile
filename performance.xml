@@ -1,0 +1,1210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Rendimiento aeronáutico por tipo ICAO
+  Fuente: Eurocontrol ATCPFDB (learningzone.eurocontrol.int/ilp/customs/ATCPFDB)
+  Generado: 2026-08-04 desde scraping de 106 páginas details.aspx?ICAO=...
+  Fases: Take-off / Initial climb 5000ft / Climb FL150 / Climb FL240 /
+         MACH climb / Cruise / Initial Descent FL240 / Descent FL100 /
+         Approach / Landing
+  Unidades: IAS/MCS/V2/Vat kt, ROC/ROD ft/min, MACH adim, TAS kt,
+            Ceiling ft, MTOW kg, Distance m, Range NM
+-->
+<aircraftPerformance>
+  <aircraft icao="A10">
+      <takeoff v2="140" distance="1200" wtc="M" recat="Lower Medium" mtow="22700"/>
+      <climb5000 ias="170" roc="6000"/>
+      <climb150 ias="300" roc="2500"/>
+      <climb240 ias="300" roc="2400"/>
+      <machClimb mach="0.63" roc="2000"/>
+      <cruise tas="300" mach="0.58" ceiling="34000" range="540"/>
+      <descent240 mach="0.67" rod="5000"/>
+      <descent100 ias="300" rod="5000"/>
+      <approach ias="250" rod="1500"/>
+      <landing vat="140" distance="610" apc="C"/>
+  </aircraft>
+  <aircraft icao="A109">
+      <takeoff wtc="L" recat="Light" mtow="3000"/>
+      <climb5000 ias="90" roc="1900"/>
+      <climb150 ias="100" roc="1000"/>
+      <climb240 ias="100" roc="1000"/>
+      <cruise tas="140" ceiling="19600" range="521"/>
+      <descent100 ias="130" rod="1000"/>
+      <approach ias="100" rod="1000"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="A124">
+      <takeoff v2="140" distance="2800" wtc="H" recat="Super Heavy" mtow="405000"/>
+      <climb5000 ias="160" roc="800"/>
+      <climb150 ias="270" roc="1200"/>
+      <climb240 ias="270" roc="900"/>
+      <machClimb mach="0.72" roc="500"/>
+      <cruise tas="430" mach="0.78" ceiling="39000" range="3200"/>
+      <descent240 mach="0.72" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="250" mcs="250" rod="1500"/>
+      <landing vat="140" distance="900" apc="C"/>
+  </aircraft>
+  <aircraft icao="A129">
+      <takeoff wtc="L" recat="Light" mtow="4600"/>
+      <climb5000 ias="90" roc="2050"/>
+      <climb150 ias="135" roc="500"/>
+      <climb240 ias="135" roc="500"/>
+      <cruise tas="140" ceiling="15500" range="275"/>
+      <descent100 ias="140" rod="2000"/>
+      <approach ias="100" rod="1000"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="A19N">
+      <takeoff v2="135" distance="1900" wtc="M" recat="Upper Medium" mtow="75500"/>
+      <climb5000 ias="165" roc="2500"/>
+      <climb150 ias="290" roc="2200"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="450" mach="0.78" ceiling="39000" range="3750"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="230" mcs="210" rod="1500"/>
+      <landing vat="130" distance="1500" apc="C"/>
+  </aircraft>
+  <aircraft icao="A20N">
+      <takeoff v2="145" distance="1951" wtc="M" recat="Upper Medium" mtow="79000"/>
+      <climb5000 ias="175" roc="2200"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="450" mach="0.78" ceiling="39000" range="3500"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="135" distance="1650" apc="C"/>
+  </aircraft>
+  <aircraft icao="A21N">
+      <takeoff v2="145" distance="2150" wtc="M" recat="Upper Medium" mtow="97000"/>
+      <climb5000 ias="175" roc="2000"/>
+      <climb150 ias="290" roc="1500"/>
+      <climb240 ias="290" roc="1200"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="450" mach="0.78" ceiling="39000" range="4000"/>
+      <descent240 mach="0.78" rod="1500"/>
+      <descent100 ias="290" rod="2500"/>
+      <approach ias="250" mcs="210" rod="1300"/>
+      <landing vat="140" distance="1850" apc="C"/>
+  </aircraft>
+  <aircraft icao="A225">
+      <takeoff v2="195" distance="3500" wtc="J" recat="Special" mtow="600000"/>
+      <climb5000 ias="250" roc="1700"/>
+      <climb150 ias="330" roc="1900"/>
+      <climb240 ias="330" roc="1900"/>
+      <machClimb mach="0.78" roc="650"/>
+      <cruise tas="458" mach="0.78" ceiling="45000" range="3000"/>
+      <descent240 mach="0.78" rod="1500"/>
+      <descent100 ias="330" rod="2200"/>
+      <approach ias="250" mcs="230" rod="1500"/>
+      <landing vat="150" apc="C"/>
+  </aircraft>
+  <aircraft icao="A306">
+      <takeoff v2="160" distance="2240" wtc="H" recat="Lower Heavy" mtow="171700"/>
+      <climb5000 ias="190" roc="3000"/>
+      <climb150 ias="290" roc="3200"/>
+      <climb240 ias="290" roc="2500"/>
+      <machClimb mach="0.78" roc="800"/>
+      <cruise tas="470" mach="0.79" ceiling="37000" range="4150"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="240" mcs="220" rod="1500"/>
+      <landing vat="139" distance="1532" apc="C"/>
+  </aircraft>
+  <aircraft icao="A30B">
+      <takeoff v2="160" distance="2850" wtc="H" recat="Lower Heavy" mtow="165000"/>
+      <climb5000 ias="190" roc="3000"/>
+      <climb150 ias="290" roc="3200"/>
+      <climb240 ias="290" roc="2500"/>
+      <machClimb mach="0.78" roc="800"/>
+      <cruise tas="470" mach="0.79" ceiling="35000" range="3000"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="240" mcs="220" rod="1500"/>
+      <landing vat="141" distance="1635" apc="C"/>
+  </aircraft>
+  <aircraft icao="A310">
+      <takeoff v2="160" distance="2290" wtc="H" recat="Lower Heavy" mtow="150000"/>
+      <climb5000 ias="190" roc="2500"/>
+      <climb150 ias="260" roc="3000"/>
+      <climb240 ias="260" roc="2800"/>
+      <machClimb mach="0.79" roc="1500"/>
+      <cruise tas="480" mach="0.8" ceiling="40000" range="5100"/>
+      <descent240 mach="0.79" rod="1500"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="240" mcs="220" rod="1000"/>
+      <landing vat="139" distance="1490" apc="C"/>
+  </aircraft>
+  <aircraft icao="A318">
+      <takeoff v2="135" distance="1400" wtc="M" recat="Upper Medium" mtow="59000"/>
+      <climb5000 ias="165" roc="3000"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.76" roc="1000"/>
+      <cruise tas="460" mach="0.79" ceiling="39000" range="1500"/>
+      <descent240 mach="0.76" rod="800"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="125" distance="1300" apc="C"/>
+  </aircraft>
+  <aircraft icao="A319">
+      <takeoff v2="135" distance="1750" wtc="M" recat="Upper Medium" mtow="64000"/>
+      <climb5000 ias="165" roc="2500"/>
+      <climb150 ias="290" roc="2200"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="450" mach="0.79" ceiling="39000" range="1800"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="230" mcs="210" rod="1500"/>
+      <landing vat="130" distance="1350" apc="C"/>
+  </aircraft>
+  <aircraft icao="A320">
+      <takeoff v2="145" distance="2190" wtc="M" recat="Upper Medium" mtow="73900"/>
+      <climb5000 ias="175" roc="2500"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1400"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="450" mach="0.79" ceiling="39000" range="2700"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="137" distance="1440" apc="C"/>
+  </aircraft>
+  <aircraft icao="A321">
+      <takeoff v2="145" distance="2210" wtc="M" recat="Upper Medium" mtow="83000"/>
+      <climb5000 ias="175" roc="2500"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1800"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="450" mach="0.79" ceiling="41000" range="2350"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="2500"/>
+      <approach ias="225" mcs="210" rod="1500"/>
+      <landing vat="141" distance="1600" apc="C"/>
+  </aircraft>
+  <aircraft icao="A332">
+      <takeoff v2="145" distance="2300" wtc="H" recat="Upper Heavy" mtow="230000"/>
+      <climb5000 ias="175" roc="2000"/>
+      <climb150 ias="290" roc="2500"/>
+      <climb240 ias="290" roc="2200"/>
+      <machClimb mach="0.8" roc="1500"/>
+      <cruise tas="470" mach="0.81" ceiling="41000" range="6750"/>
+      <descent240 mach="0.8" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="230" mcs="200" rod="1600"/>
+      <landing vat="140" distance="1800" apc="C"/>
+  </aircraft>
+  <aircraft icao="A333">
+      <takeoff v2="145" distance="2300" wtc="H" recat="Upper Heavy" mtow="230000"/>
+      <climb5000 ias="175" roc="2000"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1300"/>
+      <machClimb mach="0.8" roc="1000"/>
+      <cruise tas="475" mach="0.81" ceiling="41000" range="5650"/>
+      <descent240 mach="0.81" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="220" mcs="200" rod="1500"/>
+      <landing vat="140" distance="1700" apc="C"/>
+  </aircraft>
+  <aircraft icao="A338">
+      <takeoff v2="145" distance="2300" wtc="H" recat="Upper Heavy" mtow="251000"/>
+      <climb5000 ias="175" roc="2000"/>
+      <climb150 ias="290" roc="1500"/>
+      <climb240 ias="290" roc="1200"/>
+      <machClimb mach="0.8" roc="1000"/>
+      <cruise tas="475" mach="0.81" ceiling="41000" range="8150"/>
+      <descent240 mach="0.81" rod="1500"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="220" mcs="200" rod="1500"/>
+      <landing vat="140" distance="1850" apc="C"/>
+  </aircraft>
+  <aircraft icao="A339">
+      <takeoff v2="145" distance="2350" wtc="H" recat="Upper Heavy" mtow="251000"/>
+      <climb5000 ias="175" roc="2000"/>
+      <climb150 ias="290" roc="1500"/>
+      <climb240 ias="290" roc="1200"/>
+      <machClimb mach="0.8" roc="1000"/>
+      <cruise tas="475" mach="0.81" ceiling="41000" range="7200"/>
+      <descent240 mach="0.81" rod="1500"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="220" mcs="200" rod="1500"/>
+      <landing vat="140" distance="1850" apc="D"/>
+  </aircraft>
+  <aircraft icao="A342">
+      <takeoff v2="145" distance="2765" wtc="H" recat="Upper Heavy" mtow="275000"/>
+      <climb5000 ias="175" roc="1500"/>
+      <climb150 ias="290" roc="1200"/>
+      <climb240 ias="290" roc="1000"/>
+      <machClimb mach="0.81" roc="700"/>
+      <cruise tas="490" mach="0.82" ceiling="41000" range="8000"/>
+      <descent240 mach="0.81" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="150" distance="1765" apc="D"/>
+  </aircraft>
+  <aircraft icao="A343">
+      <takeoff v2="145" distance="2765" wtc="H" recat="Upper Heavy" mtow="275000"/>
+      <climb5000 ias="175" roc="1400"/>
+      <climb150 ias="290" roc="1500"/>
+      <climb240 ias="290" roc="1000"/>
+      <machClimb mach="0.8" roc="700"/>
+      <cruise tas="490" mach="0.82" ceiling="41000" range="7200"/>
+      <descent240 mach="0.81" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="150" distance="1830" apc="D"/>
+  </aircraft>
+  <aircraft icao="A345">
+      <takeoff v2="145" distance="3200" wtc="H" recat="Upper Heavy" mtow="368000"/>
+      <climb5000 ias="175" roc="1500"/>
+      <climb150 ias="290" roc="1200"/>
+      <climb240 ias="290" roc="1000"/>
+      <machClimb mach="0.81" roc="600"/>
+      <cruise tas="480" mach="0.82" ceiling="41000" range="8800"/>
+      <descent240 mach="0.81" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="155" distance="1920" apc="D"/>
+  </aircraft>
+  <aircraft icao="A346">
+      <takeoff v2="145" distance="3140" wtc="H" recat="Upper Heavy" mtow="368000"/>
+      <climb5000 ias="175" roc="1500"/>
+      <climb150 ias="290" roc="1200"/>
+      <climb240 ias="290" roc="1000"/>
+      <machClimb mach="0.81" roc="800"/>
+      <cruise tas="480" mach="0.82" ceiling="41000" range="7750"/>
+      <descent240 mach="0.81" rod="1000"/>
+      <descent100 ias="290" rod="2000"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="155" distance="2000" apc="D"/>
+  </aircraft>
+  <aircraft icao="A359">
+      <takeoff v2="150" distance="888" wtc="H" recat="Upper Heavy" mtow="268000"/>
+      <climb5000 ias="220" roc="3000"/>
+      <climb150 ias="300" roc="2300"/>
+      <climb240 ias="300" roc="1600"/>
+      <machClimb mach="0.82" roc="1400"/>
+      <cruise tas="490" mach="0.85" ceiling="43000" range="8100"/>
+      <descent240 mach="0.85" rod="1500"/>
+      <descent100 ias="250" rod="3000"/>
+      <approach ias="240" mcs="220" rod="1500"/>
+      <landing vat="140" distance="888" apc="C"/>
+  </aircraft>
+  <aircraft icao="A35K">
+      <takeoff v2="155" distance="2600" wtc="H" recat="Upper Heavy" mtow="319000"/>
+      <climb5000 ias="220" roc="2500"/>
+      <climb150 ias="300" roc="2000"/>
+      <climb240 ias="300" roc="1500"/>
+      <machClimb mach="0.82" roc="1000"/>
+      <cruise tas="490" mach="0.85" ceiling="41000" range="8700"/>
+      <descent240 mach="0.85" rod="1500"/>
+      <descent100 ias="270" rod="2500"/>
+      <approach ias="240" mcs="220" rod="1500"/>
+      <landing vat="150" distance="2000" apc="D"/>
+  </aircraft>
+  <aircraft icao="A388">
+      <takeoff v2="150" distance="2970" wtc="J" recat="Super Heavy" mtow="560000"/>
+      <climb5000 ias="190" roc="1500"/>
+      <climb150 ias="320" roc="2500"/>
+      <climb240 ias="320" roc="1300"/>
+      <machClimb mach="0.83" roc="1000"/>
+      <cruise tas="520" mach="0.85" ceiling="43000" range="8000"/>
+      <descent240 mach="0.83" rod="1000"/>
+      <descent100 ias="300" rod="2000"/>
+      <approach ias="250" mcs="230" rod="1000"/>
+      <landing vat="140" distance="2010" apc="C"/>
+  </aircraft>
+  <aircraft icao="A3ST">
+      <takeoff distance="1950" wtc="H" recat="Lower Heavy" mtow="155000"/>
+      <climb5000 ias="180" roc="1200"/>
+      <climb150 ias="250" roc="1500"/>
+      <climb240 ias="250" roc="1600"/>
+      <machClimb mach="0.68" roc="500"/>
+      <cruise tas="400" mach="0.69" ceiling="31000" range="2500"/>
+      <descent240 mach="0.68" rod="1500"/>
+      <descent100 ias="290" rod="1500"/>
+      <approach ias="240" mcs="210" rod="1000"/>
+      <landing vat="140" distance="1176" apc="C"/>
+  </aircraft>
+  <aircraft icao="A400">
+      <takeoff v2="120" distance="940" wtc="H" recat="Lower Heavy" mtow="141000"/>
+      <climb5000 ias="155" roc="2000"/>
+      <climb150 ias="220" roc="1550"/>
+      <climb240 ias="220" roc="1500"/>
+      <machClimb mach="0.65" roc="800"/>
+      <cruise tas="422" mach="0.72" ceiling="40000" range="1800"/>
+      <descent240 mach="0.68" rod="2000"/>
+      <descent100 ias="250" rod="2500"/>
+      <approach ias="190" mcs="135" rod="1500"/>
+      <landing vat="130" distance="625" apc="C"/>
+  </aircraft>
+  <aircraft icao="A748">
+      <takeoff v2="110" distance="1000" wtc="M" recat="Lower Medium" mtow="21090"/>
+      <climb5000 ias="140" roc="1000"/>
+      <climb150 ias="180" roc="1200"/>
+      <climb240 ias="180" roc="600"/>
+      <cruise tas="220" ceiling="25000" range="1400"/>
+      <descent100 ias="220" rod="1000"/>
+      <approach ias="220" mcs="170" rod="1500"/>
+      <landing vat="120" distance="620" apc="B"/>
+  </aircraft>
+  <aircraft icao="AC11">
+      <takeoff v2="70" distance="350" wtc="L" recat="Light" mtow="1480"/>
+      <climb5000 ias="100" roc="800"/>
+      <climb150 ias="110" roc="200"/>
+      <climb240 ias="110" roc="200"/>
+      <cruise tas="150" ceiling="16000" range="750"/>
+      <descent100 ias="140" rod="500"/>
+      <approach ias="140" mcs="67" rod="500"/>
+      <landing vat="70" distance="220" apc="A"/>
+  </aircraft>
+  <aircraft icao="AC50">
+      <takeoff v2="80" distance="400" wtc="L" recat="Light" mtow="3060"/>
+      <climb5000 ias="110" roc="1000"/>
+      <climb150 ias="130" roc="500"/>
+      <climb240 ias="130" roc="500"/>
+      <cruise tas="160" ceiling="19000" range="1100"/>
+      <descent100 ias="160" rod="800"/>
+      <approach ias="160" rod="500"/>
+      <landing vat="75" distance="400" apc="A"/>
+  </aircraft>
+  <aircraft icao="AC56">
+      <takeoff v2="80" distance="400" wtc="L" recat="Light" mtow="3060"/>
+      <climb5000 ias="110" roc="1000"/>
+      <climb150 ias="130" roc="500"/>
+      <climb240 ias="130" roc="500"/>
+      <cruise tas="160" ceiling="19000" range="1000"/>
+      <descent100 ias="160" rod="800"/>
+      <approach ias="160" rod="500"/>
+      <landing vat="75" distance="400" apc="A"/>
+  </aircraft>
+  <aircraft icao="AC68">
+      <takeoff v2="80" distance="350" wtc="L" recat="Light" mtow="3860"/>
+      <climb5000 ias="110" roc="1000"/>
+      <climb150 ias="130" roc="500"/>
+      <climb240 ias="130"/>
+      <cruise tas="160" ceiling="28000" range="1200"/>
+      <descent100 ias="160" rod="800"/>
+      <approach ias="160" rod="500"/>
+      <landing vat="75" distance="400" apc="A"/>
+  </aircraft>
+  <aircraft icao="AC6L">
+      <takeoff v2="80" distance="350" wtc="L" recat="Light" mtow="4650"/>
+      <climb5000 ias="110" roc="1000"/>
+      <climb150 ias="130" roc="500"/>
+      <climb240 ias="130"/>
+      <cruise tas="170" ceiling="20000" range="1200"/>
+      <descent100 ias="170" rod="800"/>
+      <approach ias="170" rod="500"/>
+      <landing vat="75" distance="400" apc="A"/>
+  </aircraft>
+  <aircraft icao="AC95">
+      <takeoff v2="100" distance="500" wtc="L" recat="Light" mtow="5080"/>
+      <climb5000 ias="130" roc="2000"/>
+      <climb150 ias="210" roc="1000"/>
+      <climb240 ias="210" roc="1000"/>
+      <cruise tas="270" ceiling="35000" range="800"/>
+      <descent100 ias="250" rod="1500"/>
+      <approach ias="250" rod="1500"/>
+      <landing vat="100" distance="500" apc="B"/>
+  </aircraft>
+  <aircraft icao="AEST">
+      <takeoff v2="95" distance="550" wtc="L" recat="Light" mtow="2860"/>
+      <climb5000 ias="125" roc="1500"/>
+      <climb150 ias="180" roc="1300"/>
+      <climb240 ias="180" roc="800"/>
+      <cruise tas="230" ceiling="29000" range="1200"/>
+      <descent100 ias="230" rod="2500"/>
+      <approach ias="160" rod="500"/>
+      <landing vat="100" distance="350" apc="B"/>
+  </aircraft>
+  <aircraft icao="AJET">
+      <takeoff v2="140" distance="350" wtc="M" recat="Light" mtow="7000"/>
+      <climb5000 ias="170" roc="10000"/>
+      <climb150 ias="300" roc="4000"/>
+      <climb240 ias="300" roc="3000"/>
+      <cruise tas="500" mach="0.83" ceiling="48000" range="1200"/>
+      <descent240 mach="0.84" rod="5000"/>
+      <descent100 ias="300" rod="5000"/>
+      <approach ias="120" mcs="93" rod="1500"/>
+      <landing vat="92" distance="500" apc="B"/>
+  </aircraft>
+  <aircraft icao="AMXM">
+      <takeoff v2="140" distance="700" wtc="M" recat="No code" mtow="13000"/>
+      <climb5000 ias="170" roc="10000"/>
+      <climb150 ias="300" roc="10000"/>
+      <climb240 ias="300" roc="10000"/>
+      <machClimb mach="0.8" roc="2000"/>
+      <cruise tas="420" mach="0.83" ceiling="43000" range="800"/>
+      <descent100 ias="350" rod="10000"/>
+      <approach ias="250" rod="1500"/>
+      <landing vat="140" distance="500" apc="C"/>
+  </aircraft>
+  <aircraft icao="AN12">
+      <takeoff v2="130" distance="700" wtc="M" recat="Upper Medium" mtow="61000"/>
+      <climb5000 ias="160" roc="1500"/>
+      <climb150 ias="220" roc="1000"/>
+      <climb240 ias="220" roc="800"/>
+      <cruise tas="310" ceiling="33000" range="2100"/>
+      <descent100 ias="300" rod="1500"/>
+      <approach ias="150" mcs="120" rod="1000"/>
+      <landing vat="122" distance="500" apc="C"/>
+  </aircraft>
+  <aircraft icao="AN2">
+      <takeoff v2="45" distance="150" wtc="L" recat="Light" mtow="5500"/>
+      <climb5000 ias="75" roc="650"/>
+      <climb150 ias="75" roc="-500"/>
+      <climb240 ias="75"/>
+      <cruise tas="100" ceiling="15000" range="500"/>
+      <descent100 ias="100" rod="500"/>
+      <approach ias="100" rod="50"/>
+      <landing vat="55" distance="170" apc="A"/>
+  </aircraft>
+  <aircraft icao="AN22">
+      <takeoff distance="1300" wtc="H" recat="Upper Heavy" mtow="225000"/>
+      <cruise tas="350" mach="0.65" ceiling="32800" range="3500"/>
+      <descent100 ias="250" rod="1000"/>
+      <approach ias="200" rod="1000"/>
+      <landing vat="140" distance="800" apc="C"/>
+  </aircraft>
+  <aircraft icao="AN24">
+      <takeoff v2="110" distance="900" wtc="M" recat="Lower Medium" mtow="21000"/>
+      <climb5000 ias="140" roc="1500"/>
+      <climb150 ias="200" roc="1000"/>
+      <climb240 ias="200" roc="1000"/>
+      <cruise tas="240" ceiling="28000" range="600"/>
+      <descent100 ias="240" rod="1500"/>
+      <approach ias="240" mcs="170" rod="1500"/>
+      <landing vat="120" distance="900" apc="B"/>
+  </aircraft>
+  <aircraft icao="AN26">
+      <takeoff v2="120" distance="1200" wtc="M" recat="Lower Medium" mtow="24000"/>
+      <climb5000 ias="150" roc="1500"/>
+      <climb150 ias="200" roc="1000"/>
+      <climb240 ias="200" roc="800"/>
+      <cruise tas="235" ceiling="26000" range="600"/>
+      <descent100 ias="240" rod="1500"/>
+      <approach ias="240" mcs="170" rod="1500"/>
+      <landing vat="105" distance="700" apc="B"/>
+  </aircraft>
+  <aircraft icao="AN28">
+      <takeoff v2="80" distance="400" wtc="L" recat="Light" mtow="6500"/>
+      <climb5000 ias="110" roc="900"/>
+      <climb150 ias="140" roc="700"/>
+      <climb240 ias="140" roc="700"/>
+      <cruise tas="170" ceiling="20000" range="550"/>
+      <descent100 ias="170" rod="800"/>
+      <approach ias="170" rod="800"/>
+      <landing vat="90" distance="210" apc="A"/>
+  </aircraft>
+  <aircraft icao="AN30">
+      <takeoff v2="110" distance="800" wtc="M" recat="Lower Medium" mtow="21800"/>
+      <climb5000 ias="140" roc="1500"/>
+      <climb150 ias="200" roc="800"/>
+      <climb240 ias="200" roc="700"/>
+      <cruise tas="235" ceiling="27000" range="1400"/>
+      <descent100 ias="240" rod="1500"/>
+      <approach ias="150" rod="1000"/>
+      <landing vat="95" distance="700" apc="B"/>
+  </aircraft>
+  <aircraft icao="AN32">
+      <takeoff v2="110" distance="1200" wtc="M" recat="Lower Medium" mtow="27000"/>
+      <climb5000 ias="140" roc="1500"/>
+      <climb150 ias="210" roc="1000"/>
+      <climb240 ias="210" roc="1000"/>
+      <cruise tas="250" ceiling="30000" range="900"/>
+      <descent100 ias="260" rod="1500"/>
+      <approach ias="150" rod="1000"/>
+      <landing vat="100" distance="880" apc="B"/>
+  </aircraft>
+  <aircraft icao="AN38">
+      <takeoff v2="100" distance="500" wtc="M" recat="Light" mtow="8800"/>
+      <climb5000 ias="130" roc="1000"/>
+      <climb150 ias="160" roc="1000"/>
+      <climb240 ias="160" roc="1000"/>
+      <cruise tas="200" ceiling="14000" range="800"/>
+      <descent100 ias="200" rod="800"/>
+      <approach ias="200" rod="800"/>
+      <landing vat="120" distance="900" apc="B"/>
+  </aircraft>
+  <aircraft icao="AN70">
+      <takeoff v2="120" distance="1800" wtc="M" recat="Lower Heavy" mtow="130000"/>
+      <climb5000 ias="150" roc="1500"/>
+      <climb150 ias="300" roc="1000"/>
+      <climb240 ias="300" roc="1000"/>
+      <machClimb mach="0.7" roc="700"/>
+      <cruise tas="400" mach="0.73" ceiling="36000" range="2600"/>
+      <descent240 mach="0.73" rod="800"/>
+      <descent100 ias="340" rod="1500"/>
+      <approach ias="200" rod="1500"/>
+      <landing vat="140" distance="2000" apc="C"/>
+  </aircraft>
+  <aircraft icao="AN72">
+      <takeoff v2="110" distance="900" wtc="M" recat="Lower Medium" mtow="34500"/>
+      <climb5000 ias="140" roc="2500"/>
+      <climb150 ias="230" roc="1300"/>
+      <climb240 ias="230" roc="800"/>
+      <machClimb mach="0.62" roc="500"/>
+      <cruise tas="360" mach="0.55" ceiling="38000" range="1500"/>
+      <descent240 mach="0.64" rod="800"/>
+      <descent100 ias="230" rod="1500"/>
+      <approach ias="170" mcs="140" rod="1000"/>
+      <landing vat="100" distance="470" apc="B"/>
+  </aircraft>
+  <aircraft icao="AS32">
+      <takeoff wtc="M" recat="Light" mtow="9350"/>
+      <climb5000 ias="80" roc="1500"/>
+      <climb150 ias="80" roc="700"/>
+      <climb240 ias="80" roc="700"/>
+      <cruise tas="140" ceiling="17000" range="460"/>
+      <descent100 ias="130" rod="1000"/>
+      <approach ias="90" rod="1000"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="ASTR">
+      <takeoff v2="130" distance="1600" wtc="M" recat="Light" mtow="11180"/>
+      <climb5000 ias="160" roc="3000"/>
+      <climb150 ias="290" roc="2500"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.81" roc="1500"/>
+      <cruise tas="470" mach="0.83" ceiling="45000" range="2500"/>
+      <descent240 mach="0.85" rod="1000"/>
+      <descent100 ias="290" rod="4000"/>
+      <approach ias="200" mcs="170" rod="1500"/>
+      <landing vat="120" distance="900" apc="B"/>
+  </aircraft>
+  <aircraft icao="AT43">
+      <takeoff v2="110" distance="1100" wtc="M" recat="Lower Medium" mtow="16700"/>
+      <climb5000 ias="140" roc="1000"/>
+      <climb150 ias="210" roc="1000"/>
+      <climb240 ias="210" roc="1000"/>
+      <cruise tas="255" ceiling="25000" range="1700"/>
+      <descent100 ias="240" rod="1500"/>
+      <approach ias="200" mcs="170" rod="1500"/>
+      <landing vat="120" distance="1000" apc="B"/>
+  </aircraft>
+  <aircraft icao="AT44">
+      <takeoff v2="115" distance="1100" wtc="M" recat="Lower Medium" mtow="17900"/>
+      <climb5000 ias="140" roc="1900"/>
+      <climb150 ias="210" roc="1200"/>
+      <climb240 ias="210" roc="1000"/>
+      <cruise tas="260" ceiling="25000" range="1700"/>
+      <descent100 ias="250" rod="1500"/>
+      <approach ias="250" mcs="170" rod="1500"/>
+      <landing vat="120" distance="1000" apc="B"/>
+  </aircraft>
+  <aircraft icao="AT45">
+      <takeoff v2="110" distance="1000" wtc="M" recat="Lower Medium" mtow="18600"/>
+      <climb5000 ias="140" roc="1500"/>
+      <climb150 ias="220" roc="1500"/>
+      <climb240 ias="220" roc="1000"/>
+      <cruise tas="300" ceiling="26000" range="1000"/>
+      <descent100 ias="230" rod="1500"/>
+      <approach ias="200" mcs="170" rod="1500"/>
+      <landing vat="110" distance="1000" apc="B"/>
+  </aircraft>
+  <aircraft icao="AT72">
+      <takeoff v2="110" distance="1500" wtc="M" recat="Lower Medium" mtow="21500"/>
+      <climb5000 ias="140" roc="1500"/>
+      <climb150 ias="210" roc="1000"/>
+      <climb240 ias="210" roc="1000"/>
+      <cruise tas="275" ceiling="25000" range="1500"/>
+      <descent100 ias="260" rod="1500"/>
+      <approach ias="200" mcs="170" rod="1500"/>
+      <landing vat="120" distance="1100" apc="B"/>
+  </aircraft>
+  <aircraft icao="AT75">
+      <takeoff v2="110" distance="1367" wtc="M" recat="Lower Medium" mtow="23000"/>
+      <climb5000 ias="140" roc="1350"/>
+      <climb150 ias="210" roc="1000"/>
+      <climb240 ias="210" roc="800"/>
+      <cruise tas="280" ceiling="25000" range="825"/>
+      <descent100 ias="275" rod="1500"/>
+      <approach ias="200" mcs="175" rod="1500"/>
+      <landing vat="120" distance="1100" apc="B"/>
+  </aircraft>
+  <aircraft icao="ATLA">
+      <takeoff v2="110" distance="1500" wtc="M" recat="Upper Medium" mtow="43500"/>
+      <climb5000 ias="140" roc="2000"/>
+      <climb150 ias="220" roc="1000"/>
+      <climb240 ias="220" roc="1000"/>
+      <cruise tas="275" ceiling="32000" range="2200"/>
+      <descent100 ias="280" rod="1500"/>
+      <approach ias="190" mcs="100" rod="1000"/>
+      <landing vat="130" distance="1500" apc="C"/>
+  </aircraft>
+  <aircraft icao="ATP">
+      <takeoff v2="105" distance="1351" wtc="M" recat="Lower Medium" mtow="22930"/>
+      <climb5000 ias="140" roc="1000"/>
+      <climb150 ias="185" roc="600"/>
+      <climb240 ias="185" roc="600"/>
+      <cruise tas="266" ceiling="25000" range="1000"/>
+      <descent100 ias="230" rod="1500"/>
+      <approach ias="180" mcs="140" rod="800"/>
+      <landing vat="105" distance="1128" apc="B"/>
+  </aircraft>
+  <aircraft icao="B06">
+      <takeoff wtc="L" recat="Light" mtow="1451"/>
+      <climb5000 ias="60" roc="1350"/>
+      <cruise tas="120" ceiling="13500" range="374"/>
+      <descent100 ias="120" rod="1100"/>
+      <approach ias="80" rod="1000"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="B190">
+      <takeoff v2="110" distance="1150" wtc="M" recat="Light" mtow="7690"/>
+      <climb5000 ias="145" roc="2500"/>
+      <climb150 ias="210" roc="1200"/>
+      <climb240 ias="210" roc="1200"/>
+      <cruise tas="270" ceiling="25000" range="1500"/>
+      <descent100 ias="250" rod="1500"/>
+      <approach ias="250" mcs="180" rod="1500"/>
+      <landing vat="120" distance="825" apc="B"/>
+  </aircraft>
+  <aircraft icao="B230">
+      <takeoff wtc="L" recat="Light" mtow="3810"/>
+      <climb5000 ias="60" roc="1600"/>
+      <climb150 ias="80" roc="400"/>
+      <climb240 ias="80" roc="400"/>
+      <cruise tas="130" ceiling="15500" range="378"/>
+      <descent100 ias="130" rod="1000"/>
+      <approach ias="60" rod="1000"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="B350">
+      <takeoff v2="120" distance="1000" wtc="L" recat="Light" mtow="6800"/>
+      <climb5000 ias="150" roc="2000"/>
+      <climb150 ias="230" roc="1500"/>
+      <climb240 ias="230" roc="1000"/>
+      <cruise tas="300" mach="0.47" ceiling="35000" range="1800"/>
+      <descent100 ias="280" rod="1500"/>
+      <approach ias="250" mcs="150" rod="1500"/>
+      <landing vat="110" distance="820" apc="B"/>
+  </aircraft>
+  <aircraft icao="B37M">
+      <takeoff v2="145" distance="2100" wtc="M" recat="Upper Medium" mtow="80000"/>
+      <climb5000 ias="165" roc="2800"/>
+      <climb150 ias="290" roc="2500"/>
+      <climb240 ias="290" roc="2200"/>
+      <machClimb mach="0.78" roc="1800"/>
+      <cruise tas="453" mach="0.79" ceiling="41000" range="3850"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="250" mcs="215" rod="1500"/>
+      <landing vat="145" distance="1500" apc="C"/>
+  </aircraft>
+  <aircraft icao="B38M">
+      <takeoff v2="145" distance="2500" wtc="M" recat="Upper Medium" mtow="82600"/>
+      <climb5000 ias="165" roc="2500"/>
+      <climb150 ias="290" roc="2300"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.78" roc="1500"/>
+      <cruise tas="453" mach="0.79" ceiling="41000" range="3550"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="250" mcs="215" rod="1500"/>
+      <landing vat="145" distance="1500" apc="D"/>
+  </aircraft>
+  <aircraft icao="B39M">
+      <takeoff v2="149" distance="2600" wtc="M" recat="Upper Medium" mtow="88300"/>
+      <climb5000 ias="165" roc="2300"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1800"/>
+      <machClimb mach="0.78" roc="1400"/>
+      <cruise tas="453" mach="0.79" ceiling="41000" range="3550"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="250" mcs="220" rod="1500"/>
+      <landing vat="150" distance="1700" apc="D"/>
+  </aircraft>
+  <aircraft icao="B3XM">
+      <takeoff v2="150" distance="2700" wtc="M" recat="Upper Medium" mtow="89800"/>
+      <climb5000 ias="165" roc="2000"/>
+      <climb150 ias="290" roc="1800"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.78" roc="1000"/>
+      <cruise tas="453" mach="0.79" ceiling="41000" range="3300"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="250" mcs="225" rod="800"/>
+      <landing vat="155" distance="1800" apc="D"/>
+  </aircraft>
+  <aircraft icao="B412">
+      <takeoff wtc="L" recat="Light" mtow="5397"/>
+      <climb5000 ias="80" roc="1300"/>
+      <climb150 ias="100" roc="800"/>
+      <climb240 ias="100" roc="800"/>
+      <cruise tas="125" ceiling="20000" range="402"/>
+      <descent240 mach="120" rod="1000"/>
+      <descent100 ias="120" rod="1000"/>
+      <approach ias="60" rod="800"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="B430">
+      <takeoff wtc="L" recat="Light" mtow="4218"/>
+      <climb5000 ias="60" roc="1400"/>
+      <cruise tas="130" ceiling="14600" range="324"/>
+      <descent100 ias="130" rod="1000"/>
+      <approach ias="60" rod="800"/>
+      <landing vat="40" apc="A"/>
+  </aircraft>
+  <aircraft icao="B461">
+      <takeoff v2="125" distance="1600" wtc="M" recat="Lower Medium" mtow="23290"/>
+      <climb5000 ias="155" roc="1500"/>
+      <climb150 ias="220" roc="2000"/>
+      <climb240 ias="220" roc="1200"/>
+      <machClimb mach="0.65" roc="500"/>
+      <cruise tas="380" mach="0.65" ceiling="31000" range="1120"/>
+      <descent240 mach="0.68" rod="800"/>
+      <descent100 ias="250" rod="3000"/>
+      <approach ias="250" mcs="200" rod="1500"/>
+      <landing vat="125" distance="1200" apc="C"/>
+  </aircraft>
+  <aircraft icao="B462">
+      <takeoff v2="125" distance="1030" wtc="M" recat="Lower Medium" mtow="42200"/>
+      <climb5000 ias="155" roc="1500"/>
+      <climb150 ias="220" roc="2000"/>
+      <climb240 ias="220" roc="1200"/>
+      <machClimb mach="0.65" roc="500"/>
+      <cruise tas="380" mach="0.65" ceiling="31000" range="1120"/>
+      <descent240 mach="0.68" rod="800"/>
+      <descent100 ias="250" rod="3000"/>
+      <approach ias="250" mcs="200" rod="1500"/>
+      <landing vat="125" distance="1235" apc="C"/>
+  </aircraft>
+  <aircraft icao="B463">
+      <takeoff v2="125" distance="1600" wtc="M" recat="Lower Medium" mtow="46000"/>
+      <climb5000 ias="155" roc="1500"/>
+      <climb150 ias="250" roc="2000"/>
+      <climb240 ias="250" roc="1200"/>
+      <machClimb mach="0.65" roc="500"/>
+      <cruise tas="380" mach="0.65" ceiling="31000" range="1100"/>
+      <descent240 mach="0.68" rod="800"/>
+      <descent100 ias="250" rod="3000"/>
+      <approach ias="250" mcs="200" rod="1500"/>
+      <landing vat="125" distance="1200" apc="C"/>
+  </aircraft>
+  <aircraft icao="B52">
+      <takeoff distance="3000" wtc="H" recat="Special" mtow="221350"/>
+      <climb5000 roc="3000"/>
+      <climb150 ias="300"/>
+      <climb240 ias="300"/>
+      <machClimb mach="0.72" roc="1000"/>
+      <cruise tas="415" mach="0.75" ceiling="47000" range="8600"/>
+      <descent240 mach="0.84" rod="800"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="250" rod="1500"/>
+      <landing vat="170" distance="2000" apc="E"/>
+  </aircraft>
+  <aircraft icao="B701">
+      <takeoff wtc="M" recat="Upper Medium" mtow="86184"/>
+      <climb5000 ias="160" roc="1300"/>
+      <climb150 ias="377" roc="1600"/>
+      <climb240 ias="377" roc="1400"/>
+      <machClimb mach="0.81" roc="800"/>
+      <cruise tas="470" mach="0.8" ceiling="39000" range="3530"/>
+      <descent100 ias="289" rod="1640"/>
+      <approach ias="240" mcs="240" rod="1200"/>
+      <landing vat="130" apc="C"/>
+  </aircraft>
+  <aircraft icao="B703">
+      <takeoff v2="130" distance="3000" wtc="H" recat="Lower Heavy" mtow="150800"/>
+      <climb5000 ias="160" roc="2000"/>
+      <climb150 ias="290" roc="1500"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.76" roc="1000"/>
+      <cruise tas="470" mach="0.8" ceiling="39000" range="5000"/>
+      <descent240 mach="0.75" rod="800"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="250" mcs="240" rod="1500"/>
+      <landing vat="140" distance="1200" apc="C"/>
+  </aircraft>
+  <aircraft icao="B712">
+      <takeoff v2="130" distance="2100" wtc="M" recat="Lower Medium" mtow="54885"/>
+      <climb5000 ias="165" roc="3000"/>
+      <climb150 ias="270" roc="3000"/>
+      <climb240 ias="270" roc="3000"/>
+      <machClimb mach="0.72" roc="1500"/>
+      <cruise tas="435" mach="0.76" ceiling="37000" range="2060"/>
+      <descent240 mach="0.72" rod="800"/>
+      <descent100 ias="290" rod="3500"/>
+      <approach ias="210" rod="1500"/>
+      <landing vat="139" distance="1600" apc="C"/>
+  </aircraft>
+  <aircraft icao="B720">
+      <takeoff v2="175" distance="2515" wtc="M" recat="Lower Heavy" mtow="108000"/>
+      <climb5000 ias="240" roc="1700"/>
+      <climb150 ias="280" roc="1300"/>
+      <climb240 ias="280" roc="1000"/>
+      <machClimb mach="0.78" roc="1100"/>
+      <cruise tas="480" mach="0.85" ceiling="39000" range="3600"/>
+      <descent240 mach="0.84" rod="1000"/>
+      <descent100 ias="280" rod="2000"/>
+      <approach ias="240" mcs="220" rod="1500"/>
+      <landing vat="133" distance="1740" apc="C"/>
+  </aircraft>
+  <aircraft icao="B722">
+      <takeoff v2="145" distance="3000" wtc="M" recat="Upper Medium" mtow="95300"/>
+      <climb5000 ias="175" roc="2000"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.72" roc="500"/>
+      <cruise tas="450" mach="0.8" ceiling="40000" range="2500"/>
+      <descent240 mach="0.72" rod="800"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="210" mcs="1300" rod="1500"/>
+      <landing vat="133" distance="1500" apc="C"/>
+  </aircraft>
+  <aircraft icao="B731">
+      <takeoff v2="145" distance="1800" wtc="M" recat="Lower Medium" mtow="49950"/>
+      <climb5000 ias="175" roc="1500"/>
+      <climb150 ias="250" roc="1500"/>
+      <climb240 ias="250" roc="1500"/>
+      <machClimb mach="0.68" roc="500"/>
+      <cruise tas="420" mach="0.72" ceiling="37000" range="1500"/>
+      <descent240 mach="0.68" rod="800"/>
+      <descent100 ias="270" rod="3000"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="140" distance="1400" apc="C"/>
+  </aircraft>
+  <aircraft icao="B732">
+      <takeoff v2="145" distance="1830" wtc="M" recat="Lower Medium" mtow="52390"/>
+      <climb5000 ias="175" roc="1500"/>
+      <climb150 ias="250" roc="1200"/>
+      <climb240 ias="250" roc="1000"/>
+      <machClimb mach="0.68" roc="500"/>
+      <cruise tas="400" mach="0.72" ceiling="37000" range="1200"/>
+      <descent240 mach="0.7" rod="800"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="131" distance="1400" apc="C"/>
+  </aircraft>
+  <aircraft icao="B733">
+      <takeoff v2="140" distance="1600" wtc="M" recat="Lower Medium" mtow="56470"/>
+      <climb5000 ias="165" roc="2500"/>
+      <climb150 ias="270" roc="2000"/>
+      <climb240 ias="270" roc="1400"/>
+      <machClimb mach="0.7" roc="1000"/>
+      <cruise tas="429" mach="0.74" ceiling="37000" range="1600"/>
+      <descent240 mach="0.7" rod="800"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="132" distance="1400" apc="C"/>
+  </aircraft>
+  <aircraft icao="B734">
+      <takeoff v2="150" distance="2000" wtc="M" recat="Lower Medium" mtow="62820"/>
+      <climb5000 ias="175" roc="3000"/>
+      <climb150 ias="270" roc="2500"/>
+      <climb240 ias="270" roc="2000"/>
+      <machClimb mach="0.7" roc="1000"/>
+      <cruise tas="430" mach="0.74" ceiling="37000" range="2100"/>
+      <descent240 mach="0.74" rod="1500"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="139" distance="1500" apc="C"/>
+  </aircraft>
+  <aircraft icao="B735">
+      <takeoff v2="139" distance="1500" wtc="M" recat="Lower Medium" mtow="52390"/>
+      <climb5000 ias="165" roc="3000"/>
+      <climb150 ias="270" roc="2500"/>
+      <climb240 ias="270" roc="1800"/>
+      <machClimb mach="0.7" roc="1000"/>
+      <cruise tas="430" mach="0.74" ceiling="37000" range="1600"/>
+      <descent240 mach="0.74" rod="1000"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="128" distance="1400" apc="C"/>
+  </aircraft>
+  <aircraft icao="B736">
+      <takeoff v2="135" distance="1900" wtc="M" recat="Upper Medium" mtow="56240"/>
+      <climb5000 ias="185" roc="3000"/>
+      <climb150 ias="250" roc="2500"/>
+      <climb240 ias="250" roc="2000"/>
+      <machClimb mach="0.72" roc="1500"/>
+      <cruise tas="460" mach="0.78" ceiling="41000" range="3200"/>
+      <descent240 mach="0.78" rod="1000"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="190" rod="1500"/>
+      <landing vat="130" distance="1300" apc="C"/>
+  </aircraft>
+  <aircraft icao="B737">
+      <takeoff v2="150" distance="1800" wtc="M" recat="Upper Medium" mtow="66320"/>
+      <climb5000 ias="165" roc="3000"/>
+      <climb150 ias="280" roc="2500"/>
+      <climb240 ias="280" roc="2500"/>
+      <machClimb mach="0.74" roc="1500"/>
+      <cruise tas="460" mach="0.78" ceiling="41000" range="2500"/>
+      <descent240 mach="0.76" rod="800"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="190" rod="1500"/>
+      <landing vat="137" distance="1400" apc="C"/>
+  </aircraft>
+  <aircraft icao="B738">
+      <takeoff v2="145" distance="2300" wtc="M" recat="Upper Medium" mtow="70530"/>
+      <climb5000 ias="165" roc="3000"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.78" roc="1500"/>
+      <cruise tas="460" mach="0.79" ceiling="41000" range="2000"/>
+      <descent240 mach="0.78" rod="800"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="147" distance="1600" apc="D"/>
+  </aircraft>
+  <aircraft icao="B739">
+      <takeoff v2="149" distance="2300" wtc="M" recat="Upper Medium" mtow="79015"/>
+      <climb5000 ias="165" roc="3000"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.72" roc="1500"/>
+      <cruise tas="460" mach="0.78" ceiling="41000" range="2745"/>
+      <descent240 mach="0.79" rod="1000"/>
+      <descent100 ias="280" rod="3500"/>
+      <approach ias="250" mcs="210" rod="1500"/>
+      <landing vat="150" distance="1700" apc="D"/>
+  </aircraft>
+  <aircraft icao="B741">
+      <takeoff v2="170" distance="3190" wtc="H" recat="Upper Heavy" mtow="333400"/>
+      <climb5000 ias="200" roc="1000"/>
+      <climb150 ias="290" roc="1500"/>
+      <climb240 ias="290" roc="1000"/>
+      <machClimb mach="0.82" roc="1000"/>
+      <cruise tas="500" mach="0.82" ceiling="45000" range="5290"/>
+      <descent240 mach="0.84" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="240" mcs="240" rod="1500"/>
+      <landing vat="150" distance="1900" apc="D"/>
+  </aircraft>
+  <aircraft icao="B742">
+      <takeoff v2="173" distance="3200" wtc="H" recat="Upper Heavy" mtow="374850"/>
+      <climb5000 ias="220" roc="1000"/>
+      <climb150 ias="300" roc="1500"/>
+      <climb240 ias="300" roc="1200"/>
+      <machClimb mach="0.82" roc="1000"/>
+      <cruise tas="495" mach="0.83" ceiling="45000" range="6857"/>
+      <descent240 mach="0.84" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="250" mcs="250" rod="1500"/>
+      <landing vat="150" distance="1900" apc="D"/>
+  </aircraft>
+  <aircraft icao="B743">
+      <takeoff v2="178" distance="3300" wtc="H" recat="Upper Heavy" mtow="374850"/>
+      <climb5000 ias="230" roc="2000"/>
+      <climb150 ias="300" roc="1500"/>
+      <climb240 ias="300" roc="1500"/>
+      <machClimb mach="0.75" roc="1000"/>
+      <cruise tas="510" mach="0.84" ceiling="45000" range="6695"/>
+      <descent240 mach="0.85" rod="1000"/>
+      <descent100 ias="290" rod="2500"/>
+      <approach ias="250" mcs="250" rod="1500"/>
+      <landing vat="160" distance="2200" apc="D"/>
+  </aircraft>
+  <aircraft icao="B744">
+      <takeoff v2="185" distance="3300" wtc="H" recat="Upper Heavy" mtow="396890"/>
+      <climb5000 ias="215" roc="1500"/>
+      <climb150 ias="300" roc="1500"/>
+      <climb240 ias="300" roc="1500"/>
+      <machClimb mach="0.75" roc="1500"/>
+      <cruise tas="510" mach="0.85" ceiling="45000" range="7260"/>
+      <descent240 mach="0.85" rod="1000"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="250" mcs="250" rod="1500"/>
+      <landing vat="152" distance="2130" apc="D"/>
+  </aircraft>
+  <aircraft icao="B748">
+      <takeoff v2="175" distance="3190" wtc="H" recat="Upper Heavy" mtow="442250"/>
+      <climb5000 ias="230" roc="2500"/>
+      <climb150 ias="260" roc="2000"/>
+      <climb240 ias="260" roc="1500"/>
+      <machClimb mach="0.85" roc="1000"/>
+      <cruise tas="510" mach="0.86" ceiling="43000" range="4390"/>
+      <descent240 mach="0.85" rod="1500"/>
+      <descent100 ias="250" rod="3000"/>
+      <approach ias="220" mcs="210" rod="1500"/>
+      <landing vat="145" distance="2680" apc="D"/>
+  </aircraft>
+  <aircraft icao="B74D">
+      <takeoff v2="185" distance="3320" wtc="H" recat="Upper Heavy" mtow="378182"/>
+      <climb5000 ias="215" roc="1500"/>
+      <climb150 ias="300" roc="1500"/>
+      <climb240 ias="300" roc="1500"/>
+      <machClimb mach="0.82" roc="1500"/>
+      <cruise tas="510" mach="0.85" ceiling="45000" range="7200"/>
+      <descent240 mach="0.75" rod="1000"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="250" mcs="240" rod="1500"/>
+      <landing vat="160" distance="2130" apc="D"/>
+  </aircraft>
+  <aircraft icao="B74R">
+      <takeoff v2="170" distance="3190" wtc="H" recat="Upper Heavy" mtow="340190"/>
+      <climb5000 ias="200" roc="1000"/>
+      <climb150 ias="290" roc="1000"/>
+      <climb240 ias="290" roc="1000"/>
+      <machClimb mach="0.75" roc="1000"/>
+      <cruise tas="500" mach="0.85" ceiling="45000" range="5000"/>
+      <descent240 mach="0.72" rod="800"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="250" rod="1500"/>
+      <landing vat="150" distance="1900" apc="D"/>
+  </aircraft>
+  <aircraft icao="B74S">
+      <takeoff v2="160" distance="2300" wtc="H" recat="Upper Heavy" mtow="317520"/>
+      <climb5000 ias="190" roc="3000"/>
+      <climb150 ias="290" roc="3000"/>
+      <climb240 ias="290" roc="1900"/>
+      <machClimb mach="0.8" roc="1900"/>
+      <cruise tas="490" mach="0.85" ceiling="45000" range="6000"/>
+      <descent240 mach="0.72" rod="800"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="250" mcs="240" rod="1500"/>
+      <landing vat="140" distance="2200" apc="C"/>
+  </aircraft>
+  <aircraft icao="B752">
+      <takeoff v2="145" distance="1900" wtc="M" recat="Lower Heavy" mtow="115680"/>
+      <climb5000 ias="175" roc="3500"/>
+      <climb150 ias="300" roc="2500"/>
+      <climb240 ias="300" roc="2000"/>
+      <machClimb mach="0.78" roc="1500"/>
+      <cruise tas="470" mach="0.8" ceiling="42000" range="3900"/>
+      <descent240 mach="0.8" rod="1000"/>
+      <descent100 ias="270" rod="3500"/>
+      <approach ias="220" mcs="210" rod="1500"/>
+      <landing vat="130" distance="1400" apc="C"/>
+  </aircraft>
+  <aircraft icao="B753">
+      <takeoff v2="145" distance="2600" wtc="M" recat="Lower Heavy" mtow="123600"/>
+      <climb5000 ias="175" roc="3000"/>
+      <climb150 ias="270" roc="3000"/>
+      <climb240 ias="270" roc="2500"/>
+      <machClimb mach="0.8" roc="1000"/>
+      <cruise tas="490" mach="0.8" ceiling="41000" range="3395"/>
+      <descent240 mach="0.8" rod="1000"/>
+      <descent100 ias="270" rod="3500"/>
+      <approach ias="230" mcs="220" rod="1500"/>
+      <landing vat="143" distance="1800" apc="D"/>
+  </aircraft>
+  <aircraft icao="B762">
+      <takeoff v2="160" distance="2700" wtc="H" recat="Lower Heavy" mtow="179170"/>
+      <climb5000 ias="190" roc="2000"/>
+      <climb150 ias="290" roc="2500"/>
+      <climb240 ias="290" roc="1400"/>
+      <machClimb mach="0.78" roc="1500"/>
+      <cruise tas="470" mach="0.8" ceiling="45000" range="6600"/>
+      <descent240 mach="0.78" rod="2000"/>
+      <descent100 ias="290" rod="1600"/>
+      <approach ias="250" mcs="220" rod="1500"/>
+      <landing vat="135" distance="1500" apc="C"/>
+  </aircraft>
+  <aircraft icao="B763">
+      <takeoff v2="160" distance="2900" wtc="H" recat="Lower Heavy" mtow="186880"/>
+      <climb5000 ias="190" roc="3000"/>
+      <climb150 ias="290" roc="2500"/>
+      <climb240 ias="290" roc="2000"/>
+      <machClimb mach="0.72" roc="1000"/>
+      <cruise tas="460" mach="0.8" ceiling="45000" range="6105"/>
+      <descent240 mach="0.72" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="230" mcs="220" rod="1500"/>
+      <landing vat="140" distance="1800" apc="C"/>
+  </aircraft>
+  <aircraft icao="B764">
+      <takeoff v2="160" distance="2900" wtc="H" recat="Lower Heavy" mtow="204120"/>
+      <climb5000 ias="190" roc="2500"/>
+      <climb150 ias="290" roc="2200"/>
+      <climb240 ias="290" roc="1800"/>
+      <machClimb mach="0.72" roc="1000"/>
+      <cruise tas="460" mach="0.8" ceiling="45000" range="5645"/>
+      <descent240 mach="0.72" rod="1000"/>
+      <descent100 ias="290" rod="3000"/>
+      <approach ias="230" mcs="220" rod="1500"/>
+      <landing vat="150" distance="1800" apc="D"/>
+  </aircraft>
+  <aircraft icao="B772">
+      <takeoff v2="170" distance="2900" wtc="H" recat="Upper Heavy" mtow="247210"/>
+      <climb5000 ias="200" roc="3000"/>
+      <climb150 ias="300" roc="2500"/>
+      <climb240 ias="300" roc="2000"/>
+      <machClimb mach="0.83" roc="1500"/>
+      <cruise tas="480" mach="0.84" ceiling="43000" range="5210"/>
+      <descent240 mach="0.75" rod="800"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="250" mcs="240" rod="1500"/>
+      <landing vat="140" distance="1700" apc="C"/>
+  </aircraft>
+  <aircraft icao="B773">
+      <takeoff v2="168" distance="3000" wtc="H" recat="Upper Heavy" mtow="299370"/>
+      <climb5000 ias="200" roc="3000"/>
+      <climb150 ias="300" roc="2500"/>
+      <climb240 ias="300" roc="2000"/>
+      <machClimb mach="0.82" roc="1500"/>
+      <cruise tas="490" mach="0.84" ceiling="43000" range="5955"/>
+      <descent240 mach="0.84" rod="1000"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="240" mcs="250" rod="1500"/>
+      <landing vat="149" distance="1800" apc="D"/>
+  </aircraft>
+  <aircraft icao="B77L">
+      <takeoff v2="123" distance="2970" wtc="H" recat="Upper Heavy" mtow="347500"/>
+      <climb5000 ias="175" roc="2500"/>
+      <climb150 ias="280" roc="2000"/>
+      <climb240 ias="280" roc="1500"/>
+      <machClimb mach="0.83" roc="2000"/>
+      <cruise tas="490" mach="0.84" ceiling="43100" range="9380"/>
+      <descent240 mach="0.84" rod="1000"/>
+      <descent100 ias="240" rod="3000"/>
+      <approach ias="210" mcs="240" rod="2000"/>
+      <landing vat="140" distance="1700" apc="C"/>
+  </aircraft>
+  <aircraft icao="B77W">
+      <takeoff v2="168" distance="3000" wtc="H" recat="Upper Heavy" mtow="351500"/>
+      <climb5000 ias="200" roc="3000"/>
+      <climb150 ias="300" roc="2500"/>
+      <climb240 ias="300" roc="2000"/>
+      <machClimb mach="0.83" roc="1500"/>
+      <cruise tas="490" mach="0.84" ceiling="43000" range="7930"/>
+      <descent240 mach="0.84" rod="1000"/>
+      <descent100 ias="300" rod="3000"/>
+      <approach ias="240" mcs="250" rod="1500"/>
+      <landing vat="149" distance="1800" apc="D"/>
+  </aircraft>
+  <aircraft icao="B788">
+      <takeoff v2="165" distance="2820" wtc="H" recat="Upper Heavy" mtow="228000"/>
+      <climb5000 ias="190" roc="2700"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.79" roc="1500"/>
+      <cruise tas="470" mach="0.85" ceiling="43000" range="8000"/>
+      <descent240 mach="0.84" rod="2600"/>
+      <descent100 ias="300" rod="2800"/>
+      <approach ias="240" mcs="220" rod="1500"/>
+      <landing vat="140" distance="1520" apc="C"/>
+  </aircraft>
+  <aircraft icao="B789">
+      <takeoff v2="165" distance="2800" wtc="H" recat="Upper Heavy" mtow="254011"/>
+      <climb5000 ias="190" roc="2700"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.84" roc="1000"/>
+      <cruise tas="490" mach="0.85" ceiling="43000" range="7565"/>
+      <descent240 mach="0.85" rod="2500"/>
+      <descent100 ias="300" rod="2500"/>
+      <approach ias="240" mcs="210" rod="1500"/>
+      <landing vat="150" distance="1520" apc="C"/>
+  </aircraft>
+  <aircraft icao="B78X">
+      <takeoff v2="180" distance="2800" wtc="H" recat="Upper Heavy" mtow="254011"/>
+      <climb5000 ias="190" roc="2700"/>
+      <climb150 ias="290" roc="2000"/>
+      <climb240 ias="290" roc="1500"/>
+      <machClimb mach="0.84" roc="1000"/>
+      <cruise tas="488" mach="0.86" ceiling="41000" range="6430"/>
+      <descent240 mach="0.85" rod="2500"/>
+      <descent100 ias="300" rod="2500"/>
+      <approach ias="240" mcs="210" rod="1500"/>
+      <landing vat="150" distance="1520" apc="C"/>
+  </aircraft>
+</aircraftPerformance>

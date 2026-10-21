@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
   callsign.xml — Base de datos de distintivos de llamada (callsigns)
   Uso: responder a la instrucción ATC por el distintivo de llamada.
@@ -60,7 +60,7 @@
   <airline icao="BAW" country="GB" name="British Airways" callsign="SPEEDBIRD"/>
   <airline icao="DLH" country="DE" name="Lufthansa" callsign="LUFTHANSA"/>
   <airline icao="SWR" country="CH" name="Swiss International Air Lines" callsign="SWISS"/>
-  <airline icao="AFR" country="FR" name="Air France" callsign="AIRFRANS"/>
+  <airline icao="AFR" country="FR" name="Air France" callsign="AIRFRANCE"/>
   <airline icao="KLM" country="NL" name="KLM Royal Dutch Airlines" callsign="KLM"/>
   <airline icao="IBE" country="ES" name="Iberia" callsign="IBERIA"/>
   <airline icao="THY" country="TR" name="Turkish Airlines" callsign="TURKISH"/>

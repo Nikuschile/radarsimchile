@@ -15,6 +15,11 @@
          SKU  = "SKY"   (base 123atc: AEROSKY)
          SWR  = "SWISSAIR"   (base 123atc: SWISS)
          QFA  = "QUANTAS"   (base 123atc: QANTAS)
+
+  DIFERENCIAS INTENCIONALES respecto de la base 123atc:
+         SKU  = "SKY"   (base 123atc: AEROSKY)
+         SWR  = "SWISSAIR"   (base 123atc: SWISS)
+         QFA  = "QUANTAS"   (base 123atc: QANTAS)
 -->
 <callsignDatabase>
   <!-- ════════════════════════════════════════════

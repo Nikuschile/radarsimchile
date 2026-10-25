@@ -1,0 +1,89 @@
+# Salidas (SID) definidas en el simulador SCEL ATC
+
+Generado desde `SCEL_ATC_Radar.html` (constante `SIDS`): **66 rutas de salida** = **39 designadores SID** en sus variantes de pista. Las cotas entre paréntesis son la restricción vertical publicada en la carta.
+
+SIMBOLOGÍA: `≥` = «a ese nivel o superior» · `x-y` = ventana de cruce · `FLnnn` = nivel de vuelo · `VIRnnnn` = punto de viraje en el eje de pista a esa altitud.
+
+| # | SID | Pista | Ruta fix a fix | MNM Razón ASC |
+|---|---|---|---|---|
+| 1 | NEBEG7A | 17R | THR 17R → GENPO (D10 PDH) → FL130 (viraje R177) → YESOS (≥FL230) → NEBEG (≥FL130) | 350 FT/NM hasta FL130 |
+| 2 | NEBEG7A | 17L | THR 17L → ESKUL (D10 AMB) → FL130 (viraje R177) → YESOS (≥FL230) → NEBEG (≥FL130) | 350 FT/NM hasta FL130 |
+| 3 | ALBAL7A | 17R | THR 17R → GENPO (D10 PDH) → FL130 (viraje R177) → SUPRA (≥FL130) → ALBAL | 350 FT/NM hasta FL130 |
+| 4 | ALBAL7A | 17L | THR 17L → ESKUL (D10 AMB) → FL130 (viraje R177) → SUPRA (≥FL130) → ALBAL | 350 FT/NM hasta FL130 |
+| 5 | ANGOD8B | 17R | THR 17R → GENPO → ETEMI → ANGOD (≥FL200) | 310 FT/NM hasta FL100 |
+| 6 | ANGOD8B | 17L | THR 17L → ESKUL → ANGOD (≥FL200) | 310 FT/NM hasta FL100 |
+| 7 | LINER5A | 17R | THR 17R → VAGOS (4000'-9000') → LINER (≥FL110) | 300 FT/NM hasta 9000' |
+| 8 | LINER5A | 17L | THR 17L → LINER (≥FL110) | 300 FT/NM hasta 9000' |
+| 9 | GELUS6A | 17R | THR 17R → VAGOS (4000'-9000') → KIDUG (7500'-FL100) → GELUS (≥FL100) | 310 FT/NM hasta 9000' |
+| 10 | GELUS6A | 17L | THR 17L → DESIT (4000'-9000') → KIDUG (7500'-FL100) → GELUS (≥FL100) | 310 FT/NM hasta 9000' |
+| 11 | SABLA8 | 17R | THR 17R → VAGOS (4000'-9000') → ARSEV (≥8000') → SABLA (≥FL100) | 310 FT/NM hasta 9000' |
+| 12 | SABLA8 | 17L | THR 17L → DESIT (4000'-9000') → ARSEV (≥8000') → SABLA (≥FL100) | 310 FT/NM hasta 9000' |
+| 13 | DOMINGO6 | 17R | THR 17R → VAGOS (4000'-9000') → KIDUG (7500'-FL100) → DGO (≥9000') | 310 FT/NM hasta 4000' |
+| 14 | DOMINGO6 | 17L | THR 17L → DESIT (4000'-9000') → KIDUG (7500'-FL100) → DGO (≥9000') | 310 FT/NM hasta 4000' |
+| 15 | VENTANAS6 | 17R | THR 17R → VAGOS (4000'-9000') → KIDUG (7500'-FL100) → VTN (≥8000') | 310 FT/NM hasta 4000' |
+| 16 | VENTANAS6 | 17L | THR 17L → DESIT (4000'-9000') → KIDUG (7500'-FL100) → VTN (≥8000') | 310 FT/NM hasta 4000' |
+| 17 | DONTI6A | 17R | THR 17R → VAGOS (4000'-9000') → KIDUG (7500'-FL100) → DONTI (≥FL240) | 310 FT/NM hasta 4000' |
+| 18 | DONTI6A | 17L | THR 17L → DESIT (4000'-9000') → KIDUG (7500'-FL100) → DONTI (≥FL240) | 310 FT/NM hasta 4000' |
+| 19 | TABON6A | 17R | THR 17R → VAGOS (4000'-9000') → KIDUG (7500'-FL100) → TABON | 310 FT/NM hasta 4000' |
+| 20 | TABON6A | 17L | THR 17L → DESIT (4000'-9000') → KIDUG (7500'-FL100) → TABON | 310 FT/NM hasta 4000' |
+| 21 | TENUT5 | 35L | THR 35L → TEMUS (8000'-FL140) → TABON (FL100-FL140) → OLMUE (FL100-FL170) → TENUT | 330 FT/NM hasta FL100 |
+| 22 | TENUT5 | 35R | THR 35R → PUMAR (8000'-FL140) → TABON (FL100-FL140) → OLMUE (FL100-FL170) → TENUT | 330 FT/NM hasta FL100 |
+| 23 | GUVOL5C | 35L | THR 35L → TEMUS (8000'-FL140) → TABON (FL100-FL140) → PABEK (FL130-FL170) → GUVOL (≥FL250) | 331 FT/NM hasta FL250 |
+| 24 | GUVOL5C | 35R | THR 35R → PUMAR (8000'-FL140) → TABON (FL100-FL140) → PABEK (FL130-FL170) → GUVOL (≥FL250) | 331 FT/NM hasta FL250 |
+| 25 | SANTIAGO5 | 35L | THR 35L → TEMUS (8000'-FL140) → D22AMB (FL110-FL140) → AMB (≥FL110) | 330 FT/NM hasta FL110 |
+| 26 | SANTIAGO5 | 35R | THR 35R → PUMAR (8000'-FL140) → D22AMB (FL110-FL140) → AMB (≥FL110) | 330 FT/NM hasta FL110 |
+| 27 | GELUS5B | 17R | THR 17R → VIR4000 → LOLAT (6500'-9000') → GELUS (≥FL100) | 350 FT/NM hasta 9000' |
+| 28 | GELUS5B | 17L | THR 17L → VIR4000 → LOLAT (6500'-9000') → GELUS (≥FL100) | 350 FT/NM hasta 9000' |
+| 29 | GELUS3C | 35L | THR 35L → VIR5000 → PARKE (≥FL110) → GENPO (≥FL130) → GELUS (≥FL150) | 450 FT/NM hasta FL110 |
+| 30 | GELUS3C | 35R | THR 35R → VIR5000 → PARKE (≥FL110) → GENPO (≥FL130) → GELUS (≥FL150) | 450 FT/NM hasta FL110 |
+| 31 | DILOK7B | 17R | THR 17R → VIR4000 → SEKSU (7500'-9000') → TEPOK (≥FL115) → TEMUS (≥FL150) → TINGO (≥FL180) → EL680 (≥FL210) → DILOK (≥FL210) | 445 FT/NM hasta 7500' |
+| 32 | DILOK7B | 17L | THR 17L → VIR4000 → SEKSU (7500'-9000') → TEPOK (≥FL115) → TEMUS (≥FL150) → TINGO (≥FL180) → EL680 (≥FL210) → DILOK (≥FL210) | 445 FT/NM hasta 7500' |
+| 33 | DILOK5A | 35L | THR 35L → ISOVA (≥3600') → TINGO (≥FL120) → EL680 (≥FL170) → DILOK (≥FL210) | 370 FT/NM hasta FL180 |
+| 34 | DILOK5A | 35R | THR 35R → ATTES (≥3200') → TINGO (≥FL120) → EL680 (≥FL170) → DILOK (≥FL210) | 370 FT/NM hasta FL180 |
+| 35 | GUVOL6B | 17R | THR 17R → VIR4000 → SEKSU (7500'-9000') → TEPOK (≥FL115) → TEMUS (≥FL150) → TINGO (≥FL180) → EL680 (≥FL210) → GUVOL (≥FL250) | 445 FT/NM hasta 7500' |
+| 36 | GUVOL6B | 17L | THR 17L → VIR4000 → SEKSU (7500'-9000') → TEPOK (≥FL115) → TEMUS (≥FL150) → TINGO (≥FL180) → EL680 (≥FL210) → GUVOL (≥FL250) | 445 FT/NM hasta 7500' |
+| 37 | GUVOL4A | 35L | THR 35L → ISOVA (≥3600') → TINGO (≥FL120) → EL680 (≥FL170) → GUVOL (≥FL250) | 370 FT/NM hasta FL180 |
+| 38 | GUVOL4A | 35R | THR 35R → ATTES (≥3200') → TINGO (≥FL120) → EL680 (≥FL170) → GUVOL (≥FL250) | 370 FT/NM hasta FL180 |
+| 39 | DONTI5B | 17R | THR 17R → VIR4000 → SEKSU (≥9500') → EL370 (≥FL110) → DONTI (≥FL240) | 445 FT/NM hasta 7500' |
+| 40 | DONTI5B | 17L | THR 17L → VIR4000 → SEKSU (≥9500') → EL370 (≥FL110) → DONTI (≥FL240) | 445 FT/NM hasta 7500' |
+| 41 | NEBEG7C | 17R | THR 17R → VAGOS (4000'-9000') → EL250 (≥FL100) → EL400 (≥FL135) → EL500 (≥FL170) → NEBEG (≥FL230) | 350 FT/NM hasta FL230 |
+| 42 | NEBEG7C | 17L | THR 17L → DESIT (4000'-9000') → EL250 (≥FL100) → EL400 (≥FL135) → EL500 (≥FL170) → NEBEG (≥FL230) | 350 FT/NM hasta FL230 |
+| 43 | NEBEG5D | 35L | THR 35L → VIR5000 → PARKE (≥8000') → EL400 (≥FL170) → EL500 (≥FL190) → NEBEG | 400 FT/NM hasta FL190 |
+| 44 | NEBEG5D | 35R | THR 35R → VIR5000 → PARKE (≥8000') → EL400 (≥FL170) → EL500 (≥FL190) → NEBEG | 400 FT/NM hasta FL190 |
+| 45 | ALBAL7C | 17R | THR 17R → VAGOS (4000'-9000') → EL250 (≥FL100) → EL401 (≥FL140) → ALBAL (≥FL210) | 320 FT/NM hasta FL160 |
+| 46 | ALBAL7C | 17L | THR 17L → DESIT (4000'-9000') → EL250 (≥FL100) → EL401 (≥FL140) → ALBAL (≥FL210) | 320 FT/NM hasta FL160 |
+| 47 | ALBAL5D | 35L | THR 35L → VIR5000 → PARKE (≥8000') → EL401 (≥FL140) → ALBAL (≥FL210) | 400 FT/NM hasta 9000' |
+| 48 | ALBAL5D | 35R | THR 35R → VIR5000 → PARKE (≥8000') → EL401 (≥FL140) → ALBAL (≥FL210) | 400 FT/NM hasta 9000' |
+| 49 | LINER6C | 17R | THR 17R → VAGOS (4000'-9000') → LINER (≥FL110) | 310 FT/NM hasta FL110 |
+| 50 | LINER6C | 17L | THR 17L → DESIT (4000'-9000') → LINER (≥FL110) | 310 FT/NM hasta FL110 |
+| 51 | LINER5D | 35L | THR 35L → VIR5000 → PARKE (≥FL110) → EL403 (≥FL130) → LINER (≥FL150) | 450 FT/NM hasta FL110 |
+| 52 | LINER5D | 35R | THR 35R → VIR5000 → PARKE (≥FL110) → EL403 (≥FL130) → LINER (≥FL150) | 450 FT/NM hasta FL110 |
+| 53 | ANGOD6C | 17R | THR 17R → VAGOS (4000'-9000') → GENPO (≥9000') → ANGOD (≥FL200) | 310 FT/NM hasta FL100 |
+| 54 | ANGOD6C | 17L | THR 17L → DESIT (4000'-9000') → GENPO (≥9000') → ANGOD (≥FL200) | 310 FT/NM hasta FL100 |
+| 55 | DONTI1R | 17R | THR 17R → EL019 (≥2200') → EL034 (≥2700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → EL370 (≥9000') → DONTI (≥FL130) | 370 FT/NM hasta 5500' |
+| 56 | DILOK1R | 17R | THR 17R → EL019 (≥2200') → EL034 (≥2700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → EL299 (≥FL100) → TEMUS (≥FL140) → TINGO (≥FL180) → EL680 (≥FL210) → DILOK (≥FL210) | 370 FT/NM hasta 5500' |
+| 57 | GUVOL1R | 17R | THR 17R → EL019 (≥2200') → EL034 (≥2700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → EL299 (≥FL100) → TEMUS (≥FL140) → TINGO (≥FL180) → EL680 (≥FL210) → GUVOL (≥FL250) | 370 FT/NM hasta 5500' |
+| 58 | DOMINGO1R | 17R | THR 17R → EL019 (≥2200') → EL034 (≥2700') → EL080 (≥4000') → EL091 (≥4700') → LOLAT (5500'-9000') → ARSEV (≥7000') → DGO (≥7000') | 370 FT/NM hasta 5500' |
+| 59 | GELUS1R | 17R | THR 17R → EL019 (≥2200') → EL034 (≥2700') → EL080 (≥4000') → EL091 (≥4700') → LOLAT (5500'-9000') → GELUS (≥FL100) | 370 FT/NM hasta 5500' |
+| 60 | VENTANAS1R | 17R | THR 17R → EL019 (≥2200') → EL034 (≥2700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → VTN (≥8000') | 370 FT/NM hasta 5500' |
+| 61 | DONTI1L | 17L | THR 17L → EL021 (≥2200') → EL070 (≥3700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → EL370 (≥9000') → DONTI (≥FL130) | 330 FT/NM hasta 5500' |
+| 62 | DILOK1L | 17L | THR 17L → EL021 (≥2200') → EL070 (≥3700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → TEPOK (≥FL100) → TEMUS (≥FL140) → TINGO (≥FL180) → EL680 (≥FL210) → DILOK (≥FL210) | 330 FT/NM hasta 5500' |
+| 63 | GUVOL1L | 17L | THR 17L → EL021 (≥2200') → EL070 (≥3700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → TEPOK (≥FL100) → TEMUS (≥FL140) → TINGO (≥FL180) → EL680 (≥FL210) → GUVOL (≥FL250) | 330 FT/NM hasta 5500' |
+| 64 | DOMINGO1L | 17L | THR 17L → EL021 (≥2200') → EL080 (≥4000') → LOLAT (5500'-9000') → ARSEV (≥7000') → DGO (≥7000') | 330 FT/NM hasta 5500' |
+| 65 | GELUS1L | 17L | THR 17L → EL021 (≥2200') → EL080 (≥4000') → LOLAT (5500'-9000') → GELUS (≥FL100) | 330 FT/NM hasta 5500' |
+| 66 | VENTANAS1L | 17L | THR 17L → EL021 (≥2200') → EL070 (≥3700') → EL080 (≥4000') → EL106 (5500'-9000') → EL131 (≥6000') → EL177 (≥7000') → VTN (≥8000') | 330 FT/NM hasta 5500' |
+
+## Rutas verificadas una a una (2026-10-25)
+
+Se comprobó que ninguna secuencia de puntos contradice la carta: los tramos iniciales usan el eje de pista (THR → VIR4000/VIR5000 → primer fix), los 17R giran por VAGOS y los 17L por DESIT (salvo las SID de la familia 1R/1L, que salen por los pasillos EL019/EL021, y NEBEG 7A / ALBAL 7A, que sobrepasan GENPO/ESKUL y continúan por R177 hasta FL130), y cada restricción vertical está en orden ascendente.
+
+| SID | Punto de entrada | Observación |
+|---|---|---|
+| NEBEG7C | VAGOS / DESIT | EL250 ≥FL100 → EL400 ≥FL135 → EL500 ≥FL170 → NEBEG ≥FL230 · ASC 350 FT/NM hasta FL230 |
+| ALBAL7C | VAGOS / DESIT | EL250 ≥FL100 → EL401 ≥FL140 → ALBAL ≥FL210 · ASC 320 FT/NM hasta FL160 |
+| NEBEG5D / ALBAL5D | PARKE (VIR5000) | giro a la derecha tras 5000', EL400 ≥FL170 / EL401 ≥FL140 |
+| LINER5A / ANGOD8B | VAGOS / DESIT | directos por la aerovía R177 (sin paso intermedio): intencional |
+| NEBEG7A / ALBAL7A | GENPO / ESKUL (D10) | mantienen R177 hasta FL130 (viraje a 28,4 NM del THR) y siguen a YESOS ≥FL230 / SUPRA ≥FL130; sin la ventana 4000'-9000' de VAGOS/DESIT |
+| DONTI1R/1L · DILOK1R/1L · GUVOL1R/1L | EL019 / EL021 | pasillo de salida con escalones 2200'-9000' antes de la aerovía |
+
+Verificación dinámica de las dos SID corregidas (trayectoria real del simulador, no sólo la polilínea): `ALBAL7C_17R` pasa a **0,015 NM** del EL250 y `NEBEG7C_17R` a **0,016 NM**; ambas viran en el punto correcto (112° y 084° de rumbo respectivamente) y el ascenso cumple los mínimos antes de cada fix.

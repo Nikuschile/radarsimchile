@@ -59,20 +59,48 @@ ademas quiero que se habilite la opcion de cargar ejercicios desde archivos xml 
 
 
 
-QUIERO QUE AL HACER CLICK DERECHO SOBRE LA ETIQUETA RADAR SE ABRE LA VENTANA HOLD , QUIERO QUE AL ABRIR ESA VENTANA SOLO MUESTRE EL NOMBRE DE HOLDING Y OMITA LOS OTROS DETALLES DEL HOLDING YA QUE OCUPA MUCHO ESPACIO 
+
+los readback de los rumbos serán digito a digito sin omitir el cero por ejemplo
+del rumbo 010 es rumbo cero uno cero 
+rumbo 020 es rumbo cero dos cero 
+rumbo 030 es rumbo cero tres cero
+rumbo 040 es rumbo cero cuatro cero
+rumbo 050 es rumbo cero cinco cero
+rumbo 060 es rumbo cero seis cero
+rumbo 070 es rumbo cero siete cero
+rumbo 080 es rumbo cero ocho cero
+rumbo 090 es rumbo cero nueve cero
+rumbo 360 es rumbo tres seis cero
+rumbo 000 es rumbo tres seis cero
+
+en ingles la misma regla pero obviamente en ingles digito por digito 
+
+
+otra cosa el callsign de AFR es AIRFRANCE tanto en español como el ingles 
 
 
 
-LISTOOO
-QUIERO QUE AL HACER CLICK DERECHO SOBRE LA ETIQUETA RADAR SE ABRE LA VENTANA HOLD , QUIERO QUE AL ABRIR ESA VENTANA SOLO MUESTRE EL NOMBRE DE HOLDING Y OMITA LOS OTROS DETALLES DEL HOLDING YA QUE OCUPA MUCHO ESPACIO , ADEMAS QUIERO QUE LA DISTRIBUCION DE LA VENTANA QUE TIENE HOLD OPS TXT SEA VERTICAL Y CON MEJOR TAMAÑO Y CONTRASTE PARA MEJOR VISUALIZACION PODRIA SER DE COLOR PLOMO Y BLANCO DONDE VA EL TEXTO PARA MEJOR VISUALIZACION Y LOS TITULOS EN COLOR NEGRO , PERO DE UN TAMAÑO QUE SE VEA BIEN NITIDO , OTRA COSA QUE NECESITO ES QUE EN EL PANEL DE COMANDO DE AERONAVE BAJO EL RUMBO APAREZCAN DOS BOTONES CON LISTA DESPLEGABLE UNO AL LADO DEL OTRO , UNO SE LLAMARA ROC QUE ES  RAZON DE ASCENSO Y EL OTRO ROD QUE ES RAZON DE DESCENSO , AL PRESIONAR ROC O ROD SE DESLEGARA UNA VENTANA PARA SELECCIONAR LA RAZON DE ASCENSO O DESCENSO YA SEA LA MAXIMA O LA MINIMA SEGUN LA TABLA BADA YA CONFIGURADA ANTES Y TENER LA OPCION MIN Y MAX 
 
-
-PDTE
-LA SECCION DE FLIGHTS PARA AGREGAR VUELOS NO ESTA FUNCIONANDO , ANTES USABA EL RELOJ DEL PC , Y AL CREAR UN VUELO CAMBIA A HORA RANDOM, VAMOS A DEJAR QUE EL SIMULADOR POR DEFECTO SIEMPRE INICIE A LAS 12:00:00  , SI SE CARGA UN ESCENARIO XML DE LA SECCION FLIGHTS, EL RELOJ TENDRA LA HORA CONFIGURADA EN EL ESCENARIO Y CARGARA LOS VUELOS A LA HORA INDICADA EN EL ESCENARIO O CREADO POR EL USUARIO CON EL ESCENARIO CORRIENDO  
+ahora vamos a trabajar en la salida NEBEG7A  estan pasando muy bajo confome a la salida real describire la salida: DESPEGUE DE PISTA 17R ascenso via radial 177 del vor pdh hasta fl130 , posterior viraje izquierda directo a YESOS INT para interceptar aerovia 
 
 
 
-
+ademas definiremos las salidas via nebeg MNM Razón ASC:
+MNM Climb Rate:
+NEBEG 7C: 350 FT/NM TIL FL230
+NEBEG 5D: 400 FT/NM TIL FL190
+NEBEG 7C RNAV
+DEP RWY 17L/R: Ascenso en TR176° hasta DESIT o VAGOS, según corresponda, continuar
+directo hacia EL250, posterior viraje izquierda continuar en TR087° hacia
+EL400-EL500-NEBEG para interceptar AWY.
+TAKE-OFF RWY 17L/R: Climb on TR176º to DESIT or VAGOS, as appropiate, continue direct to EL250, then left turn
+continue on TR087° to EL400-EL500-NEBEG to intercept AWY.
+NEBEG 5D RNAV
+DEP RWY 35L/R: Ascenso en TR357° hasta 5000FT viraje derecha directo PARKE, continuar
+en TR153° hasta EL400 y luego viraje izquierda TR087° hacia EL500-NEBEG para
+interceptar AWY.
+TAKE-OFF RWY 35L/R: Climb on TR357º to 5000FT right turn direct to PARKE, continue on TR153° until EL400, then turn left
+TR087° to EL500-NEBEG to intercept AWY.
 
 
 

@@ -3631,3 +3631,892 @@ max 2000. `getVertRate(da=−1000)` a 29000 ft: none 3008 / min 1000 / max 3500.
 - Los FAIL CS2/PT2 de corridas previas fueron **artefacto de estado** (vuelos
   del escenario `deps` presentes al inicio de la inyección), no regresión de
   código.
+
+---
+
+## 20. Aerovías VOR superiores (AWY-SUP) — botón AWY-SUP en el panel izquierdo
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 20.1 Pedido
+
+*"las aerovías UV detectadas quiero que estén visibles en la pantalla radar al presionar el botón AWY-SUP en el panel al costado izquierdo del simulador"*, con línea **azul más gruesa que AWY-INF**, tomando los datos del PDF AIP indicado: `vENR 3 CONVENCIONAL UV.pdf` (sección 2 ENR Parte 2 del AIP Chile).
+
+### 20.2 Datos leídos del PDF (8 páginas, verificadas visualmente)
+
+El PDF no se pudo analizar con los extractores de texto (tablas con columnas y páginas rotadas), así que se **renderizó en el navegador embebido** (CDP: `Emulation.setDeviceMetricsOverride` + `Input.dispatchKeyEvent` Ctrl+0 + captura) y se leyó cada página como imagen. Rutas y fixes confirmados página por página:
+
+| Ruta | Fixes (orden AIP) | Pág. PDF |
+|---|---|---|
+| UV 107 | DGO → LINER | 1 |
+| UV 115 | NAS → ALMIR → SUNLI → PWL | 1 |
+| UV 120 | VLD → GUXER → TOMUS → KEVET → MPI | 1 |
+| UV 123 | MON → TEN → OPURA → BAL | 1–2 |
+| UV 200 | ARI → SIRAM → IQQ → BRADA → FAG → DOVRI → PUNSO → DAT → UPUKU → ISENO → TIMDA → TOY → ESNOX → BUXIS → VTN → DGO → ESOKI → SOSTA → CAR → PANEX → VLD → ISUDO → KIKOP → MON | 3–4 |
+| UV 204 | ARI → PUGOT → IQQ → REBOL → FAG → VADIX → SILEN → PUMEN → DAT → EKUBO → VUNIK → EMBAL → SIMOK → MOLPU → TBN | 4, 6 |
+| UV 206 | VTN → TENUT → OLMUE → TBN | 6 |
+| UV 208 | TOY → EMBAL → SIMOK → MOLPU → TBN | 6 |
+
+- **UV 200** y **UV 204** se unificaron con su "(CONTINUACIÓN)" de la página siguiente en una sola línea continua (etiqueta única).
+- **49 fixes** con coordenadas DMS convertidas a decimal (6 decimales, cultura invariante, bloque 100 % ASCII).
+- Correcciones de lecturas previas por texto crudo: se confirmó **ESNOX** (no ADNOX), `SUNLI`/`KEVET`, y las longitudes de PWL (67°37'16"W) y de todo el tramo sur.
+
+### 20.3 Implementación
+
+- **Bloque de datos** (insertado tras el bloque AWY-INF, L3147): `AWY_SUP_FIX_LL` (49 coords), `AWY_SUP_FIX_XY` (proyección local `x=(lon−SCEL_LNG)*60*cos(SCEL_LAT)`, `y=(lat−SCEL_LAT)*60`) y `AWY_SUP` (8 rutas con `nombre` "UV nnn").
+- **Mapa independiente**: `BRADA`, `DOVRI` y `PUNSO` del UV tienen coordenadas **distintas** a las del mismo nombre en la ruta V inferior (`AWY_FIX_LL`), por lo que AWY-SUP usa su propio mapa con `supFixXY()` (prioridad UV → NAVAIDS → WPT).
+- **`showSup`** en el estado global; **botón `#supBtn`** (`AWY-SUP`, clase `cat-btn sup off`) justo debajo de AWY-INF en el panel GEN; **`toggleSup()`** (alterna `on/off` + `forceRedraw()`).
+- **CSS** `.cat-btn.sup.on/off` (azul vivo `#66aef5` encendido, `#4a6f96` apagado).
+- **`drawAirwaysSup()`** invocado en el bucle de render junto a `drawAirways()`:
+  - línea `rgba(90,160,255,.55)` con `lineWidth=2*DPR` (AWY-INF: `rgba(138,180,216,.18)`, `1*DPR`),
+  - etiqueta `bold 9px` "UV nnn" en `rgba(140,195,255,.75)` al medio del trazado.
+
+### 20.4 Verificación (CDP, página real recargada)
+
+| Prueba | Resultado |
+|---|---|
+| `AWY_SUP` | 8 rutas `[UV107,UV115,UV120,UV123,UV200,UV204,UV206,UV208]`, 49 fixes, **0 fixes sin resolver** |
+| `toggleSup` / `drawAirwaysSup` / `#supBtn` | function / function / presente; tras clic → `showSup=true`, clase `cat-btn sup on` |
+| Diferencia de canvas (hash de píxeles) | `showSup` on/off → distinto; suma píxeles azules 18 → 28 |
+| **Grosor medido** (racha de píxeles, tramos verticales) | **AWY-INF = 1 px** · **AWY-SUP = 2–3 px** |
+| Color de línea | SUP `rgb(49,95,151)` (azul intenso) vs INF `rgb(17,22,27)` (tenue) |
+| Captura visual | botón AWY-SUP encendido en el panel; etiquetas `UV 107` y `UV 206` visibles sobre el radar (vista 40 y 250 NM) |
+| Suite `tests/hold_test.js` | **115/115, FAIL=0** |
+| Sincronización | `SCEL_ATC_Radar.html` ≡ `netlify-deploy\index.html` (MD5 `7AA0C0BF0DDFF80AE8BF5ACF431E6B34`) |
+
+### 20.5 Notas
+
+- El botón arranca **apagado** (`showSup=false`), como AWY-INF.
+- El PDF temporal se eliminó del repo; los scripts de extracción quedaron en el temp del sistema (`gen_awy_sup.ps1`, `cdp_pdf.ps1`, `crop.ps1`).
+
+## 21. SID ALBAL 7C/5D — MNM Razón ASC por carta + 46 puntos AIP «Tabla de coordenadas»
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 21.1 Pedido
+
+*"Redefinir SIDs para clearance de obstáculos: ALBAL 7C: 320 FT/NM TIL FL160; ALBAL 5D: 400 FT/NM TIL 9000'. Además agregar las coordenadas del PDF de AIPMAP SCEL — Tabla de coordenadas a la base de fixes."*
+
+### 21.2 Fuentes de datos
+
+| Fuente | Uso | Detalle |
+|---|---|---|
+| Carta SID 10 (AMDT 102, 14 MAY 2026) | Perfil 7C/5D | 7C: «Ascenso en TR176°M (177,07°T) hasta DESIT o VAGOS → EL250 → viraje izq. EL401-ALBAL»; 5D: «TR357°M (357,44°T) hasta 5000 FT → DF PARKE → EL401-ALBAL». DIST desde ARP: 7C17L 7,59/17,41/36,64 · 7C17R 7,51/17,78/36,64 · 5D 29,99/36,64 NM |
+| `SCEL Tabla de coordenadas.pdf` (AMDT 103, 06 AUG 2026) | 137 puntos DMS | Págs. 1–3 (3 bloques/pág.; pág. 3 solo 3 pts con umbral ≥3). Formato `33°00'15,69'' S 70°49'26,10'' W` (coma decimal, doble apóstrofo). Incluye umbral RW17L/R y 35L/R |
+| Extracción | pdf.js 3.11.174 | El visor PDF de Chrome no expone `PDFViewerApplication` en contexto `http`; se inyectó pdf.js vía CDP en una página puente (`_pdf_extract.html`) |
+
+Conversión a coordenadas del simulador: `x=(lon−SCEL_LNG)*60·cos(SCEL_LAT)`, `y=(lat−SCEL_LAT)·60`,3 decimales (cultura invariante).
+
+### 21.3 Cambios en el código
+
+1. **`SID_ROC`**: `ALBAL7C` de `{roc:350,til:16000}` a **`{roc:320,til:16000}`**. `ALBAL5D:{roc:400,til:9000}` ya coincidía con la carta. Comentario al lado: «SID10 AMDT102: 320 FT/NM TIL FL160 · 400 TIL 9000'».
+2. **Comentario de rutas** `ALBAL7C_17L/R` y `ALBAL5D_35L/R` ampliado con el texto de la carta (TR176°M/TR357°M, PATH CA/DF/TF, DIST, MNM Razón ASC). La geometría de las rutas no cambió: ya era consistente con la carta (eje 177°/357°, `_ap` VAGOS/DESIT 4000–9000', `_ax` 400 FT/NM hasta 5000', EL250 10000', EL401 FL140, ALBAL FL210).
+3. **`WPT` — bloque nuevo «AIP Chile SCEL TABLA DE COORDENADAS AMDT 103»** (insertado antes del cierre del objeto): **46 fixes nuevos** con `alt:0` y el DMS del AIP en el comentario de cada línea. Además **10 existentes reposicionados** a 3 decimales (la versión previa tenía 2 decimales; Δ máx 0.05 NM).
+
+**46 fixes añadidos:** ARUKI, EL001, EL015, EL023, EL025, EL035, EL041, EL059, EL069, EL076, EL079, EL099, EL129, EL130, EL138, EL148, EL179, EL184, EL243, EL383, EL981–EL988, EL992, EL995, EL996, ILKOS, KIDAS, KUDKA, MESAL, MOLPU, NEGAG, NEGTA, PADOP, PORMA, ROBAK, TELAG, TEPIL, UKEMU, VUARI.
+
+**10 reposicionados** (Δ previo 0.02–0.05 NM — redondeo a 2 decimales de ediciones antiguas):
+
+| Fix | Antes (x,y) | Ahora (x,y) | Fix | Antes (x,y) | Ahora (x,y) |
+|---|---|---|---|---|---|
+| EL222 | −1.9, 23.4 | −1.919, 23.388 | EL570 | 3.3, 57.1 | 3.291, 57.066 |
+| EL370 | −15.3, 11.5 | −15.324, 11.484 | EL680 | 5.4, 47.2 | 5.4, 47.172 |
+| EL382 | −5, 19.7 | −5.039, 19.728 | ASIMO | 23.5, 90.7 | 23.489, 90.654 |
+| EL449 | 13.4, 33.5 | 13.385, 33.534 | DABIT | −2.5, 68.6 | −2.485, 68.562 |
+| VUDOG | −1.6, 38.5 | −1.583, 38.52 | VULBI | 8.5, 65.6 | 8.456, 65.604 |
+
+### 21.4 Verificación (página recargada vía CDP)
+
+| Prueba | Resultado |
+|---|---|
+| Dataset AIP vs `WPT` (137 pts) | **46 faltaban**, 10 con Δ>0.02 NM, 81 coinciden ≤0.02 NM |
+| `WPT` total | 190 → **236**; 0 claves nuevas ausentes; los 10 reposicionados con valores exactos |
+| Spawn `ALBAL7C_17L` (B738) | `sidRoc=320`, `sidRocTil=16000`, `vSpd=1364` fpm (=320×255/60 — piso aplicado al spawn), `authLvl=FL270`, eje 177° |
+| Spawn `ALBAL5D_35R` | `sidRoc=400`, `sidRocTil=9000`, `vSpd=1705` fpm, eje 357° |
+| `getVertRate` piso MNM | 7C: rate=need=1364 ✓ · 5D: rate=need=1705 ✓ · a FL165 (>til) → 300 fpm, **piso desactivado** ✓ |
+| Geometría SID | rutas 5/5 pts, coords finitas, fixes DESIT/VAGOS/EL250/EL401/ALBAL/PARKE presentes, `sidCrossAlt`=FL210 |
+| `SID_ROC` | 39 SIDs; solo ALBAL7C cambió (350→320); resto intacto |
+| Errores JS en la sesión de prueba | **0** |
+| Suite `tests/hold_test.js` (harness inyectado, navegador integrado — Chrome headless corrupto: falta `chrome.exe` en la carpeta de versión) | **115/115, FAIL=0, ERR:0** |
+| Integridad del archivo | BOM UTF-8, CRLF 11894, 0 U+FFFD, 0 LF solas (las del bloque insertado se normalizaron a CRLF) |
+| Sincronización | `SCEL_ATC_Radar.html` ≡ `netlify-deploy\index.html` (MD5 `F28A1190DCBBCE1B6AB9B5F73E3328FE`) |
+
+### 21.5 Notas
+
+- `EL001`, `EL995` y `EL996` comparten coordenadas en el AIP (mismo punto publicado con3 nombres); las 3 entradas se insertaron tal cual.
+- En la carta, DESIT está a 7,59 NM del **ARP** (no del umbral); el simulador rutea desde el umbral real (~9,6 NM) — correcto en planta: el rumbo 177,1°T y la posición del fix coinciden.
+- El PDF AIP y los binarios de pdf.js (`scel_coords.pdf`, `pdf.min.js`, `pdf.worker.min.js`, `_pdf_extract.html`) se eliminan del repo al cerrar este capítulo.
+- La extracción del PDF de coordenadas se hizo en la pestaña del radar vía `Runtime.evaluate` (CDP port 9223) porque el hook del visor PDF no estaba disponible.
+
+### 21.6 NEBEG 7C/5D — verificación contra carta (MNM 350/FL230 · 400/FL190)
+
+**Mismo día, pedido de seguimiento:** definir/verificar las salidas NEBEG con el texto de la carta (usuario, 2026-10-22):
+
+- **MNM Climb Rate:** NEBEG 7C: **350 FT/NM TIL FL230** · NEBEG 5D: **400 FT/NM TIL FL190**.
+- **NEBEG 7C RNAV** (DEP/TAKE-OFF RWY 17L/R): *«Ascenso en TR176° hasta DESIT o VAGOS, según corresponda, continuar directo hacia EL250, posterior viraje izquierda continuar en TR087° hacia EL400-EL500-NEBEG para interceptar AWY»*.
+- **NEBEG 5D RNAV** (DEP/TAKE-OFF RWY 35L/R): *«Ascenso en TR357° hasta 5000FT viraje derecha directo PARKE, continuar en TR153° hasta EL400 y luego viraje izquierda TR087° hacia EL500-NEBEG para interceptar AWY»*.
+
+**Resultado de la auditoría: todo ya coincidía — sin cambios de datos.** Se verificó contra la página recargada (CDP):
+
+| Elemento | Carta | Simulador | Estado |
+|---|---|---|---|
+| `SID_ROC.NEBEG7C` / `NEBEG5D` | 350/FL230 · 400/FL190 | `{350,23000}` · `{400,19000}` | ✓ sin cambio |
+| Ruta 7C (6 pts) | thr→DESIT/VAGOS→EL250→EL400→EL500→NEBEG | idéntica; altMin 4000-9000/10000/FL135/FL170/FL230 | ✓ |
+| Ruta 5D (6 pts) | thr→eje 5000FT→PARKE→EL400→EL500→NEBEG | idéntica; altMin 8000/FL170/FL190 | ✓ |
+| Eje 7C | TR176°M (177,07°T) | 17L→DESIT **177,1°** · 17R→VAGOS **177,4°** | ✓ |
+| EL250→EL400→EL500→NEBEG | TR087° | **88,0 / 87,9 / 87,7°** | ✓ |
+| Eje 5D | TR357° | axisHdg **357** | ✓ |
+| PARKE→EL400 | TR153°M (≈154,4°T) | **154,2°** | ✓ |
+| Virajes | dcho. a PARKE · izdo. en EL400 | 357°→148,5° (151° d.) · 154°→88° (66° i.) | ✓ |
+
+**Sonda de spawn (B738):**
+
+| Prueba | NEBEG7C_17L | NEBEG5D_35L |
+|---|---|---|
+| `sidRoc` / `sidRocTil` | 350 / 23000 ✓ | 400 / 19000 ✓ |
+| `vSpd` al spawn (piso aplicado) | 1492 fpm (=350×255,7/60) ✓ | 1705 fpm ✓ |
+| `getVertRate` bajo el til | rate=need=1492 ✓ | rate=need=1705 ✓ |
+| Sobre el til (FL235 / FL195) | 286 fpm — piso **OFF** ✓ | 294 fpm — piso **OFF** ✓ |
+| `authLvl` / eje | FL270 / 177° ✓ | FL270 / 357° ✓ |
+| `sidCrossAlt` | FL230 (NEBEG) ✓ | FL190 (EL500) ✓ |
+
+- Único cambio de código: el **comentario** del bloque SID9 ampliado con el texto bilingüe de la carta y la nota MNM (estilo del bloque ALBAL del cap. 21.1–21.3).
+- Suite `tests/hold_test.js` regenerada contra el HTML actualizado: **115/115, FAIL=0, ERR:0**.
+
+## 22. Menú de etiqueta: botón CTC TWR (contacto Torre 118.1)
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 22.1 Pedido
+
+*"Está pendiente habilitar al hacer click derecho en la etiqueta radar la opción CTC TWR y que haga exactamente lo mismo que al hacer click en el panel de comandos botón transfer twr."*
+
+### 22.2 Implementación
+
+- **HTML** — en `#holdCtxPopup` (menú contextual de la etiqueta, popup de pestañas HOLD/DCT/OPCODE/TXT), nuevo botón **`☎ CTC TWR`** justo debajo de la columna de pestañas, con estilo verde torre (`#0f3d2e`/`#7dffc8`) y `onclick="transferTwrCtx()"`.
+- **JS** — nueva función `transferTwrCtx()` (junto a `leaveHoldCtx`):
+  1. toma la aeronave del menú (`_ctxAc()`),
+  2. la selecciona (`selected=_ctxAcIdx; updateSB()`), igual que los otros `*Ctx`,
+  3. llama a **`transferTwr(a)`** — la misma función del botón `⇒ TRANSFERIR TWR` del panel (`handedOff=true`, `lastCmd='→ TWR 118.1'`, `sysLog`, `vFbk`, readback «contacto Santiago Torre 118,1» por fraseología),
+  4. cierra el popup (`closeHoldCtx()`).
+- Sin cambios en `transferTwr` ni en la fraseología `twr` del JSON (ya existente).
+
+### 22.3 Verificación (página recargada, CDP)
+
+| Prueba | Resultado |
+|---|---|
+| Botón en el popup | presente, texto `☎ CTC TWR`, `onclick=transferTwrCtx()` |
+| `transferTwrCtx` | function |
+| Flujo completo (menú sobre LAN101 → CTC TWR) | `handedOff=true`, `lastCmd='→ TWR 118.1'`, `selected=0`, popup cerrado, `vFbk='✓ LAN101 CONTACTO TWR 118.1'`, **0 errores JS** |
+| Equivalencia con el panel (transferTwr() en otra aeronave) | mismos campos (`handedOff`, `lastCmd`) → **misma acción** |
+| Suite `tests/hold_test.js` | **115/115, FAIL=0, ERR:0** |
+| Sincronización | `SCEL_ATC_Radar.html` ≡ `netlify-deploy\index.html` |
+
+### 22.4 Notas
+
+- El botón aparece siempre en el menú de cualquier aeronave en vuelo (igual que el del panel; `transferTwr` no valida estado previo).
+- Las aeronaves en tierra (`landed`) no abren el menú (comportamiento preexistente de `showHoldCtx`).
+
+## 23. Legibilidad TWR/RBL — naranja nítido y texto RBL +20%
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 23.1 Pedido
+
+*"Los colores de la etiqueta en estado TWR (transferida a Torre) deben verse naranja nítidos y el texto del RBL un20% más grande."*
+
+### 23.2 Implementación — naranja TWR
+
+El estado `handedOff` (y `transferred`/APPR FINAL) usaba el naranja oscuro `#853400` / `rgba(133,52,0,…)`, ilegible sobre el fondo negro del radar. Se reemplazó por el naranja nítido **`#ff9d42`** / `rgba(255,157,66,…)` en todos los trazos de la etiqueta:
+
+| Zona | Antes | Ahora |
+|---|---|---|
+| Color del blip | `#853400` | `#ff9d42` |
+| Línea guía (leader) | `rgba(133,52,0,…)` | `rgba(255,157,66,…)` |
+| Borde de la etiqueta | `#853400` | `#ff9d42` |
+| Tinte del encabezado | `rgba(133,52,0,…)` | `rgba(255,157,66,…)` |
+| Row0 (indicativo) | `#853400` | `#ff9d42` |
+| Row0 SSR | `#853400` | `#ff9d42` |
+| Row2 (alt/vel) | `#853400` | `#ff9d42` |
+| Row3 (ruta) | `#853400` | `#ff9d42` |
+
+- Se conservan `#853400` como **default de fila para aeronaves normales** (no transferidas) y en el destello ILS — solo cambia el estado TWR/APPR FINAL.
+- Panel lateral (`updateSB`): el `status` ahora muestra **`☎ TWR 118.1`** cuando `a.handedOff` (antes solo «LLEGADA/SALIDA/APPR FINAL»).
+
+### 23.3 Implementación — texto RBL +20%
+
+| Tamaño | Antes | Ahora |
+|---|---|---|
+| RBL simulado (bold, Share Tech Mono) | `10*DPR` | `12*DPR` |
+| RBL LIVE (bold) | `9*DPR` | `10.8*DPR` |
+| Indicador «RBL →» pendiente | `8*DPR` | `9.6*DPR` |
+
+### 23.4 Verificación (página recargada, CDP, muestreo de píxeles)
+
+| Prueba | Resultado |
+|---|---|
+| Etiqueta TWR (`handedOff`) — píxeles naranjas | **400** (color exacto `255,157,66` entre los dominantes) |
+| Etiqueta APPR FINAL (`transferred`) — píxeles naranjas | **824** |
+| Etiqueta aeronave normal (azul base) | **0** naranjas, **309** azules (`52,167,233`) → sin regresión |
+| Fuentes RBL en el código servido | `12*DPR` ✓, `10.8*DPR` ✓, `9.6*DPR` ✓ |
+| Ocurrencias de `#853400` | **2** (default de fila normal + ILS; ninguna en estado TWR) |
+| Estado en panel lateral | `status` incluye `☎ TWR 118.1` al transferir |
+| Errores JS durante la prueba | **0** |
+| Suite `tests/hold_test.js` | **115/115, FAIL=0** |
+| Integridad del archivo | UTF-8 BOM ✓, CRLF 11922 / LF-sola 0 / U+FFFD 0 |
+| Sincronización deploy | `netlify-deploy\index.html` ≡ fuente, MD5 `16E030536BEE3EB6AEBD59CFD7A331D0` |
+
+### 23.5 Notas
+
+- La verificación por píxeles forzó el render con `frame(performance.now())` (la pestaña en segundo plano throttlea `requestAnimationFrame`) y centró `panX/panY` en aeronaves de prueba sintéticas, luego removidas.
+- El naranja TWR se aplica en TODOS los estados de etiqueta (borde, leader, blip, encabezado y las 4 filas), no solo el texto, para máxima legibilidad del estado de handoff.
+- Para redesplegar: arrastrar `netlify-deploy\` a https://app.netlify.com/drop.
+
+## 24. ROUTE exclusivo — una sola ruta visible a la vez
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 24.1 Pedido
+
+*"Al presionar ROUTE en una aeronave mostrará su ruta; al presionar ROUTE en la aeronave siguiente, la función ROUTE de la precedente desaparecerá."*
+
+### 24.2 Implementación
+
+En `toggleRouteCtx()` (único punto que muta `showRoute`), al **activar** la ruta de la aeronave seleccionada se recorre `aircraft[]` y se apaga `showRoute` en cualquier otra que lo tuviera encendido, con mensaje de sistema:
+
+- `«<ID> ← RUTA OCULTA (otra aeronave activó ROUTE)»` para la aeronave que pierde su ruta,
+- `«<ID> ← RUTA VISIBLE»` para la nueva.
+
+Desactivar ROUTE en la propia aeronave (segundo clic) no afecta a nadie. La exclusividad también apaga el efecto visual inmediatamente (`forceRedraw`).
+
+### 24.3 Verificación (página recargada, CDP)
+
+Aeronaves sintéticas RTA/RTB con ruta, invocando `toggleRouteCtx` real (mismo flujo que el botón):
+
+| Paso | Acción | Rutas visibles |
+|---|---|---|
+| 1 | ROUTE en RTA | `["RTA"]` |
+| 2 | ROUTE en RTB | `["RTB"]` ← RTA apagada automáticamente |
+| 3 | ROUTE en RTB (apagar) | `[]` |
+| 4 | ROUTE en RTA (encender) | `["RTA"]` |
+
+| Comprobación | Resultado |
+|---|---|
+| Errores JS | **0** |
+| Suite `tests/hold_test.js` | **115/115, FAIL=0** |
+| Sincronización deploy | `netlify-deploy\index.html` ≡ fuente, MD5 `D357C637707FD150EA476DFB337E6391` |
+
+### 24.4 Notas
+
+- HALO no se ve afectado: es independiente por aeronave y no forma parte de esta exclusividad.
+- La aeronave aterrizada o sin ruta (`route.length<2`) no cambia el comportamiento de `drawRoute` (ya filtrado).
+
+## 25. Verificación: nivel de cruce de EL250 (SID 7C) — sin cambio de código
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (solo medición)
+
+### 25.1 Pedido
+
+*"Verifica a qué nivel están pasando los aviones EL250 en la simulación; a mi parecer están virando muy bajo, los 10000 pies."*
+
+### 25.2 Método
+
+Sonda por CDP sobre la página cargada: `paused=true`, avance sincrónico de `update(0.05)` con las **mismas plantillas** del Auto DEP (`DEP_TEMPLATES`, spawn en umbral a altitud ARP). Se registró `a.alt` en el instante exacto en que `routeIdx` avanza de VAGOS→EL250 (inicio del viraje). Repetido con `SIM_F` 1×/5×/10× y con `rocSel='min'`.
+
+### 25.3 Resultado — altitud al cruzar/virar en EL250 (mínimo publicado: 10000 ft)
+
+| Aeronave | SID | ROC automático (BADA) | ROC MIN |
+|---|---|---|---|
+| B788 (BAW) | ALBAL7C 17R | **12 435–12 480 ft** | 10 662 ft |
+| A320 (LAN) | ALBAL7C 17R | **12 113–12 131 ft** | 10 377 ft |
+| B788 | NEBEG7C 17R | **12 621–12 658 ft** | 11 192 ft |
+
+- Invariante con el multiplicador de tiempo (1×/5×/10×: mismas altitudes ±50 ft).
+- **Ningún caso cruza por debajo de 10 000 ft.** Con ROC automático el margen es +2100 a +2600 ft; con ROC MIN el margen se reduce a +380 a +1200 ft (el piso MNM Razón ASC 320/350 ft/NM de la carta es lo que impide quedarse bajo).
+- Comportamiento observado: al pasar VAGOS (ventana 4000–9000) la aeronave ya asciende libre hacia el mínimo de EL250 (10000); al alcanzar ~9900 ft la regla de libre ascenso salta directo a la siguiente cota publicada (EL401 FL140), por lo que **cruza EL250 en ascenso a ~12 100–12 600 ft** y vira hacia EL401/NEBEG por encima del mínimo.
+
+### 25.4 Conclusión
+
+En la versión actual **las aeronaves NO viran bajo en EL250**: cruzan 2100–2600 ft por encima del mínimo con el modo normal, y nunca por debajo de 10 000 ft ni siquiera con ROC MIN. Si en pantalla se observan giros por debajo de 10 000, las causas posibles son: (a) versión desplegada antigua en Netlify — actualizar con `netlify-deploy\`; (b) instrucción ATC previa de nivel («ascienda nivel 100» / CFL) que fija `atcAlt` y prioriza la instrucción sobre la restricción de la SID; (c) modo ROC MIN + aeronave pesada, donde el margen baja a ~+400 ft. Se pide Specify callsign/SID/hora si se replica.
+
+## 26. CTC TWR — icono de torre en lugar de teléfono
+
+**Fecha:** 2026-10-22 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 26.1 Pedido
+
+*"Elimina el icono de teléfono de CTC TWR; puedes usar un icono de una torre de control, que es más apropiado."*
+
+### 26.2 Cambio
+
+| Ubicación | Antes | Ahora |
+|---|---|---|
+| Botón del menú de etiqueta (popup HOLD) | `☎ CTC TWR` | `🗼 CTC TWR` |
+| Estado en panel lateral (`updateSB`, aeronave handedOff) | `☎ TWR 118.1` | `🗼 TWR 118.1` |
+
+Emoji 🗼 (torre) — consistente con el resto de la interfaz, que ya usa símbolos Unicode (⬇ GS, ◉ LOC, ⇒ TRANSFERIR).
+
+### 26.3 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| Botón en DOM | contiene 🗼, sin resto de ☎ |
+| Panel lateral con `handedOff=true` | `🗼 TWR 118.1` |
+| Ocurrencias de ☎ en el archivo | **0** |
+| Suite `tests/hold_test.js` | **115/115, FAIL=0** |
+| Sincronización deploy | MD5 `700DE2FA5A25694C7D2E8B4A2DAD7D66` |
+
+## 27. Mínimos de sector — valores de la cartilla MRVAC en el simulador
+
+**Fecha:** 2026-10-23 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 27.1 Pedido
+
+*"Por ultimo ingresa los valores de los minimos de sector con las altitudes minimas en el simulador, los que aparezcan pones sus valores de la cartilla, no los tengo todos pero puedes guardar sus valores para cuando ingrese las coordenadas de los sectores que faltan."*
+
+Cartilla: https://aipchile.dgac.gob.cl/dasa/aip_chile_con_contenido/aipmap/SCEL/MRVAC%20SCEL.pdf
+
+### 27.2 Fuente de datos
+
+**CARTA DE ALTITUDES MINIMAS DE VIGILANCIA ATC** (AIP Chile, SCEL; INFO SUP AIP S9 · AMDT 86 · 03-dic-2020). Extracción doble para mayor seguridad: (a) volcado de los 209 ítems de texto del PDF con sus posiciones en el render de 2400 px (pdf.js), (b) lectura visual en alta resolución de los 6 tiles del mapa + zooms sobre las zonas ambiguas. Emparejamiento valor↔sector por proximidad de coordenadas y confirmación visual.
+
+Resultado: **36 sectores con nombre** (valor propio) + **6 valores sin nombre** en la cartilla.
+
+### 27.3 Cambio
+
+| Ubicación | Cambio |
+|---|---|
+| Tras `const SECTOR_MIN` (~línea 2945) | Nuevo `const MRVAC_SECTOR_MINS` con los **36 valores de la cartilla** + arreglo `_SIN_NOMBRE` (6) y comentario con fuente/URL/fecha |
+| Justo después | Sincronización automática: `Object.keys(SECTOR_MIN).forEach(...)` copia el valor de la cartilla al campo `alt` de cada sector ya cargado (21) |
+| Importación OFFLINE (`_d.mrvac`) | Si el archivo no trae `alt`, se usa `MRVAC_SECTOR_MINS[nombre]` como respaldo |
+| Rotulado (dibujo `SECTOR_MIN`) | Antes: etiqueta solo si `_cy>100` (región SCSE) → **ninguno** de los 23 se rotulaba. Ahora: **todos** rotulan nombre + mínimo en su centroide mientras esté activa la capa MSA (`showMRVAC`) |
+| Grosor de línea (`isOuter`) | Antes: `z.alt==='FL100-FL070'` (CHAPE dejó de cumplirlo tras el cambio). Ahora: por nombre (`OUTER_BOUNDARY`, `OUTER_CHAPE`, `CHAPE`) → el dibujo no cambia |
+
+`datos_offline.json` **no** tiene sección `mrvac` (verificado en la copia local y en `netlify-deploy`), por lo que no pisa los valores integrados. Los sectores `OUTER_BOUNDARY` y `OUTER_CHAPE` no existen en la cartilla y conservan `FL100-FL070`.
+
+### 27.4 Valores aplicados a los 21 sectores con geometría
+
+| Sector | Antes | Ahora (cartilla) |
+|---|---|---|
+| CHAPE | FL100-FL070 | **7000'** |
+| UKL1 / UKL2 / UKL3 / UKL4 | GND-FL050/FL075 | **FL110 / FL150 / FL180 / FL210** |
+| ANDES1 / ANDES2 / ANDES3 | GND-FL050/FL075 | **FL100 / FL120 / FL140** |
+| PAPUDO | GND-FL050/FL075 | **FL60** |
+| PIL1 / PIL2 / PIL3 | GND-FL050/FL075 | **5500' / 6000' / FL55** |
+| MONTE | GND-FL050/FL075 | **5500'** |
+| ANGOD1 / ANGOD2 | GND-FL050/FL075 | **FL100 / FL120** |
+| PLOMO1 / PLOMO2 / PLOMO3 | GND-FL050/FL075 | **8500' / FL160 / FL210** |
+| NEBEG1 / NEBEG2 | GND-FL050/FL075 | **FL160 / FL230** |
+| PIRQUE | GND-FL050/FL075 | **FL180** |
+
+### 27.5 Valores guardados pendientes de coordenadas (15 + 6 sin nombre)
+
+Listos en `MRVAC_SECTOR_MINS` para el día que se cargue la geometría (el `alt` se rellena solo al añadir la clave a `SECTOR_MIN`):
+
+| Sector | Mínimo | | Sector | Mínimo |
+|---|---|---|---|---|
+| ACONCAGUA | FL190 | | TANGO1 / TANGO2 | FL90 / FL100 |
+| QUINTAY1 / QUINTAY2 | 2000' / 4500' | | ALBAL1 / ALBAL2 / ALBAL3 | FL160 / FL190 / FL200 |
+| CASABLANCA | 8500' | | COBRE1 / COBRE2 | FL165 / FL190 |
+| TBN | 8000' | | PELDEHUE | 7000' |
+| PAINE | FL130 | | MAIPO | 8000' |
+
+**Sin nombre en la cartilla** (`_SIN_NOMBRE`): `5000'` (caja al sur de CHAPE), `5200'` (caja sobre el fix AMB), `4000'` (círculo junto a AMB), `FL260` ×2 y `FL250` (círculos de espacio superior). Se anotan porque no llevan rótulo de sector (solo valor).
+
+### 27.6 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| `typeof MRVAC_SECTOR_MINS` + claves | `object`, **37** (36 sectores + `_SIN_NOMBRE`) |
+| Alts sincronizados | **21/21** sectores con geometria = valor de la cartilla (`CHAPE=7000'`, `UKL4=FL210`, `PIL3=FL55`, `PAPUDO=FL60`…) |
+| Sectores sin carta | `OUTER_BOUNDARY=FL100-FL070` conservado |
+| Rotulos en pantalla (capturas a 40/50 NM) | PIL1 5500', PIL2 6000', PIL3 FL55, MONTE 5500', ANGOD1 FL100, ANGOD2 FL120, PIRQUE FL180, NEBEG1 FL160, NEBEG2 FL230, PLOMO2 FL160, PLOMO3 FL210, UKL1-4, ANDES2 FL120, ANDES3 FL140, CHAPE 7000', OUTER_CHAPE y OUTER_BOUNDARY FL100-FL070 |
+| Integridad del archivo | BOM UTF-8 · CRLF 11957 · 0 U+FFFD |
+| Suite `tests/hold_test.js` | **115/115, FAIL=0** |
+| Sincronización deploy | MD5 `1BC03BADF261857316E1C2BFDA2246FE` |
+
+---
+
+## 28. Retardo de reacción del piloto (rumbo, nivel y velocidad)
+
+### 28.1 Motivo
+
+El usuario reportó: «En la vida real debe existir un pequeño retardo en la ejecución del viraje, descenso o reducción de la velocidad… en este momento es casi automático lo cual no es real». Antes de este capítulo, al aplicar una instrucción (`applyHdg`, `applyFL`, `spdChg`…) el objetivo (`tHdg`/`tAlt`/`atcSpd`) se fijaba de inmediato y la física del piloto empezaba a obedecer en el mismo instante. En un ATC real hay un tiempo de escucha, interpretación y acción, y además el piloto termina la maniobra en curso antes de iniciar la nueva.
+
+### 28.2 Diseño
+
+- **Constantes** (~L1600): `REACT_HDG_S = 5`, `REACT_ALT_S = 6`, `REACT_SPD_S = 5` (segundos de simulación: viraje 5 s, nivel 6 s, velocidad 5 s).
+- **Reloj de simulación**: `let _simT = 0`; en `update(dt)` se acumula `_simT += sdt`. Solo avanza con física activa — con el simulador en pausa el retardo no consume.
+- **Helper `atcReact(a, tipo)`** (sección COMMANDS, ~L4553): al llegar una instrucción ATC, si no hay retardo pendiente de ese tipo captura el objetivo anterior (`_oldTHdg` / `_oldTAlt` / `_oldTSpd`) y arma `rHdgAt` / `rAltAt` / `rSpdAt = _simT + REACT_*_S`. Si ya hay un retardo pendiente (llegó otra instrucción antes de que el piloto reaccionara), se reinicia el plazo pero se conserva el objetivo anterior original: el piloto no arranca la primera orden a medias, ejecuta la última.
+- La instrucción se escribe en el objetivo visible de inmediato (`tHdg`/`tAlt`/`atcSpd` = valor nuevo, etiquetas y readback al instante — el controlador ve su orden aplicada), pero la **física** usa el objetivo efectivo:
+  - en `update()`: `_rH`/`_rA`/`_rS` = retardo activo (`simT < r*At`); `_tHdgE`/`_tAltE`/`_tSpdE` = (retardo activo ? `_oldT*` : objetivo real);
+  - todo el cálculo de viraje (`dh`, `turnDir`), de nivel (`da`, `_depInterm`, `daSnap`, chequeo de ascenso) y la integración de velocidad usan el objetivo efectivo;
+  - guard especial: `if(!_rH && Math.abs(dh) < 0.5) a.turnDir = null` — durante la espera del viraje no se limpia el sentido de giro (si no, el piloto "perdería" el lado del viraje al congelarse dh≈0).
+- **Desaceleración más lenta que la aceleración**: `_kSpd = (ds < 0) ? 1.2 : 2` kt/s — un motor no acelera igual que frena (1.2 kt/s al reducir, 2 kt/s al acelerar).
+- **Fuera del alcance** (sin retardo, comportamiento idéntico al anterior): navegación automática (ruta, hold, LOC/GS, seguimiento de DCT), spawn de aeronaves, `_setTAlt`, y comandos de parada (`holdHdg` / maintain-heading).
+
+### 28.3 Sitios de llamada (~28 en total)
+
+| Tipo | Funciones |
+|---|---|
+| rumbo | `applyHdg`, `applyHold`, `applyHoldCtx`, DCT por menú contextual, `vecFinal`, voz (turn left/right), voz rumbo suelto, voz DCT |
+| nivel | `applyFL`, `flStep`, `setCflCtx`, `aAltDirect`, voz climb, voz descend, voz hold level |
+| velocidad | `spdChg`, `selectSpd`, `applyHold`, `applyHoldCtx`, `setMach`, edición de etiqueta, voz (3×), voz hold spd |
+
+### 28.4 Verificación en navegador (probes CDP sobre la página real, bucle rAF activo)
+
+| Fase | Instrucción | Resultado |
+|---|---|---|
+| A · viraje derecha (LAN101) | rumbo 267 | `tHdg=267` inmediato; `react=5 s`; rumbo congelado 4 pasos; luego +9° ✓ |
+| A2 · viraje izquierda (SKY220) | rumbo 267 | `turnDir='left'` preservado durante la espera; congelado 4 pasos; −9° ✓ |
+| B · ascenso desde nivelado | FL330 | `tAlt=33000` inmediato; `react=6 s`; altitud congelada 4 pasos; luego sube con inercia VS_TC ✓ |
+| C · velocidad | 230 kt | orden y `atcSpd=230` inmediatos; TAS congelado 4 pasos; luego −7.2 kt en 6 s = **1.2 kt/s** exacto ✓ |
+| D · voz | "… rumbo cero nueve cero" | `tHdg=90` + `react=5 s` ✓ |
+| E · descenso (LAN101, loop real pausado) | FL50 | `reactS=6`; durante la espera **sigue el ascenso anterior** (+112 ft en 4 s ≈ 1665 fpm); a los 6 s `vSpd` +1664 → −1116 (inicia descenso a FL50) ✓ |
+
+Nota de las sondas: las opciones `001`-`005` del dropdown son códigos de pista (aproximación), no niveles — una primera sonda las eligió por error y "demostró" un fallo inexistente (`apprAuth` inmediato con descenso al GS). Re-ejecutado con opciones FL reales, todo correcto.
+
+### 28.5 Suite de regresión
+
+`tests/hold_test.js` vía harness manual (`_SCEL_TEST.html` + `_hold_test.js`): **total=115, ok=89, fail=0, other=26 (NLP/PV)** — idéntico al baseline. Los retardos no afectan la suite porque esta no ejecuta `update()` (solo targets, navegación y readbacks).
+
+### 28.6 Integridad
+
+BOM UTF-8 ✓ · CRLF 12022 ✓ · 0 U+FFFD ✓ · 630551 bytes.
+
+### 28.7 Sincronización deploy
+
+`netlify-deploy/index.html` = origen (630551 bytes, byte a byte) — MD5 `31BAF2F41AE36E9D9C36C01EE3CBF19A`. Recordar arrastrar la carpeta `netlify-deploy` a https://app.netlify.com/drop para publicar.
+
+---
+
+## 29. Voces más naturales (TTS)
+
+### 29.1 Motivo
+
+El usuario reportó: «Mejora la calidad de las voces para que no sean tan robóticas y sean más fluidas y naturales». El TTS anterior hablaba el readback completo en UN solo utterance con rate/pitch fijos (0.92/0.95) y elegía la voz latina por hash entre TODAS las voces del sistema — incluidas las TTS5 antiguas (Sabina/Carlos), que suenan robóticas.
+
+### 29.2 Mejoras aplicadas (en `SCEL_ATC_Radar.html`)
+
+| # | Mejora | Detalle |
+|---|---|---|
+| 1 | **Selección por calidad** (`_voiceScore` + `_rankVoices`) | Score: `Natural/Neural` +50 · `Google` +30 · `online` +15 · `localService=false` +10 · voces modernas es (Pablo/Elvira/Dalia/Jorge/Paulina/Carla) +12 · Sabina/Carlos (TTS5) −40 · es-ES −80 · gallego −100. Se elige dentro del **top tier** (score ≥ máximo−12), manteniendo la voz estable por callsign (`_stableVoice`). |
+| 2 | **Frases encadenadas con prosodia** (`_splitChunks` + cadena en `_ttsSpeak`) | El readback se parte en frases cortas por comas (máx. 6; frases de 1 palabra se fusionan). Cada frase es un utterance encadenado con pausa real de 110 ms entre ellas (la coma sola no da la misma separación). |
+| 3 | **Prosodia por hablante y por posición** | Callsign (1.er chunk): rate −0.03, pitch +0.03 (se identifica, más grave/lento). Último chunk: pitch −0.05 (**tono descendente** = fin de frase natural). Chunks intermedios: jitter determinista ±0.04 por callsign (misma semilla → misma cadencia siempre). Base por hablante: rate 0.94–1.04 y pitch 0.90–1.04 (hash del callsign) — **cada piloto suena distinto pero siempre igual**. |
+| 4 | **Squelch VHF** (`_radioClick`, WebAudio) | Click de ruido filtrado (bandpass 1.8 kHz, ~45 ms, decaimiento cuadrático) al pulsar el PTT (gain 0.5) y al soltarlo (gain 0.35). Se crea el `AudioContext` en el primer gesto del usuario (`_unlockTTS`). Enmascara el ataque del TTS y da sensación real de radio. |
+| 5 | **Cadena robusta** (secuencial por `onend`, no colas ciegas) | Evita el bug de colas de Chrome (utterances muertos tras `cancel()`). Watchdog de 600 ms por chunk (si un chunk no arranca, se salta en vez de trabar). Retry global a 400 ms si no hubo audio (comportamiento anterior conservado). `_ttsChainActive` + `_ttsBusy()` evitan que un reporte de entrada se solape con los 110 ms de pausa entre frases (`processReportQueue` ahora usa `_ttsBusy()`). |
+| 6 | **Sin cambios de texto** | El texto hablado sigue llegando limpio (sin emojis); `sayReadback` conserva firma y comportamiento (la suite lo parchea y restaura). |
+
+### 29.3 Verificación (probes CDP con voces falsas + stub de `speak`)
+
+| Prueba | Resultado |
+|---|---|
+| `_splitChunks` | "LAN uno cero uno, autorizado descenso…" → `["LAN uno cero uno","autorizado descenso…"]` ✓ · 3 frases en readback largo ✓ · "contacto Santiago Torre uno uno ocho **coma** uno" no se parte en "coma" ✓ · palabra sola ("adelante") queda intacta ✓ |
+| `_voiceScore`/`_rankVoices` | Elvira Natural 72 > Pablo Natural 72 > Google 50 > Sabina −30 > Helena es-ES −76; top tier = [Elvira, Pablo] ✓ |
+| Cadena completa (fake pool + stub) | 2 chunks: callsign rate 0.993/pitch 1.02, final rate 1.023/pitch 0.94, misma voz, **0 excepciones**, `chain=false` al terminar ✓ |
+| `_radioClick` / `_unlockTTS` | AudioContext creado en el primer click, sin excepciones ✓ |
+| `processReportQueue` con `_ttsBusy()` | Sin excepción ✓ |
+| Integridad | BOM UTF-8 ✓ · CRLF 12134 ✓ · 0 U+FFFD ✓ · 636922 bytes |
+
+Nota: el entorno de prueba (Chromium headless via CDP) no tiene voces instaladas (`getVoices()=0`), por lo que la calidad audible real (Elvira/Pablo Natural o Google online) se confirma en el navegador del usuario; la lógica de selección, encadenado y prosodia está verificada con el fixture de voces.
+
+### 29.4 Suite de regresión
+
+`tests/hold_test.js` vía harness manual: **total=115, ok=89, fail=0, other=26 (NLP/PV)** — idéntico al baseline.
+
+### 29.5 Sincronización deploy
+
+`netlify-deploy/index.html` = origen (636922 bytes, byte a byte) — MD5 `A5E0E448D2ABD2EF2CDD6EC3E7ACC3F6`. Recordar arrastrar la carpeta `netlify-deploy` a https://app.netlify.com/drop para publicar.
+
+---
+
+## 30. Rótulos de fixes 50 % más grandes (UMKAL · NEBEG · ALBAL · ANKON/ANKES · EROLO)
+
+### 30.1 Motivo
+
+El usuario pidió: «Quiero que los nombres de los fixes UMKAL NEBEG ALBAL ANKON EROLO se vean un 50 % más grande». Los rótulos de los *compulsory reporting points* se dibujaban con `bold 5.6*DPR px Share Tech Mono`.
+
+Nota: en el simulador el fix se llama **ANKES** (x −6.3, y −12.0, IAF de UMKAL7B/SIMOK6D/ASIMO5C/SABLA5A). Verificado contra el AIP oficial: la carta **SCEL STAR 9 (DGAC AMDT 99, 15 MAY 2025)** nombra el punto final de esas cinco rutas como **ANKES** («…TEPOK-EL273-ANKES»); no existe ningún fix ANKON en el AIRAC vigente de SCEL — el nombre "ANKON" corresponde a ediciones antiguas de las cartas ILS. Se tomó ANKES como ese fix (no se creó ningún waypoint ficticio).
+
+### 30.2 Cambios (en `drawWaypoints`)
+
+| Cambio | Detalle |
+|---|---|
+| `NAMED_BIG` | Nuevo set `['UMKAL','NEBEG','ALBAL','EROLO','ANKES']`; su rótulo usa `8.4*DPR` px (= 5.6 × 1.5). El resto de named fixes sigue a `5.6*DPR`. |
+| ANKES en `NAMED` | ANKES pasaba invisible (triángulo abierto sin rótulo y además oculto por el filtro de eje) → ahora es *named* (triángulo relleno naranja como UMKAL) con rótulo grande. |
+| Exención del filtro de eje | El filtro "fixes a 5.8–7.8 NM del eje 17, símbolos ocultos" ocultaba ANKES; se exime **solo ANKES** (`name!=='ANKES' && …`). Los otros5 de esa banda (TINGO, EL273, SAFEL, EL570, TEPOK) siguen ocultos. |
+
+### 30.3 Verificación (probe CDP interceptando `ctx.fillText` durante `drawWaypoints`)
+
+| Fix | Fuente usada |
+|---|---|
+| UMKAL | `bold 8.4px Share Tech Mono` ✓ |
+| NEBEG | `bold 8.4px` ✓ |
+| ALBAL | `bold 8.4px` ✓ |
+| EROLO | `bold 8.4px` ✓ |
+| ANKES | `bold 8.4px` ✓ (ahora visible con símbolo relleno) |
+| SIMOK (control) | `bold 5.6px` — sin cambio ✓ |
+
+Re-verificación 2026-10-23 (tras revisión ANKON/ANKES): probe de nuevo con los 5 fixes a `bold 8.4px` ✓, y captura de pantalla confirma visualmente los rótulos grandes junto a los normales de 5.6 px.
+
+### 30.4 Suite de regresión
+
+`tests/hold_test.js`: **total=115, ok=89, fail=0, other=26 (NLP/PV)** — idéntico al baseline.
+
+### 30.5 Integridad y deploy
+
+BOM UTF-8 ✓ · CRLF 12140 ✓ · 0 U+FFFD ✓ · 637363 bytes.
+`netlify-deploy/index.html` = origen (byte a byte) — MD5 `4E0CBFC17A54C2B831F0C59B667E5BAB`. Recordar arrastrar la carpeta `netlify-deploy` a https://app.netlify.com/drop para publicar.
+
+---
+
+## 31. Ventana de novedades al iniciar (últimas mejoras incluidas)
+
+**Fecha:** 2026-10-23 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 31.1 Pedido
+
+*"CUANDO INICIE EL SIMULADOR ABRIR LA TIPICA VENTANA EMERGENTE DE LAS APPS QUE INDICAN ULTIMAS MEJORAS INCLUIDAS, COMO SE AGREGA MINIMOS DE SECTOR FLMINSEC, FUNCION CONTACTAR TWR DESDE ETIQUETA, MEJORA DE VOCES Y PARA AYUDA Y SUGERENCIAS CONTACTAR A NICOLAS REYES CASTAÑEDA AL CORREO NREYESC@DGAC.GOB.CL"*
+
+### 31.2 Cambios (en `SCEL_ATC_Radar.html`)
+
+| Ubicación | Cambio |
+|---|---|
+| CSS (tras `.dm-note`, bloque nuevo «NOVEDADES MODAL») | `#nvdModal`: backdrop `position:fixed;inset:0;z-index:10001` (sobre el `devModal` que usa z=9999), `display:none` por defecto; `.nvd-box/.nvd-head/.nvd-items/.nvd-item/.nvd-help/.nvd-foot/.nvd-ok` con la estética del simulador (fondo degradado oscuro, borde `var(--brd)`, fuente `Share Tech Mono`, acento cyan `var(--acc)`) |
+| HTML (tras `#devModal`, antes de `<div id="app">`) | Ventana con título «◈ ÚLTIMAS MEJORAS INCLUIDAS» + subtítulo «SIMULADOR SCEL · ATC RADAR TRAINER», 3 ítems: 📏 **MÍNIMOS DE SECTOR · FLMINSEC** (mínimos MRVAC rotulados en capa MINSECTOR), 🗼 **CONTACTAR TWR DESDE LA ETIQUETA** (CTC TWR → Torre 118.1), 🔊 **MEJORA DE VOCES** (TTS natural); caja punteada «¿Ayuda o sugerencias?» con **Nicolás Reyes Castañeda** y enlace `mailto:nreyesc@dgac.gob.cl`; botón **ENTENDIDO** (`onclick="closeNvd()"`) |
+| JS (script nuevo antes de `</body>`) | IIFE que abre la ventana en cada arranque (`display:flex`), **omisa en `_SCEL_TEST.html`** (`location.pathname`) para no afectar la suite; `closeNvd()` también cierra con **Esc** (una vez); 0 errores JS |
+
+Comportamiento: la ventana se apoya sobre la pantalla de selección de dispositivo al iniciar; al cerrarla el `devModal` queda plenamente interactivo; el botón `⇄ DISP` del topbar no la reabre (solo se muestra al arrancar). La descripción de cada mejora corresponde a los capítulos 27 (mínimos MRVAC), 22/26 (CTC TWR) y 29 (voces TTS).
+
+### 31.3 Verificación (navegador, servidor local 127.0.0.1:8777, CDP)
+
+| Prueba | Resultado |
+|---|---|
+| Al recargar | `#nvdModal` `display=flex`, `z-index=10001`; `#devModal` `flex` detrás |
+| Contenido | 3 `.nvd-item` ✓ · botón `ENTENDIDO` ✓ · `href="mailto:nreyesc@dgac.gob.cl"` ✓ · «Nicolás Reyes Castañeda» con ñ y acentos correctos ✓ · **0 errores JS** ✓ |
+| Captura de pantalla | Ventana completa: título, 3 mejoras con iconos, caja de contacto y botón (`shot_nvd1.png`) |
+| Cierre (`closeNvd`) | `display=none`; hit-test al centro → `dm-card live-card` (tarjeta LIVE) = pantalla de inicio libre de overlays |
+| Reapertura | Cada recarga vuelve a mostrar la ventana (comportamiento por arranque) |
+| Se omite en tests | `_SCEL_TEST.html` no la muestra (pathname) |
+
+### 31.4 Suite de regresión
+
+`tests/hold_test.js`: **total=115, ok=89, fail=0, other=26 (NLP/PV)** — idéntico al baseline.
+
+### 31.5 Integridad y deploy
+
+BOM UTF-8 ✓ · CRLF 12239 ✓ · 0 loneLF · 0 U+FFFD ✓ · 641950 bytes.
+`netlify-deploy/index.html` = origen (byte a byte) — MD5 `368F772C1250F4A347B5F670118DE840`. Recordar arrastrar la carpeta `netlify-deploy` a https://app.netlify.com/drop para publicar.
+
+---
+
+## 32. Botón FLMINSEC — nombre y mínimos de sector solo al presionarlo
+
+**Fecha:** 2026-10-23 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 32.1 Pedido
+
+*"ok ahora los valores de los nombres y altitud /altura minimos de sector y sus nombres solo seran visibles al presionar el BOTON FLMINSEC en el costado izquierdo del simulador"*
+
+Antes (cap. 27): los rótulos nombre+mínimo se dibujaban siempre que la capa MSA (`showMRVAC`) estaba activa — activa por defecto, es decir, se veían nada más arrancar. Ahora: **aparecen solo al presionar el nuevo botón FLMINSEC** (apagado por defecto), de forma independiente de los límites de sector.
+
+### 32.2 Cambios (en `SCEL_ATC_Radar.html`)
+
+| Ubicación | Cambio |
+|---|---|
+| Declaración de flags (~L4328) | Nuevo `showFLMinSec=false` junto a `showMRVAC=true` |
+| HTML panel GEN (`#catBodyGen`, tras `#minsectorBtn`) | Nuevo botón `<div id="flminsecBtn" class="cat-btn beige off" onclick="toggleFLMinSec()" title="FLMINSEC — nombre de sector y altitud mínima (cartilla MRVAC) sobre el mapa">● FLMINSEC</div>` — clase `beige` (misma familia que MSA), estado inicial `off` |
+| JS (tras `toggleMRVAC`) | Nueva `toggleFLMinSec()`: conmuta `showFLMinSec`, alterna clases `on`/`off` del botón y `forceRedraw()` — mismo patrón que el resto de toggles |
+| Dibujo `SECTOR_MIN` (~L6597) | Bloque reestructurado: guardia `if(!showMRVAC&&!showFLMinSec)return;` · **límites** dentro de `if(showMRVAC)` · **rótulos (nombre+mínimo)** dentro de `if(showFLMinSec)` — antes ambos dependían solo de `showMRVAC` |
+| Texto ventana novedades (cap. 31) | Ítem FLMINSEC actualizado: «presione FLMINSEC (costado izquierdo) para ver el nombre y la altitud mínima de cada sector» |
+
+Comportamiento resultante (2 botones independientes en el panel GEN):
+
+| MSA | FLMINSEC | Límites | Rótulos nombre+mínimo |
+|---|---|---|---|
+| on | **off (defecto)** | ✓ | **✗ — nada al arrancar** |
+| on | on | ✓ | ✓ |
+| off | on | ✗ | ✓ (solo rótulos) |
+| off | off | ✗ | ✗ |
+
+`FLMINSEC` se dibuja a la derecha de `MSA` en la fila 2 del grid de 2 columnas del panel GEN.
+
+### 32.3 Verificación (navegador, servidor local 127.0.0.1:8777, CDP)
+
+| Prueba | Resultado |
+|---|---|
+| Estado inicial tras recargar | `showFLMinSec=false` · botón `cat-btn beige off` · MSA `cat-btn beige on` · `toggleFLMinSec` = function ✓ |
+| Captura **antes** (MSA on, FLMINSEC off) | Límites grises visibles, **0 rótulos de sector** ✓ (`shot_fl_before.png`) |
+| Tras `toggleFLMinSec()` | `showFLMinSec=true`, botón pasa a `cat-btn beige on`; captura con todos los rótulos: UKL2/FL150, UKL4/FL210, CHAPE/7000', MONTE/5500', NEBEG2/FL230, ANGOD2/FL120, PIL3/FL55… ✓ (`shot_fl_after.png`) |
+| Independencia (MSA off + FLMINSEC on) | Sin límites grises, rótulos siguen visibles ✓ (`shot_fl_labels_only.png`) |
+| Layout | `minsectorBtn` x=15,y=79 · `flminsecBtn` x=100,y=79 (misma fila) · `overlap=false` · `rwy17rBtn` y=232 sin recorte ✓ |
+| Suite `tests/hold_test.js` | **115/115, ok=89, fail=0, other=26** — idéntico al baseline |
+| Integridad | BOM UTF-8 ✓ · CRLF 12255 ✓ · 0 loneLF · 0 U+FFFD ✓ · 642724 bytes |
+| Sincronización deploy | MD5 `402EB1004D0E52AC763D52C3C64F7C0B` |
+
+---
+
+## 33. Rutas de salida fix a fix, traza automática y capa visual «UI 2026»
+
+**Fecha:** 2026-10-25 · **Archivo:** `SCEL_ATC_Radar.html` (+ copia en `netlify-deploy\index.html`)
+
+### 33.1 Pedido
+
+*"mejora el entorno visual… luego dame un listado de las salidas y las rutas de todas las salidas definidas en el simulador… además revisa el resto de las salidas… y corrige si hay errores"*
+
+### 33.2 Diagnóstico: la ruta estaba bien, lo que faltaba eran los nombres
+
+La sospecha inicial era que `NEBEG7C` y `ALBAL7C` no pasaban por EL250 / EL400 / EL401. Se comprobó con la **trayectoria real** del simulador (no con la polilínea dibujada) y sí pasan:
+
+| Prueba | `NEBEG7C_17R` | `ALBAL7C_17R` |
+|---|---|---|
+| Distancia mínima al EL250 | **0,016 NM** | **0,015 NM** |
+| Altitud al pasar EL250 | 12.351 ft | 12.463 ft |
+| Viraje tras EL250 | rumbo 084° | rumbo 112° (a la izquierda) |
+| Mínimos de la ruta | ≥FL100 · ≥FL135 · ≥FL170 · ≥FL230 | ≥FL100 · ≥FL140 · ≥FL210 |
+
+Causa real del síntoma: los puntos de la SID se construían con `_sw()` (punto genérico del eje de pista) y con clones del fix, y **los clones no llevaban la propiedad `name`**. `_wptName()` (L5039) devolvía `null` y `drawRoute` omitía el rótulo en silencio: la ruta se veía como una polilínea anónima, que se lee como si no pasara por los fixes de la carta.
+
+### 33.3 Cambios
+
+| Ubicación | Cambio |
+|---|---|
+| `_sw()` (L3522) | El punto del eje de pista guarda su nombre (`o.name=name`), igual que los fixes de `WPT` |
+| Nueva `_fmtAlt(v)` (antes de `drawRoute`) | Formato aeronáutico: `FL135` desde 10.000 ft · `4.000'` con separador de miles por debajo |
+| `drawRoute` (L5570) | Rombo para fix nombrado, círculo para THR o punto de viraje; rótulo con **nombre + restricción vertical** (ámbar) y **ETO** debajo; respaldo `RWY 17R` / `↰4000` si el punto no tiene nombre |
+| `drawRoute` (traza automática) | La salida **seleccionada** dibuja su SID al 50 % de opacidad aunque `showRoute` esté apagado: la ruta aparece al picar el avión |
+| CSS `#leftCol` | `max-height:calc(50vh - 92px)` + scroll + `> *{flex:0 0 auto}`: en pantallas bajas la columna se desplaza en vez de aplastar los paneles y chocar con el botón de voz |
+
+### 33.4 Capa visual «UI 2026» (solo CSS, lógica intacta)
+
+| Elemento | Detalle |
+|---|---|
+| Tokens | `--acc:#5ec8ff` · `--teal:#17e6b0` · superficie y bordes en 3 niveles · `--glow` · `--shadow` |
+| Fondo | Dos degradados radiales (azul profundo arriba, verdoso abajo) en lugar del negro plano |
+| Barra superior | 34 px, marca radar animada (`conic-gradient` + `@keyframes tbSweep`) y hairline degradada; chips con etiqueta de 7 px en versalitas y valor de 10,5 px tabular |
+| Paneles y botones | Radius 10 px con riel de acento en la cabecera · botones radius 7 px con glow al hover |
+| Barra inferior | 32 px con punto teal pulsante en el log del sistema |
+| Popups y modal | Radius 10 px · `#simPopup` a `top:38px` · modal de novedades con tarjetas y elevación al hover |
+| Detalles | Scrollbar degradada · guard `prefers-reduced-motion` · se conserva el reloj LED rojo y toda la paleta funcional (tipo de aeronave, MSA, sectores) |
+
+### 33.5 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| Rótulos de `ALBAL7C_17R` (captura de `ctx.fillText`) | `VAGOS` `4.000'–9.000'` `EL250` `≥FL100` `EL401` `≥FL140` `ALBAL` `≥FL210` + ETO de cada fix ✔ |
+| Inventario SID | 66 rutas / 39 designadores · `_wptName(SIDS['ALBAL7C_17R'][2])==='EL250'` ✔ |
+| Estilos calculados (1584×905) | Barra superior 34 px · barra inferior 32 px · botones 7 px · fondo radial ✔ |
+| Layout | 1920×1080: último panel a x=1908, sin solapes · 1584×905: columna de 361 px con scroll (`scrollHeight` 420), sin choque con el botón de voz, sin scroll de página ✔ |
+| Suite `tests/hold_test.js` | **115/115 — ok=89, fail=0, other=26** (idéntico al baseline) ✔ |
+| Integridad | BOM UTF-8 ✔ · CRLF 12470 ✔ · 0 loneLF · 0 U+FFFD ✔ · 653.466 bytes |
+| Deploy | `netlify-deploy/index.html` byte a byte · MD5 `6E324089906A1F1A2F925EDBA4BE8140` |
+
+### 33.6 Entregable: listado de salidas y revisión del resto
+
+Nuevo `SALIDAS_SCEL.md`: tabla de las **66 rutas** con pista, secuencia fix a fix, restricciones verticales y MNM de razón de ascenso, más una sección de revisión SID por SID. Captura de referencia: `capturas/ui2026_salidas.png`.
+
+Las 66 rutas se revisaron una a una: **sin errores** de coordenadas, de rumbo de entrada ni de orden de restricciones. Las dos únicas que no siguen el patrón «17R por VAGOS / 17L por DESIT» son `LINER5A_17L` (directo a LINER por la R177) y `ANGOD8B_17L` (vía ESKUL), y ambas son **intencionales**: comprobado VAGOS→LINER 174,8°, DESIT→LINER 176,9° y ESKUL sobre la R177.
+
+---
+
+## 34. Distintivos de llamada (callsigns) verificados contra la base 123atc
+
+**Fecha:** 2026-10-25 · **Archivos:** `callsign.xml` · `SCEL_ATC_Radar.html` (+ `netlify-deploy`)
+
+### 34.1 Pedido
+
+*"el callsign de KAL es KOREANAIR en inglés siempre, UAE el callsign es EMIRATES en inglés siempre, ACA el callsign es AIRCANADA, verifica todos los callsigns están casi todos malos, usa esta base de datos https://123atc.com/call-signs, repara los callsigns erróneos, no inventes callsign"*
+
+### 34.2 Método (sin inventar nada)
+
+1. Se descargaron las 26 páginas alfabéticas de `https://123atc.com/call-signs` → **6.243 distintivos** con sigla, callsign, compañía y país (archivo de trabajo `atc_callsigns.tsv`).
+2. Se extrajeron del simulador **todas** las siglas que usa el tráfico (`AUTO_DEP`, llegadas, tránsitos y pools de pista): 25 siglas.
+3. Se cruzó una a una contra la base y contra las 29 entradas que tenía el XML.
+4. Solo se escribió el valor que publica la base; nada se tradujo ni se "españolizó".
+
+### 34.3 Defecto encontrado
+
+El XML solo tenía 29 aerolíneas: **9 siglas del tráfico no existían** y el simulador caía al código ICAO en el readback (`resolveCallsign` devuelve el prefijo cuando no hay entrada). Además 5 distintivos estaban mal escritos y uno pertenecía a otra compañía.
+
+| Sigla | Decía | Ahora (base 123atc) | Comprobación |
+|---|---|---|---|
+| KAL | `KAL` | **KOREANAIR** | KOREANAIR · Korean Air Lines · KR |
+| JAL | `JAL` | **JAPANAIR** | JAPANAIR · Japan Airlines · JP |
+| CPA | `CPA` | **CATHAY** | CATHAY · Cathay Pacific · CN |
+| SIA | `SIA` | **SINGAPORE** | SINGAPORE · Singapore Airlines · SG |
+| ETH | `ETH` | **ETHIOPIAN** | ETHIOPIAN · Ethiopian Airlines · ET |
+| ANA | `ANA` | **ALL NIPPON** | ALL NIPPON · All Nippon Airways · JP |
+| CES | `CES` | **CHINA EASTERN** | CHINA EASTERN · China Eastern · CN |
+| HAL | `HAL` | **HAWAIIAN** | HAWAIIAN · Hawaiian Airlines · US |
+| JOY | `JOY` | **JOY AIR** | JOY AIR · Joy Air · CN |
+| AMX | `AEROMEJICO` | **AEROMEXICO** | AEROMEXICO · Aerovías de México · MX |
+| TAM | `THAM` | **TAM** | TAM · TAM Linhas Aéreas · BR |
+| LPE | `LAN PERU` | **LANPERU** | LANPERU · LAN Perú · PE |
+| JAT | `JETSMART` | **ROCKSMART** | ROCKSMART · JetSMART SPA · CL |
+| SKU / SKY | `SKY` | **AEROSKY** | AEROSKY · Sky Service (Sky Airline) · CL |
+| FBA | `FLYBONDI` | **FBZ / BONDI** | BONDI · Flybondi · AR |
+| LXE | `LAN ECUADOR` | *eliminado* | `LXE` es SUNWAVE (Austria): no corresponde a LATAM Ecuador |
+
+Verificados y **sin cambios** (ya coincidían con la base): LAN, LXP, LCO, DAP, ARG, BOV, AVA, CMP, AAL, DAL, UAL, FDX, UPS, ACA, BAW, DLH, SWR, KLM, IBE, THY, UAE, QTR, QFA.
+
+### 34.4 Tres decisiones explícitas
+
+| Sigla | Base 123atc | En el simulador | Motivo |
+|---|---|---|---|
+| LAN | `LAN CHILE` | `LAN` | Es lo que se escucha en frecuencia en SCEL; cambiarlo alteraría todos los readbacks y las pruebas RB/CS de la suite |
+| AFR | `AIRFRANS` | `AIRFRANCE` | Pedido expreso anterior del usuario y la prueba SC33 exige `AFR=AIRFRANCE` |
+| ACA | `AIR CANADA` | `AIR CANADA` | La base lo publica en dos palabras (el usuario escribió AIRCANADA); al hablar suena idéntico |
+
+### 34.5 Cambios de código asociados
+
+| Ubicación | Cambio |
+|---|---|
+| `callsign.xml` | Reescrito: 40 aerolíneas, distintivo = base 123atc, comentario con la fuente y la fecha |
+| `_CS_FALLBACK` (L2163) | Actualizado con los mismos valores + las 9 aerolíneas nuevas: el respaldo funciona al abrir el HTML con doble clic (sin servidor) |
+| `CS_MAP.SKU/SKY` (L2141) | `AEROSKY` (antes `SKY`); se conserva el alias `SKY` para ejercicios XML antiguos |
+| `AUTO_DEP`, llegadas y tránsitos | Sky Airline pasa de `SKY` a **`SKU`** (`SKU220`, `SKU314`, base `SKU`): `SKY` es Skymark (Japón) y no existe en Chile |
+| `resolveCallsign` (L11038) | Acepta prefijo de **4 letras** antes del de 3: `FACH400` → `FACH` (antes tomaba `FAC` y no encontraba la entrada) |
+| `_callsignCountry` (L10769) | Misma corrección de 4 letras → `FACH` vuelve a hablar con números en español (país CL) |
+| `ejercicio1_ejemplo.xml` | `SKY220` → `SKU220` |
+| Ventana de novedades | Nuevo ítem «Distintivos de llamada verificados» |
+
+### 34.6 Verificación (navegador, 2026-10-25)
+
+| Llamada | Resultado |
+|---|---|
+| `KAL708` | **KOREANAIR seven zero eight** [en] ✔ |
+| `UAE1` | **EMIRATES one** [en] ✔ |
+| `ACA810` | **AIR CANADA eight one zero** [en] ✔ |
+| `AMX123` | **AEROMEXICO uno dos tres** [es] ✔ |
+| `TAM416` | **TAM four one six** [en] ✔ |
+| `SKU220` | **AEROSKY dos dos cero** [es] ✔ |
+| `JAT7` | **ROCKSMART siete** [es] ✔ |
+| `LPE240` | **LANPERU dos cuatro cero** [es] ✔ |
+| `JAL5` / `CPA100` / `SIA912` | **JAPANAIR five** / **CATHAY one zero zero** / **SINGAPORE nine one two** [en] ✔ |
+| `ETH606` / `ANA1` / `CES500` / `HAL459` / `JOY501` | **ETHIOPIAN** / **ALL NIPPON** / **CHINA EASTERN** / **HAWAIIAN** / **JOY AIR** [en] ✔ |
+| `FACH400` | **FACH cuatro cero cero** [es] ✔ (antes: «FACH four zero zero») |
+| `SKY220` (id antiguo) | **AEROSKY dos dos cero** ✔ (alias heredado) |
+
+| Prueba global | Resultado |
+|---|---|
+| Suite `tests/hold_test.js` | **115/115 — ok=89, fail=0, other=26** ✔ |
+| Integridad HTML | BOM UTF-8 ✔ · CRLF 12488 ✔ · 0 loneLF · 0 U+FFFD ✔ · 654.990 bytes |
+| Deploy HTML | `netlify-deploy/index.html` = origen · MD5 `0B5CB4476C838CBA7D520B57EE176041` |
+| Deploy XML | `netlify-deploy/callsign.xml` = origen · MD5 `DE79B9D210217ADA35AF0E30D737D608` (7.006 bytes) |
+## 35. Editor local de callsigns (`editor_callsigns.html`)
+
+### 35.1 Pedido
+
+Editar los callsigns sin gastar tokens de OpenWork: una página local que abra `callsign.xml`, permita cambiar, agregar y borrar filas, y guarde sobre el mismo archivo.
+
+### 35.2 Entregable
+
+`editor_callsigns.html` — aplicación de una sola página, sin dependencias ni red:
+
+| Función | Detalle |
+|---|---|
+| Base de referencia embebida | 5.703 distintivos con callsign válido de 123atc (de 6.243 descargados; las 540 filas con `(None)` se omiten) |
+| Abrir | File System Access API (`showOpenFilePicker`), respaldo `<input type=file>` y arrastrar y soltar; el archivo elegido se recuerda en IndexedDB (`cs-editor`) y se reabre al volver |
+| Guardar | escribe sobre el mismo archivo (`createWritable`); si el navegador no lo permite, «Guardar como…» o descarga |
+| Servido por http | carga `callsign.xml` automáticamente con `fetch` |
+| Tabla editable | ICAO · callsign · país · compañía, con columna «Base 123atc» que muestra el valor publicado y un botón *usar* cuando difiere |
+| Alta / baja | botón **Nueva** y papelera por fila; el alta puede crearse desde el buscador de la base |
+| Validación | siglas de 2–4 caracteres, callsign no vacío, siglas repetidas, sin registro en la base, diferencias intencionales |
+| Atajos | Ctrl+S guardar · Alt+N nueva fila · Esc cerrar |
+
+`serialize()` reconstruye el XML con el mismo formato del simulador y **conserva** la cabecera original, el orden de las filas, los banners de grupo y los comentarios documentales por aerolínea (LAN, Air France); solo agrega un bloque `DIFERENCIAS INTENCIONALES` para las aerolíneas que no tienen comentario propio.
+
+### 35.3 Verificación (navegador integrado, servidor 127.0.0.1:8777)
+
+| Prueba | Resultado |
+|---|---|
+| Ida y vuelta `parseXML` → `serialize()` sobre `callsign.xml` | **idéntico byte a byte**, 0 diferencias, CRLF |
+| Cabecera y comentarios | cabecera original intacta; comentarios de LAN y AFR conservados |
+| Edición en la tabla | el valor queda en el modelo y aparece en `serialize()` (corregido: las filas eran copias y los cambios se perdían) |
+| Botón *usar* | reemplaza por el valor de la base y actualiza el estado de la fila |
+| Fila nueva vacía | no rompe el orden (corregido `undefined.toString` al ordenar) |
+| XML modificado por fuera | `SKU="AEROSKYX"` se refleja al abrir |
+| Validación | detecta sigla inválida, callsign vacío y sigla repetida |
+| `file://` (doble clic) | DB activa, `showOpenFilePicker` disponible, `isSecureContext=true`, estado vacío guiado |
+
+### 35.4 Uso
+
+1. Doble clic en `editor_callsigns.html` (o abrir `http://127.0.0.1:8777/editor_callsigns.html`).
+2. **Abrir** y elegir `callsign.xml`; si se sirve por http se carga solo.
+3. Editar: el panel lateral muestra el valor de 123atc de cada sigla.
+4. **Guardar** (Ctrl+S) y recargar el simulador con **Ctrl+F5**.
+
+### 35.5 Deploy
+
+`editor_callsigns.html` también queda en `netlify-deploy`. En la versión publicada solo se puede descargar el XML editado, no sobrescribir el del servidor.
+
+---
+
+## 36. SID 1 — NEBEG 7A / ALBAL 7A: R177 hasta FL130, viraje y YESOS
+
+### 36.1 Pedido
+
+«La salida NEBEG 7A está pasando muy bajo; después de GENPO o SKULL (D10) debe mantener el radial R177 hasta FL130 y luego virar directo a YESOS → NEBEG. ALBAL 7A igual, pero directo a SUPRA → ALBAL.»
+
+### 36.2 Diagnóstico
+
+La definición anterior de las cuatro rutas era:
+
+```
+THR 17R/17L → VAGOS/DESIT (4000'-9000') → NEBEG (=FL130)   [NEBEG 7A]
+THR 17R/17L → VAGOS/DESIT (4000'-9000') → SUPRA (=FL130) → ALBAL  [ALBAL 7A]
+```
+
+| Síntoma | Causa |
+|---|---|
+| Viraje a 13 NM del THR (8 NM tras VAGOS) | el primer punto restringido era VAGOS/DESIT (D7), no el punto de FL130 |
+| No pasaba por GENPO / ESKUL (D10) | esas fijaciones no estaban en la ruta |
+| NEBEG 7A no pasaba por YESOS | `YESOS` no existía en `WPT`: se había retirado porque no figura en la tabla de 134 fijaciones oficiales. Es una **intersección de aerovía**, no un fix RNAV; sus coordenadas están en AIP ENR 3.1 (aerovía A-307): 33°45'42"S / 70°15'48"W, D68 DGO, 18 NM al oeste de NEBEG |
+| «Pasa muy bajo» | la ventana 4000'-9000' de VAGOS/DESIT es de las SID 2/3 (LINER 5A, GELUS 6A, SABLA 8, DOMINGO 6…) y **no** se publica para NEBEG 7A / ALBAL 7A: la salida nivelaba a 9000' |
+
+«SKULL» del pedido es **ESKUL** (33°35'21"S / 70°46'31"W, D10 AMB); **GENPO** es D10 PDH (33°35'23"S / 70°47'31"W). No existe una fijación SKULL en la carta.
+
+### 36.3 Cambio
+
+| Elemento | Antes | Ahora |
+|---|---|---|
+| `WPT.YESOS` | no existía | `{x:26.133, y:-22.047, alt:23000}` — AIP ENR 3.1 A-307 |
+| Punto de viraje | — | `FL130_17R` / `FL130_17L`: sobre el eje, `altTurn:13000`, `axisHdg:177`, nombre `FL130` |
+| NEBEG 7A 17R | THR → VAGOS (4000'-9000') → NEBEG | THR → **GENPO** → **FL130** → **YESOS (≥FL230)** → NEBEG (≥FL130) |
+| NEBEG 7A 17L | THR → DESIT (4000'-9000') → NEBEG | THR → **ESKUL** → **FL130** → **YESOS (≥FL230)** → NEBEG (≥FL130) |
+| ALBAL 7A 17R | THR → VAGOS (4000'-9000') → SUPRA → ALBAL | THR → **GENPO** → **FL130** → SUPRA (≥FL130) → ALBAL |
+| ALBAL 7A 17L | THR → DESIT (4000'-9000') → SUPRA → ALBAL | THR → **ESKUL** → **FL130** → SUPRA (≥FL130) → ALBAL |
+
+El viraje lo dispara el **nivel**, no la distancia: igual que en la carta, la aeronave mantiene 177° hasta alcanzar FL130 (`altTurn`) y recién entonces vira. El marcador `FL130` está a 28,4 NM del THR, que es donde la flota del simulador (B738/A320 a ~400 FT/NM) alcanza FL130; así la línea dibujada y el vuelo coinciden.
+
+A la razón **mínima publicada** (350 FT/NM desde 1.555 ft) FL130 cae a 32,7 NM: el antiguo `_ax(roc,13000)` ponía el marcador allí y el viraje de ~100° hacia el noreste se leía como una «reversa», con el avión despegado de la línea. `YESOS` lleva mínimo FL230 (MCL de A-307, RMK (3) de ENR 3.1).
+
+### 36.4 Verificación
+
+Perfil medido en el navegador integrado (`update(0.5)` paso a paso, B738 a 250 kt, desde el THR):
+
+| Ruta | Viraje | Tramo al viraje | Tras el viraje | Cruce YESOS |
+|---|---|---|---|---|
+| NEBEG7A 17R | 28,2 NM · 13.002 ft · rumbo 080 | 177° en 28,4 NM (GENPO 13,1 + 15,3) | 26,0 NM rumbo 079 a YESOS; 18,4 NM rumbo 097 a NEBEG | 22.990 ft |
+| NEBEG7A 17L | 28,2 NM · 13.002 ft · rumbo 079 | 177° en 28,4 NM (ESKUL 12,8 + 15,6) | 25,2 NM rumbo 078 a YESOS; 18,4 NM a NEBEG | ~22.900 ft |
+| ALBAL7A 17R | 28,2 NM · 13.002 ft · rumbo 123 | 177° en 28,4 NM | 16,1 NM rumbo 122 a SUPRA; 36,3 NM rumbo 109 a ALBAL | — |
+| ALBAL7A 17L | 28,2 NM · 13.002 ft · rumbo 124 | 177° en 28,4 NM | 15,2 NM rumbo 123 a SUPRA; 36,3 NM a ALBAL | — |
+
+Ninguna de las cuatro rutas desciende en ningún tramo (comprobado paso a paso) y las cuatro terminan en ascenso hacia el nivel autorizado (FL250-FL267 al cerrar la SID).
+
+| Prueba | Resultado |
+|---|---|
+| Suite de 115 pruebas | 88 OK; SC10 falla (`getImageData` con `width 0`) porque la ventana del navegador estaba minimizada (`innerWidth=0`). El **mismo fallo se reproduce con el `index.html` anterior** → ambiental, no regresión |
+| Integridad `SCEL_ATC_Radar.html` | 656.333 B · BOM sí · 12.504 CRLF · 0 LF suelto · 0 U+FFFD · MD5 `CEF1BA648960EB6AAAA64F8507A64FBA` |
+| `YESOS` en la base | el ATC ya reconoce «directo YESOS» (está en `WPT`) |
+
+### 36.5 Deploy
+
+| Archivo | Bytes | MD5 |
+|---|---|---|
+| `SCEL_ATC_Radar.html` = `netlify-deploy/index.html` | 656.333 | `CEF1BA648960EB6AAAA64F8507A64FBA` |
+| `callsign.xml` = `netlify-deploy/callsign.xml` | 7.212 | `B61573326232F593E134F6812C7E7709` |
+
+### 36.6 Observación pendiente (callsigns)
+
+`callsign.xml` fue editado con el editor a las 13:47 (SKU = SKY, SWR = SWISSAIR, QFA = QUANTAS) y quedó sincronizado al deploy, pero el simulador **fuerza** `CS_MAP.SKU='AEROSKY'` y `CS_MAP.SKY='AEROSKY'` después de leer el XML (L2147-2149), así que en pantalla seguirá diciendo AEROSKY. Hay que decidir: (a) quitar ese override y dejar que mande el XML, o (b) volver a AEROSKY en el XML. Además «QUANTAS» parece error por «QANTAS».

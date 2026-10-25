@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Ejercicio 1 — Tráfico simultáneo desde el norte
   3 aeronaves simultáneas con diferentes STARS
@@ -25,7 +25,7 @@
 
   <!-- Vuelo 3: desde el norte vía ASIMO -->
   <flight time="14:10"
-          callsign="SKY220"
+          callsign="SKU220"
           type="A321"
           star="ASIMO7D"
           flAct="F280"

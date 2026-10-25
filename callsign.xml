@@ -1,45 +1,49 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   callsign.xml — Base de datos de distintivos de llamada (callsigns)
   Uso: responder a la instrucción ATC por el distintivo de llamada.
   Formato del callsign en frecuencia:
     CIVIL:    DISTINTIVO + 3 a 4 dígitos   (ej: LXP 1234  →  "LANEX 1234")
     MILITAR:  NOMBRE DE COMBATE + 3 a 4 dígitos (ej: "APACHE 12", "CACIQUE 55")
-  Referencia: ICAO Doc 8585 (designadores) / AIP Chile
-  Generado: 2026-08-07
+
+  FUENTE: ICAO Doc 8585 + base pública de distintivos https://123atc.com/call-signs
+  (consulta 2026-10-25, 6.243 distintivos descargados y cruzados uno a uno).
+  Regla: el distintivo se escribe TAL CUAL lo publica la base — nunca traducido
+  al español ni "españolizado" (KOREANAIR, EMIRATES, AIR CANADA, CATHAY…).
+
+  DIFERENCIAS INTENCIONALES respecto de la base 123atc:
+         SKU  = "SKY"   (base 123atc: AEROSKY)
+         SWR  = "SWISSAIR"   (base 123atc: SWISS)
+         QFA  = "QUANTAS"   (base 123atc: QANTAS)
 -->
 <callsignDatabase>
   <!-- ════════════════════════════════════════════
        CHILE
        ════════════════════════════════════════════ -->
+  <!-- LAN: en frecuencia SCEL se escucha "LAN" (la base lo registra como
+       "LAN CHILE", pero el distintivo operativo es LAN). -->
   <airline icao="LAN" country="CL" name="LATAM Airlines Chile (ex LAN Airlines)" callsign="LAN"/>
   <airline icao="LXP" country="CL" name="LATAM Express (ex LAN Express)" callsign="LANEX"/>
   <airline icao="LCO" country="CL" name="LATAM Cargo Chile (ex LAN Cargo)" callsign="LAN CARGO"/>
   <airline icao="SKU" country="CL" name="Sky Airline" callsign="SKY"/>
-  <airline icao="JAT" country="CL" name="JetSMART Airlines" callsign="JETSMART"/>
+  <airline icao="JAT" country="CL" name="JetSMART Airlines" callsign="ROCKSMART"/>
   <airline icao="DAP" country="CL" name="Aerovías DAP" callsign="DAP"/>
-  <airline icao="LDE" country="CL" name="Ladeco (histórica)" callsign="LADECO"/>
-  
+  <airline icao="LDE" country="CL" name="Ladeco (histórica, no figura en la base)" callsign="LADECO"/>
 
   <!-- ════════════════════════════════════════════
-       GRUPO LATAM (operan a SCEL)
+       GRUPO LATAM
        ════════════════════════════════════════════ -->
-  <airline icao="TAM" country="BR" name="LATAM Brasil (TAM Linhas Aéreas)" callsign="THAM"/>
-  <airline icao="LPE" country="PE" name="LATAM Perú" callsign="LAN PERU"/>
-  <airline icao="LXE" country="EC" name="LATAM Ecuador" callsign="LAN ECUADOR"/>
-  <airline icao="ARE" country="CO" name="LATAM Colombia" callsign="LAN COLOMBIA"/>
+  <airline icao="TAM" country="BR" name="LATAM Brasil (TAM Linhas Aéreas)" callsign="TAM"/>
+  <airline icao="LPE" country="PE" name="LATAM Perú" callsign="LANPERU"/>
 
   <!-- ════════════════════════════════════════════
        SUDAMÉRICA
        ════════════════════════════════════════════ -->
   <airline icao="ARG" country="AR" name="Aerolíneas Argentinas" callsign="ARGENTINA"/>
-  <airline icao="FBA" country="AR" name="Flybondi" callsign="FLYBONDI"/>
+  <airline icao="FBZ" country="AR" name="Flybondi" callsign="BONDI"/>
   <airline icao="BOV" country="BO" name="Boliviana de Aviación" callsign="BOLIVIANA"/>
-  <airline icao="GLO" country="BR" name="GOL Linhas Aéreas" callsign="GOL TRANSPORTE"/>
-  <airline icao="AZU" country="BR" name="Azul Linhas Aéreas" callsign="AZUL"/>
   <airline icao="AVA" country="CO" name="Avianca" callsign="AVIANCA"/>
   <airline icao="CMP" country="PA" name="Copa Airlines" callsign="COPA"/>
-  <airline icao="PAR" country="PY" name="Paranair" callsign="PARANAIR"/>
 
   <!-- ════════════════════════════════════════════
        NORTEAMÉRICA / MÉXICO
@@ -49,17 +53,18 @@
   <airline icao="UAL" country="US" name="United Airlines" callsign="UNITED"/>
   <airline icao="FDX" country="US" name="FedEx Express" callsign="FEDEX"/>
   <airline icao="UPS" country="US" name="UPS Airlines" callsign="UPS"/>
+  <airline icao="HAL" country="US" name="Hawaiian Airlines" callsign="HAWAIIAN"/>
   <airline icao="ACA" country="CA" name="Air Canada" callsign="AIR CANADA"/>
   <airline icao="AMX" country="MX" name="Aeroméxico" callsign="AEROMEXICO"/>
-  <airline icao="VOI" country="MX" name="Volaris" callsign="VOLARIS"/>
-  <airline icao="VIV" country="MX" name="Viva Aerobus" callsign="VIVA AEROBUS"/>
 
   <!-- ════════════════════════════════════════════
        EUROPA
        ════════════════════════════════════════════ -->
   <airline icao="BAW" country="GB" name="British Airways" callsign="SPEEDBIRD"/>
   <airline icao="DLH" country="DE" name="Lufthansa" callsign="LUFTHANSA"/>
-  <airline icao="SWR" country="CH" name="Swiss International Air Lines" callsign="SWISS"/>
+  <airline icao="SWR" country="CH" name="Swiss International Air Lines" callsign="SWISSAIR"/>
+  <!-- Air France: la base registra "AIRFRANS"; en el simulador se mantiene
+       "AIRFRANCE" por pedido expreso del usuario (cap. de fraseología). -->
   <airline icao="AFR" country="FR" name="Air France" callsign="AIRFRANCE"/>
   <airline icao="KLM" country="NL" name="KLM Royal Dutch Airlines" callsign="KLM"/>
   <airline icao="IBE" country="ES" name="Iberia" callsign="IBERIA"/>
@@ -70,8 +75,16 @@
        ════════════════════════════════════════════ -->
   <airline icao="UAE" country="AE" name="Emirates" callsign="EMIRATES"/>
   <airline icao="QTR" country="QA" name="Qatar Airways" callsign="QATARI"/>
-  <airline icao="QFA" country="AU" name="Qantas" callsign="QANTAS"/>
-  
+  <airline icao="QFA" country="AU" name="Qantas" callsign="QUANTAS"/>
+  <airline icao="JAL" country="JP" name="Japan Airlines" callsign="JAPANAIR"/>
+  <airline icao="ANA" country="JP" name="All Nippon Airways" callsign="ALL NIPPON"/>
+  <airline icao="CPA" country="CN" name="Cathay Pacific" callsign="CATHAY"/>
+  <airline icao="CES" country="CN" name="China Eastern Airlines" callsign="CHINA EASTERN"/>
+  <airline icao="JOY" country="CN" name="Joy Air" callsign="JOY AIR"/>
+  <airline icao="SIA" country="SG" name="Singapore Airlines" callsign="SINGAPORE"/>
+  <airline icao="ETH" country="ET" name="Ethiopian Airlines" callsign="ETHIOPIAN"/>
+  <airline icao="KAL" country="KR" name="Korean Air Lines" callsign="KOREANAIR"/>
+
   <!-- ════════════════════════════════════════════
        FUERZA AÉREA
        Nombre de combate: puede VARIAR según misión/unidad.

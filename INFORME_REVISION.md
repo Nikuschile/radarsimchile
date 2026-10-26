@@ -4520,3 +4520,244 @@ Ninguna de las cuatro rutas desciende en ningún tramo (comprobado paso a paso) 
 ### 36.6 Observación pendiente (callsigns)
 
 `callsign.xml` fue editado con el editor a las 13:47 (SKU = SKY, SWR = SWISSAIR, QFA = QUANTAS) y quedó sincronizado al deploy, pero el simulador **fuerza** `CS_MAP.SKU='AEROSKY'` y `CS_MAP.SKY='AEROSKY'` después de leer el XML (L2147-2149), así que en pantalla seguirá diciendo AEROSKY. Hay que decidir: (a) quitar ese override y dejar que mande el XML, o (b) volver a AEROSKY en el XML. Además «QUANTAS» parece error por «QANTAS».
+
+> **Resuelto en el capítulo 37**: se quitó el override (opción a). QUANTAS y SWISSAIR se mantienen por decisión del usuario: «ese es el callsign».
+
+---
+
+## 37. El XML manda, y el simulador sobrevive sin los XML
+
+### 37.1 Pedido
+
+1. «Si el XML siempre mandara»: que `callsign.xml` sea la única fuente de verdad de los callsigns (SKU = SKY, SWR = SWISSAIR, QFA = QUANTAS) y que ningún valor quede clavado en el código.
+2. «Algo pasó en el código, hice una edición y ahora no da readback de pilotaje».
+3. «Tengo el proyecto en GitHub y al parecer solo hace referencia al index.html, quiero que también use los archivos XML».
+
+### 37.2 El XML es la única fuente de verdad
+
+Se eliminaron los overrides duros que se aplicaban **después** de leer el XML:
+
+| Antes (se aplicaba siempre) | Ahora |
+|---|---|
+| `CS_MAP.SKU='AEROSKY'` · `CS_MAP.SKY='AEROSKY'` | solo si el XML no trae la sigla |
+| `CS_MAP.IBE='IBERIA'` | solo si el XML no trae la sigla |
+| `CS_MAP.AFR='AIRFRANCE'` | solo si el XML no trae la sigla |
+| `resolveCallsign()`: `p3==='SKY'?'AEROSKY'` | eliminado (era el último resto) |
+
+`_CS_FALLBACK` ya solo rellenaba huecos (`if(!CS_MAP[k])`), así que ahora la cadena es: **XML → relleno interno → sigla tal cual**.
+
+Medido en el navegador con el `callsign.xml` actual:
+
+| Sigla | Callsign en pantalla | Readback |
+|---|---|---|
+| SKU | SKY | «SKY dos dos cero» |
+| SKY | SKY | «SKY dos dos cero» |
+| SWR | SWISSAIR | «SWISSAIR nine» |
+| QFA | QUANTAS | «QUANTAS one two» |
+| IBE | IBERIA | «IBERIA uno uno uno» |
+| AFR | AIRFRANCE | «AIRFRANCE three three» |
+| ACA | AIR CANADA | «AIR CANADA two zero two» |
+| LAN | LAN | «LAN dos cero cero» |
+
+### 37.3 El readback que «dejó de funcionar»
+
+No era el simulador: la copia `ssdsd.html` (25-10 19:56) tiene la línea de respaldo partida —
+
+```js
+SKU:{c:'CL',n:'Sky Airline',JAT:{c:'CL',n:'JetSMART',s:'ROCKSMART'},
+```
+
+falta `,s:'SKY'}` y el `}` de cierre: eso es un **`SyntaxError`** que mata el `<script>` completo (no arranca nada, y por eso no hay readback). En `SCEL_ATC_Radar.html` esa línea está correcta (`SKU:{c:'CL',n:'Sky Airline',s:'SKY'},SKY:{...}`).
+
+Comprobación en el archivo principal, invocando el readback de cada instrucción:
+
+| Instrucción | Resultado |
+|---|---|
+| hdg · climb · descend · level · direct · hold · twr · ident | OK, habla y colaciona |
+| spd (vía `spdReadbackCmd`) | «LAN uno cero uno, reduciendo a dos dos cero nudos» |
+
+### 37.4 Por qué en GitHub «solo usa el index.html» (bug real, previo)
+
+Reproducido sirviendo **solo** `index.html`, sin XML ni .js auxiliares:
+
+- `coast_xy_smooth.js` define `COAST_XY`. Sin ese archivo, `cleanCoastData()` evaluaba `if(!COAST_XY…)` → **`ReferenceError: COAST_XY is not defined`** en el nivel superior del script → muere todo lo que viene después: no arranca el bucle (`lastT` congelado en el primer frame), no hay despegues, y **no hay readback**. Se comprobó que pasa igual con el `index.html` anterior: el fallo no lo introdujo este trabajo.
+- Arreglo: stubs `window.COAST_XY=[]` / `window.BORDER_XY=[]` cuando falta el `.js`. El radar arranca y solo pierde la silueta.
+- Además, el simulador ahora **registra** los archivos que no cargaron (`performance.xml`, `callsign.xml`, `fraseologia_editada.json`) y muestra un cartel ámbar abajo: «⚠ No se cargaron: … — se usan los datos internos. Sube esos archivos junto al index.html (clic para cerrar)».
+
+Verificado sirviendo solo el HTML: el radar corre, crea los 3 tráficos del escenario, el readback responde («SKY dos dos cero» con los datos internos) y aparece el aviso.
+
+### 37.5 Desplegar en GitHub Pages
+
+Los XML **sí** se leen en GitHub Pages: el simulador los pide por ruta relativa al `index.html` (mismo origen). Lo que rompe es desplegar solo el HTML o cambiar mayúsculas.
+
+Tienen que estar en **la misma carpeta** que el `index.html`, con el nombre exacto (en Pages el servidor distingue mayúsculas):
+
+| Archivo | Para qué |
+|---|---|
+| `index.html` | el simulador |
+| `callsign.xml` | callsigns (manda sobre todo lo demás) |
+| `performance.xml` | perfiles de ascenso/descenso por tipo |
+| `fraseologia_editada.json` | fraseología editable (readbacks) |
+| `normativa.xml` | respaldo de fraseología si falta el JSON |
+| `datos_offline.json` | aeropuertos/ayudas sin red |
+| `border_xy.js` | límite LPI |
+| `coast_xy_smooth.js` | costa (sin él: radar en negro antes, ahora solo sin silueta) |
+
+Comprobación rápida tras subir: abrir `https://usuario.github.io/repo/callsign.xml` — si el navegador muestra el XML, el simulador también lo verá. Si sale 404, falta el archivo o el nombre no coincide.
+
+### 37.6 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| Suite completa | **115 líneas · 89 OK · 0 fallos** |
+| Sin XML (solo `index.html`) | radar activo, 3 tráficos, readback OK, cartel de aviso |
+| Con XML | SKU/SKY/SWR/QFA/IBE/AFR/ACA/LAN con el valor del archivo |
+| Integridad | 658.210 B · BOM sí · 12.525 CRLF · 0 LF suelto · 0 U+FFFD · MD5 `3A89583C49A639CD1AE63C9151C93B46` |
+
+### 37.7 Deploy
+
+| Archivo | Bytes | MD5 |
+|---|---|---|
+| `SCEL_ATC_Radar.html` = `netlify-deploy/index.html` | 658.210 | `3A89583C49A639CD1AE63C9151C93B46` |
+| `callsign.xml` = `netlify-deploy/callsign.xml` | 7.212 | `B61573326232F593E134F6812C7E7709` |
+
+`ssdsd.html` (copia rota del usuario) sigue en la carpeta: no debe subirse a GitHub.
+
+---
+
+## 38. Voces: motor conmutable SISTEMA / AZURE neuronal — 26-10-2026
+
+### 38.1 Diagnóstico: el problema no era la selección
+
+El motor anterior ya elegía bien: `_voiceScore` suma +50 a las voces «Natural/Neural», +30 a las Google, +15 a las online, +12 a las modernas (Pablo/Elvira/Dalia/Jorge/Paulina/Carla/Renata) y resta −40 a Sabina/Carlos (TTS5, las robóticas); `_rankVoices` ordena por esa nota y `_splitChunks` parte la readback por comas con prosodia propia por hablante.
+
+Lo que falla es el catálogo: en un Chrome de Windows sin paquetes de idioma, `getVoices()` sólo devuelve las SAPI antiguas, y ninguna puntuación arregla eso. En el navegador de pruebas `getVoices()` devuelve **0 voces** (Chromium sin motor de voz), así que la calidad sólo se puede juzgar en el equipo del usuario.
+
+### 38.2 Motores neuronales evaluados (medido, no supuesto)
+
+| Motor | Español | Dónde corre | Medición | Veredicto |
+|---|---|---|---|---|
+| Kitten TTS mini/micro/nano 0.8 | **No** (sólo inglés) | ONNX local | — | Descartado: no habla español |
+| Kitten TTS 2 (1.7B, 20 idiomas) | Sí | **API hospedada** | — | Descartado: no es offline |
+| Kokoro 82M · kokoro-js 1.2.1 | **No**: el paquete oficial sólo lista `af_*/am_*/bf_*/bm_*` | WASM local | modelo q8 carga en 18–23 s | Descartado |
+| Kokoro 82M multilenguaje (fork `chijete`) | Sí (`em_santa`, `ef_dora`) | WASM local | **11–16 s por frase** y bloquea la interfaz | Descartado |
+| Azure Speech (es-CL Catalina / Lorenzo) | Sí, chileno | Nube | 300–900 ms por readback | **Elegido** |
+
+Detalle de la medición de Kokoro (readback corta, `dtype:'q8'`, `device:'wasm'`, ya con el modelo cacheado): 1.ª síntesis 27,5 s (incluye bajar el tensor de la voz), siguientes **11,5 / 14,1 / 16,2 s**; el audio sale correcto (3,8–4,7 s a 24 kHz, RMS 0,060–0,069, no es silencio). Es decir: incluso en caliente sintetiza **3 veces más lento que tiempo real** y, al correr en el hilo principal, deja la interfaz congelada mientras habla (las evaluaciones del navegador dejaban de responder). Para readbacks de ATC, inservible.
+
+### 38.3 Qué se implementó
+
+**a) Enrutador de motor.** La función de voz anterior pasó a llamarse `_ttsSpeakSystem` (sin cambios internos) y `_ttsSpeak` ahora es un enrutador:
+
+```
+_ttsSpeak → ¿motor = azure y hay clave?
+              sí → VOZ.speakAzure(...)  ──fallo──▶ _ttsSpeakSystem(...) + aviso en ESTADO
+              no → _ttsSpeakSystem(...)
+```
+
+Todos los llamados existentes (`sayReadback`, reportes de entrada, colaciones) siguen usando `_ttsSpeak`, así que no hubo que tocar el resto del diálogo.
+
+**b) Panel `CONFIG ▸ VOZ`** (mismo patrón que LABEL / BUTTON / FRASES):
+
+| Campo | Para qué |
+|---|---|
+| MOTOR `SISTEMA` / `AZURE` | botón activo en verde |
+| VOZ ES / VOZ EN | lista las voces instaladas con su nota `_voiceScore`; `AUTO` = mejor disponible |
+| CLAVE | clave de Azure (campo oculto) |
+| REGIÓN | por defecto `brazilsouth` |
+| ▶ ESCUCHAR | readback de ejemplo con el motor y la voz actuales |
+| ESTADO | qué está usando y qué falló |
+
+La voz elegida a mano tiene prioridad sobre el hash del hablante (se inyecta justo antes de `_stableVoice`), y como el resto del motor, se guarda por navegador.
+
+**c) Privacidad.** Motor, clave, región y preferencias viven en `localStorage['scel_voz_motor_v1']`, sólo en ese navegador. **Nada de eso va al HTML, al repo ni al deploy.**
+
+**d) Azure Speech.** `POST` a `https://{región}.tts.speech.microsoft.com/cognitiveservices/v1` con SSML:
+
+```xml
+<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='es-CL'>
+  <voice name='es-CL-CatalinaNeural'>
+    <prosody rate='+10%' pitch='-3%'>LAN uno cero uno, autorizado ascenso…</prosody>
+  </voice>
+</speak>
+```
+
+- Voces: `es-CL-CatalinaNeural` (mujer) / `es-CL-LorenzoNeural` (hombre) / `en-US-AriaNeural` / `en-US-GuyNeural`, alternadas de forma determinista por callsign (mismo piloto = misma voz toda la sesión).
+- `rate` sale del control de velocidad que ya existía (`ttsSpeedPct`, 110 % por defecto); `pitch` fijo en −3 % para que no suene jovial.
+- Salida `audio-24khz-48kbitrate-mono-mp3` ≈ 6 KB/s; una readback de 4 s pesa ~24 KB.
+- Squelch VHF al empezar y al terminar, igual que el motor del sistema; un readback nuevo corta el anterior.
+- Errores traducidos en ESTADO: `401` clave inválida, `403` recurso sin permiso, `429` cuota agotada, más `HTTP nnn`. En cualquiera de esos casos **cae al motor del sistema** y el simulador sigue funcionando.
+
+### 38.4 Cómo activarlo (5 minutos, gratis)
+
+1. `portal.azure.com` → *Crear un recurso* → **Speech**.
+2. Plan **F0 (gratuito)**: 500.000 caracteres al mes — una readback típica son ~120 caracteres, o sea >4.000 readbacks/mes.
+3. Región **Brazil South** (la más cercana; sirve cualquier región, las voces es-CL están en todas).
+4. Copiar **CLAVE 1** → `CONFIG ▸ VOZ ▸ AZURE` → pegar en CLAVE → `▶ ESCUCHAR`.
+
+Sin clave el motor Azure no se usa: el panel avisa «Azure seleccionado pero SIN clave → se usa el sistema».
+
+### 38.5 Alternativa gratis y sin clave: Edge
+
+Si el equipo tiene **Microsoft Edge** (Windows 10/11), al abrir el simulador ahí `getVoices()` incluye las voces **Natural** (`Microsoft Catalina Online (Natural) - Spanish (Chile)`). El motor `SISTEMA` ya las puntúa +50, así que las elige solo: no hay que configurar nada. Es la mejora más barata; Azure es para cuando se quiere la misma voz en cualquier navegador y en cualquier PC.
+
+### 38.6 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| Sintaxis de los 3 bloques `<script>` (`new Function`) | 0 errores |
+| Panel VOZ | abre, lista voces con nota, ESTADO correcto en cada motor |
+| SSML | `&`, `<`, `>`, `"`, `'` escapados; `rate`/`pitch` correctos |
+| Petición Azure con clave falsa | `HTTP 401` → mensaje «clave inválida (401) → sistema» y readback por el motor del sistema |
+| Suite completa | **115 líneas · 89 OK · 0 fallos** |
+| Integridad | 667.797 B · BOM sí · 12.673 CRLF · 0 LF suelto · 0 U+FFFD |
+| Deploy servido solo como `index.html` | arranca, panel VOZ operativo |
+
+No se pudo validar el **audio** desde el navegador de pruebas (no tiene motor de voz ni salida); la prueba real es `▶ ESCUCHAR` en el equipo del usuario.
+
+### 38.7 Deploy
+
+| Archivo | Bytes | MD5 |
+|---|---|---|
+| `SCEL_ATC_Radar.html` = `netlify-deploy/index.html` | 667.797 | `FE183AD40E16AF2E9D7751497B314185` |
+| `callsign.xml` = `netlify-deploy/callsign.xml` | 7.212 | `B61573326232F593E134F6812C7E7709` |
+
+Los archivos de prueba de los motores (`_kokoro_probe.html`, `_kokoro_es_probe.html`) se borraron: no se suben.
+
+### 38.8 Ajustes para el camino gratis (Edge) — verificado con voces simuladas
+
+Para que la opción «sin clave» sea la buena, se corrigieron tres detalles del motor `SISTEMA`:
+
+| Cambio | Por qué |
+|---|---|
+| `u.lang = uttVoice.lang` (antes siempre `es-419`/`en-US`) | Edge ignora o silencia el utterance cuando `lang` no coincide con la voz elegida; con Natural es-CL ahora pide `es-CL` |
+| El `AUTO` del selector muestra el nombre de la voz que va a usar | se ve de un golpe si tomó Catalina o una SAPI vieja |
+| ESTADO cuenta las neuronales y avisa si no hay | «Sistema · 4 voces · 2 neuronales» / «sin neuronales — en Edge hay gratis (Catalina/Lorenzo)» |
+
+Prueba con un catálogo simulado de Edge (`getVoices` inyectado: Sabina es-MX, Catalina Natural es-CL, Google es-US, Aria Natural en-US) y `speak` interceptado:
+
+| Comprobación | Resultado |
+|---|---|
+| Ranking ES | Catalina Natural **85** › Google es-US **44** › Sabina **−30** (la preferencia por Natural funciona) |
+| Voz y `lang` del utterance ES | `Microsoft Catalina Online (Natural) - Spanish (Chile)` · **`es-CL`** |
+| Voz y `lang` del utterance EN | `Microsoft Aria Online (Natural) - English (United States)` · `en-US` |
+| Panel | `AUTO — Microsoft Catalina…`, lista con notas 85/44/−30, ESTADO «4 voces · 2 neuronales» |
+| Suite | **115 · 89 OK · 0 fallos** |
+| Integridad | 668.152 B · BOM sí · 12.677 CRLF · 0 LF suelto · 0 U+FFFD · MD5 `5FBA364CB9C8CB0CCA840665155776ED` |
+
+Deploy actualizado: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html` con ese mismo MD5.
+
+**Cómo se usa en el equipo real:** abrir el `index.html` con **Microsoft Edge** → `CONFIG ▸ VOZ` → `SISTEMA` → la lista debe mostrar `Microsoft Catalina Online (Natural) - Spanish (Chile)` como AUTO → `▶ ESCUCHAR`. Si la lista sólo trae Sabina/Helena, faltan las voces: *Configuración de Windows ▸ Hora e idioma ▸ Voz ▸ Agregar voces* (y en Edge, que las voces en línea estén permitidas).
+
+### 38.9 Dónde está el botón VOZ (ajuste de descubribilidad)
+
+El primer intento dejó `VOZ` al final de `CONFIG` (antes de `HELP`). Dos cosas lo hacían invisible:
+
+1. La columna izquierda tiene `max-height:calc(50vh - 92px)` y **scroll propio**: en una ventana de 900 px de alto mide ~363 px y el contenido ~420 px, así que los últimos botones quedaban fuera de vista sin indicio de que hubiera que bajar.
+2. Hasta elegir dispositivo en el modal de arranque (SECTOR G / SECTOR E), `#app` está oculto y la columna mide 0×0.
+
+Cambio: `VOZ` pasó a ser **el primer botón de CONFIG**, arriba de `LIVE`. Medido con SECTOR E en ventana de 910 px: `VOZ` a `top=327 px` (visible) y al abrirlo el panel mide 216 px (353→569), también dentro de pantalla.
+
+Captura de referencia: `capturas/config_voz.png`.
+
+Verificación: suite **115 · 89 OK · 0 fallos** · integridad 668.152 B · BOM sí · 12.677 CRLF · 0 LF suelto · 0 U+FFFD · MD5 `5AF37EA6AE5C1EA681A353B45BF1526A` (deploy sincronizado).

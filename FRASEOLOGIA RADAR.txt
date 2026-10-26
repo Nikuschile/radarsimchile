@@ -81,27 +81,9 @@ otra cosa el callsign de AFR es AIRFRANCE tanto en español como el ingles
 
 
 
-ahora vamos a trabajar en la salida NEBEG7A  estan pasando muy bajo confome a la salida real describire la salida: DESPEGUE DE PISTA 17R ascenso via radial 177 del vor pdh hasta fl130 , posterior viraje izquierda directo a YESOS INT para interceptar aerovia 
 
 
-
-ademas definiremos las salidas via nebeg MNM Razón ASC:
-MNM Climb Rate:
-NEBEG 7C: 350 FT/NM TIL FL230
-NEBEG 5D: 400 FT/NM TIL FL190
-NEBEG 7C RNAV
-DEP RWY 17L/R: Ascenso en TR176° hasta DESIT o VAGOS, según corresponda, continuar
-directo hacia EL250, posterior viraje izquierda continuar en TR087° hacia
-EL400-EL500-NEBEG para interceptar AWY.
-TAKE-OFF RWY 17L/R: Climb on TR176º to DESIT or VAGOS, as appropiate, continue direct to EL250, then left turn
-continue on TR087° to EL400-EL500-NEBEG to intercept AWY.
-NEBEG 5D RNAV
-DEP RWY 35L/R: Ascenso en TR357° hasta 5000FT viraje derecha directo PARKE, continuar
-en TR153° hasta EL400 y luego viraje izquierda TR087° hacia EL500-NEBEG para
-interceptar AWY.
-TAKE-OFF RWY 35L/R: Climb on TR357º to 5000FT right turn direct to PARKE, continue on TR153° until EL400, then turn left
-TR087° to EL500-NEBEG to intercept AWY.
-
+otra consulta porque si tengo un archivo callsign.xml sigue buscando los datos el simulador en en archivo index.html , o sera que no se puede hacer ref a archivos xml ? tengo subido mi proyecto a github y al parecer solo hace refferencia al index.html , ayudame con eso ya que quiero que tambien use los archivos xml
 
 
 

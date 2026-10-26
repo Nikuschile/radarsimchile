@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
   callsign.xml — Base de datos de distintivos de llamada (callsigns)
   Uso: responder a la instrucción ATC por el distintivo de llamada.
@@ -9,12 +9,7 @@
   FUENTE: ICAO Doc 8585 + base pública de distintivos https://123atc.com/call-signs
   (consulta 2026-10-25, 6.243 distintivos descargados y cruzados uno a uno).
   Regla: el distintivo se escribe TAL CUAL lo publica la base — nunca traducido
-  al español ni "españolizado" (KOREANAIR, EMIRATES, AIR CANADA, CATHAY…).
-
-  DIFERENCIAS INTENCIONALES respecto de la base 123atc:
-         SKU  = "SKY"   (base 123atc: AEROSKY)
-         SWR  = "SWISSAIR"   (base 123atc: SWISS)
-         QFA  = "QUANTAS"   (base 123atc: QANTAS)
+  al español ni "españolizado" (KOREANAIR, EMIRATES, AIR CANADA…).
 
   DIFERENCIAS INTENCIONALES respecto de la base 123atc:
          SKU  = "SKY"   (base 123atc: AEROSKY)
@@ -81,9 +76,7 @@
   <airline icao="UAE" country="AE" name="Emirates" callsign="EMIRATES"/>
   <airline icao="QTR" country="QA" name="Qatar Airways" callsign="QATARI"/>
   <airline icao="QFA" country="AU" name="Qantas" callsign="QUANTAS"/>
-  <airline icao="JAL" country="JP" name="Japan Airlines" callsign="JAPANAIR"/>
   <airline icao="ANA" country="JP" name="All Nippon Airways" callsign="ALL NIPPON"/>
-  <airline icao="CPA" country="CN" name="Cathay Pacific" callsign="CATHAY"/>
   <airline icao="CES" country="CN" name="China Eastern Airlines" callsign="CHINA EASTERN"/>
   <airline icao="JOY" country="CN" name="Joy Air" callsign="JOY AIR"/>
   <airline icao="SIA" country="SG" name="Singapore Airlines" callsign="SINGAPORE"/>

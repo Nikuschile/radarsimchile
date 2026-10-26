@@ -4761,3 +4761,537 @@ Cambio: `VOZ` pasó a ser **el primer botón de CONFIG**, arriba de `LIVE`. Medi
 Captura de referencia: `capturas/config_voz.png`.
 
 Verificación: suite **115 · 89 OK · 0 fallos** · integridad 668.152 B · BOM sí · 12.677 CRLF · 0 LF suelto · 0 U+FFFD · MD5 `5AF37EA6AE5C1EA681A353B45BF1526A` (deploy sincronizado).
+
+---
+
+## 39. Eliminar un vuelo: clic en el símbolo + SUPR — 26-10-2026
+
+### 39.1 Qué hace
+
+1. **Clic** sobre el símbolo radar (o sobre su etiqueta) → el tráfico queda seleccionado, como siempre.
+2. **SUPR** (tecla `Delete` / `Suprimir`) → modal centrado:
+
+```
+⚠ ELIMINAR VUELO
+¿Eliminar el vuelo LAN dos cero cero?
+A320 · 12.000 ft. Desaparece del radar y del listado. No se puede deshacer.
+                                          [ CANCEL ]  [ OK ]
+```
+
+3. **OK** saca la aeronave de la simulación · **CANCEL** / `Esc` / clic fuera no toca nada.
+
+El nombre que muestra el modal es el **callsign hablado** (`resolveCallsign`), no la sigla: si el XML dice `SKU=SKY`, el modal dice «SKY dos dos cero». Debajo, tipo y nivel actuales como confirmación visual.
+
+### 39.2 Detalle de la implementación
+
+| Pieza | Dónde |
+|---|---|
+| `#delModal` + estilos `.dx-*` | antes de `</style>`, paleta de `#flightsModal` con borde rojo |
+| `delFlightPrompt()` / `delFlightCancel()` / `delFlightConfirm()` | después de `cur()` |
+| Disparo de SUPR | handler de teclado de flechas/Tab (document) |
+| Texto de ayuda | pie del modal HELP |
+
+Limpieza al borrar (misma que el aterrizaje automático, que ya existía en la línea del `landed`):
+
+- `aircraft.splice(idx,1)` y reajuste de `selected` (`deselect()` si era el seleccionado, `--` si estaba después).
+- **RBLs persistentes**: se eliminan las que lo referencian y se reindexan las demás (`idx1/idx2`), más las de LIVE por `hex`.
+- Edición en línea (`_editIdx`), tap pendiente (`_tapBlipIdx`) y RBL pendiente (`_pendingRbl`) se resetean.
+- Contador `TRF` (`tb-count`) recalculado y línea en el log: `✕ VUELO ELIMINADO · SKU220 · A320 · quedan 2`.
+- El índice del modal se **revalida por callsign** antes de borrar: si entre abrir y confirmar aterrizó o se limpió otro tráfico, no se borra el avión equivocado.
+
+### 39.3 Guardas
+
+- SUPR **sin selección** no abre nada (probado).
+- SUPR con **otro modal abierto** (FLIGHTS, HELP, FRASES, OFFLINE, editor, selector de dispositivo) no se dispara.
+- Con el modal abierto: `Esc` cancela, `Enter`/`SUPR` confirman, y **la barra espaciadora no activa el micrófono**.
+- En modo **LIVE ADS-B** (`selected=-1`) no aplica: el tráfico real no se borra.
+
+### 39.4 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| Clic real en el blip (`mousedown`+`mouseup` en sus coordenadas) | `selected=0` · `SKU220` |
+| SUPR tras el clic | modal `flex` · texto «SKY dos dos cero» (callsign del XML) |
+| OK | 3 → 2 tráficos · `selected=-1` · `TRF=2` · sidebar cerrada |
+| CANCEL / `Esc` / clic en el fondo | cierra sin borrar |
+| `Enter` con el modal abierto | confirma |
+| Espacio con el modal abierto | no inicia voz |
+| SUPR sin selección / con FLIGHTS abierto | no hace nada |
+| Suite completa | **115 líneas · 89 OK · 0 fallos** |
+| Integridad | 673.945 B · BOM sí · 12.774 CRLF · 0 LF suelto · 0 U+FFFD |
+
+Captura: `capturas/eliminar_vuelo.png`. Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `2519EFC299B739DB2DC44DE68652F750`.
+
+---
+
+## 40. AWY-SUP: aerovías RNAV superiores (UL) - 26-10-2026
+
+Hasta ahora `AWY-SUP` dibujaba solo las 8 aerovías **UV** (ENR 3.1, convencionales VOR). Se agregaron las **16 RNAV UL** que publica el AIP Chile en ENR 3.2.
+
+### 40.1 Fuente y extracción
+
+PDF oficial (AMDT 66, páginas con fecha 14 MAY 2026 y 30 NOV 2023):
+
+`2 ENR Parte 2/ENR 3 Designadores y Descripcion para Rutas ATS/zENR 3 RNAV UL.pdf` - 14 páginas.
+
+El texto del PDF viene troceado por kerning (`[(IRE)9.7 (MI)]TJ`) y con celdas fusionadas, así que no sirve el extractor de líneas por sí solo. Se usó **pdf.js** en el navegador (`pdfjs.html` temporal) para obtener cada ítem con su `transform` real, se agruparon filas por `y` (tolerancia 1,2 pt) y se unieron por `x`:
+
+- **nombre** = ítems antes de la columna de coordenadas (los `VOR/DME` se guardan sin sufijo: `TOY`, `LOA`, `IPA`, `NIA`, `AMB`).
+- **coordenadas** = par `GD MM SS S` + `GD MM SS W` de la misma fila (se aceptan 1-3 dígitos de grado, necesario para `108°W`/`120°W`).
+- **distancia** = columna DIST de la fila `RNAV` inmediatamente inferior.
+
+Se descartaron dos falsos positivos del barrido (`UL 14`, `UL 30`, que eran trozos de encabezados `ENR 3.2-14.UL`).
+
+### 40.2 Datos incorporados
+
+**86 puntos nuevos** (coordenadas tal cual el PDF, DMS a decimal) + **135 puntos** en total en `AWY_SUP_FIX_XY` (49 UV que ya estaban + 86 UL). Los nombres que ya existían (`ALMIR`, `ARI`, `BAL`, `BRADA`, `BUXIS`, `DGO`, `MON`, `NAS`, `PWL`, `SIMOK`, `SIRAM`, `TBN`, `TOY`, `VTN`, `VUNIK`) se reutilizan: se verificó que las coordenadas del PDF coinciden con las que ya tenía el mapa UV.
+
+| Ruta | Puntos | Ruta | Puntos |
+|---|---|---|---|
+| UL 300 | 12 | UL 531 | 4 |
+| UL 302 | 10 | UL 540 | 3 |
+| UL 309 | 3 | UL 550 | 7 |
+| UL 322 | 3 | UL 650 | 8 |
+| UL 348 | 17 | UL 653 | 3 |
+| UL 401 | 6 | UL 670 | 10 |
+| UL 405 | 5 | UL 780 | 10 |
+| UL 416 | 6 | UL 797 | 4 |
+
+Notas de armado:
+
+- **UL 348** viene en dos páginas con `ASALA` repetido en el corte (`ENR 3.2-4.UL` / `-5.UL`); se deja una sola vez. Es la ruta Santiago - Isla de Pascua - Tahiti, por eso llega a `SAURI` (25°45'S 120°00'W).
+- **UL 670** no publica distancia en `BAL -> EGOSA` ni en `ROMIV -> PWL` (celdas vacías en el AIP); la geometría igual es correcta (366,6 NM y 37,7 NM respectivamente, medidos).
+- Los nombres son los del AIP tal cual, incluso los de 5 letras que parecen cortados: `IREMI`, `ASEPU`, `ISGUD`, `EDRON`. Se cruzaron contra **ENR 4.3 Puntos ATS/MET** (AMDT 61) y coinciden (`IREMI 18°21'S 75°23'W`, `ELASA`, `ATEDA`, `ESDIN`, `JURAK`, `ANPUK`, `UMKAL`, `NEBEG`, `PABOS`, `EMPEX`, `XONAT`, `OSOGU`, `MUGUK`, `SAURI`, `SORTA`, `LIVOR`, `SULNA`, `KONRI`, `GEKAL`, `KADAT`).
+
+### 40.3 Dibujo
+
+En `drawAirwaysSup()` las UL se dibujan **con trazo discontinuo** (`setLineDash([8,6])`) y las UV siguen sólidas, mismo azul y mismo grosor. El designador (`UL 302`, `UL 348`, ...) va al medio del trazado igual que los `UV`.
+
+Los puntos lejanos (hasta 120°W) simplemente quedan fuera del canvas cuando el zoom está cerca; no afectan el encuadre ni el `pan`.
+
+### 40.4 Verificación
+
+Se validó cada tramo contra la **columna DIST del propio AIP** (great circle, R=3440,065 NM). 100 tramos medidos:
+
+| Resultado | Detalle |
+|---|---|
+| 97 tramos | diferencia <= 1,0 NM |
+| 2 tramos | sin distancia publicada en el AIP (UL 670: `BAL->EGOSA`, `ROMIV->PWL`) |
+| 1 tramo | `VANIL->MIBAS` (UL 416) mal leído al principio: la fila trae `10` NM y el extractor tomó el `5` de la columna LL; corregido a 10 NM (calculado 9,8) |
+
+Con eso quedan descartados los errores típicos de esta tabla: pares lat/lon cruzados, filas saltadas y nombres pegados (`ISGUD`+`EDRON`).
+
+| Prueba | Resultado |
+|---|---|
+| `AWY_SUP` | 24 rutas (8 UV + 16 UL), 135 puntos, 0 referencias sin resolver |
+| Test nuevo `SUP1` en la suite | `OK (AWY-SUP 24 rutas, 16 UL, 135 puntos)` |
+| Suite completa | **116 líneas - 0 fallos** |
+| Integridad | 678.759 B - BOM sí - 12.887 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `9C0ECB26083FB91929A0D035CC5CDCB4`.
+---
+
+## 41. AWY-SUP: aerovías RNAV superiores (UT) - 26-10-2026
+### 41.1 Fuente y extracción
+`zENR 3 RNAV UT.pdf` (ENR 3.2 RNAV UT, 18 páginas, 821.165 B). El PDF se lee con la misma pagina `pdfjs.html` que las UL y se extrae en el navegador: 4.815 items de texto, agrupados por fila (`y` +- 1,2) y unidos por celdas (separacion de `x` > 1,2). La distancia de cada tramo se toma de la fila `RNAV` siguiente.
+
+Resultado: **26 rutas, 159 fixes**. Las filas del PDF son 160; se descarta el `SOSTA` repetido en el corte `ENR 3.2-12.UT` / `-13.UT`.
+
+### 41.2 Datos incorporados
+
+| Ruta | Puntos | Ruta | Puntos | Ruta | Puntos |
+|---|---|---|---|---|---|
+| UT 100 | 5 | UT 127 | 8 | UT 276 | 2 |
+| UT 101 | 7 | UT 131 | 7 | UT 291 | 5 |
+| UT 102 | 9 | UT 134 | 11 | UT 293 | 7 |
+| UT 103 | 4 | UT 200 | 14 | UT 295 | 3 |
+| UT 104 | 6 | UT 210 | 3 | UT 296 | 4 |
+| UT 105 | 11 | UT 252 | 3 | UT 315 | 5 |
+| UT 107 | 2 | UT 258 | 5 | UT 316 | 13 |
+| UT 115 | 5 | | | | |
+| UT 118 | 9 | | | | |
+| UT 121 | 5 | | | | |
+| UT 122 | 3 | | | | |
+| UT 125 | 3 | | | | |
+
+Notas de armado:
+
+- **UT 200** sigue en la pagina siguiente (`ENR 3.2-13.UT`) con `SOSTA` repetido: se deja una sola vez.
+- **UT 316** es la ruta oceánica a Isla de Pascua: llega a 109 grados W con tramos reales de 318, 268, 262, 259, 256 y 254 NM.
+- **UT 101** y **UT 316** son las de tramos mas largos del bloque superior.
+- Los 26 designadores son UQ/UT de 3 digitos (UT 100 ... UT 316); ninguno se pisa con las UV ni con las UL.
+
+### 41.3 Dibujo
+
+Las UT usan el mismo azul y el mismo trazo discontinuo `[8,6]` que las UL; la regla quedó por prefijo (`UV` solida, cualquier otra RNAV discontinua), así que no hubo que tocar el renderer. El título del boton pasa a `Aerovías superiores: UV ENR 3.1 (VOR, azul gruesa) y UL/UT ENR 3.2 (RNAV, discontinua)`.
+
+### 41.4 Verificacion
+
+Se midió cada tramo con la columna DIST del AIP (great circle, R=3440,065 NM). **133 tramos medidos**:
+
+| Resultado | Detalle |
+|---|---|
+| 132 tramos | diferencia <= 1,0 NM |
+| 1 tramo | `NEDOM->SUGRO` (UT 316) AIP 256 NM, calculado 255 NM |
+
+No apareció ningun conflicto de coordenadas con los 49 puntos UV/UL previos (tolerancia 5e-5). De los 130 puntos distintos de las UT, **80 eran nuevos** y 50 ya existían.
+
+| Prueba | Resultado |
+|---|---|
+| `AWY_SUP` | 50 rutas (8 UV + 16 UL + 26 UT), 215 puntos, 0 referencias sin resolver |
+| Test `SUP1` | `OK (AWY-SUP 50 rutas: 8 UV / 16 UL / 26 UT, 215 puntos)` |
+| Suite completa | **116 lineas - 0 fallos** |
+| Integridad | 683.603 B - BOM si - 12.997 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `3AAEC2750220A779C1C309C03E70630E`.
+
+---
+
+## 42. AWY-SUP: aerovías RNAV superiores (UQ) - 26-10-2026
+### 42.1 Fuente y extracción
+`zENR 3 RNAV UQ.pdf` (ENR 3.2 RNAV UQ, 16 páginas, 1.007.475 B, MD5 `2D64394CC4CEE6FB8E97EEECE59BC59E`; hojas fechadas 28 NOV 2024 y 14 MAY 2026). Estas rutas son RNAV/RNP 2 con tramos controlados por ADS-C (`ACCS` / `ACCM`) y el AIP las publica aparte de las UL y las UT.
+
+Primer intento fallido: la descarga se cortó en 737.280 B (exactamente 720 KB) por el timeout de `Invoke-WebRequest` y el PDF truncado se leia como una revisión vieja de las UL (30 NOV 2023). Se repitió con timeout de 300 s y el archivo completo; recién ahí aparecieron las 8 rutas UQ.
+
+El extractor de las UT no sirve tal cual: en estas hojas la pista magnética y la distancia van en una fila propia, por ejemplo `174 354 44 | 5 | ACCS`, donde la distancia es el último número antes de la barra. Se agregó esa variante (y la de `RNAV 5 /` con distancia en la misma fila) y se validó cada tramo.
+
+Resultado: **8 rutas, 138 fixes**, 130 tramos con distancia publicada (los ultimos fix de cada ruta no llevan distancia).
+
+### 42.2 Datos incorporados
+
+| Ruta | Puntos | Recorrido |
+|---|---|---|
+| UQ 802 | 48 | SIRAM ... NAS (norte-sur por el oeste) |
+| UQ 803 | 33 | LOBAG ... NAS |
+| UQ 805 | 9 | LINER ... TIGNO |
+| UQ 808 | 4 | KADAK ... LODOS |
+| UQ 809 | 16 | GELUS ... TIGNO (incluye la oceánica hacia 73 W) |
+| UQ 810 | 8 | KADAK ... VLD |
+| UQ 814 | 11 | LOA ... DILOK |
+| UQ 815 | 9 | LOA ... SIMOK |
+
+Notas de armado:
+
+- **UQ 802** ocupa cinco páginas (`ENR 3.2-1.UQ` a `-5.UQ`) y pasa por 48 puntos; es la mas larga del bloque.
+- **UQ 809** y **UQ 814** comparten varios fixes con **UT 105/115** y **UL 416** (`VLD`, `MPI`, `LITUX`, `PABOS`, `VANIL`); se verificó que las coordenadas coincidan antes de reutilizarlos.
+- `PNT` (UQ 803) es un nombre de tres letras tal cual el AIP.
+
+### 42.3 Dibujo
+
+Las UQ entran con la misma regla por prefijo: mismo azul, trazo discontinuo `[8,6]`, designador al medio (`UQ 802`, `UQ 809`, ...). Comentarios de cabecera y del renderer actualizados a `UL/UT/UQ (ENR 3.2 RNAV)`.
+
+### 42.4 Verificacion
+
+**130 tramos medidos** contra la columna DIST del AIP:
+
+| Resultado | Detalle |
+|---|---|
+| 129 tramos | diferencia <= 1,0 NM |
+| 1 tramo | `DADGI->EDNIX` (UQ 802) AIP 43 NM, calculado 44 NM (redondeo del AIP) |
+
+Validacion conjunta de las 42 rutas nuevas (UL + UT + UQ, 356 tramos): solo quedan las dos excepciones ya documentadas de las UL (`ESDIN->JIREN` 433 vs 434,8 NM y `VANIL` con 10 NM reales) y el tramo de 1,0 NM de las UT. Cero conflictos de coordenadas entre las 284 puntos.
+
+| Prueba | Resultado |
+|---|---|
+| `AWY_SUP` | 58 rutas (8 UV + 16 UL + 26 UT + 8 UQ), 284 puntos, 0 referencias sin resolver |
+| Test `SUP1` | `OK (AWY-SUP 58 rutas: 8 UV / 16 UL / 26 UT / 8 UQ, 284 puntos)` |
+| Suite completa | **116 lineas - 0 fallos** |
+| Integridad | 687.528 B - BOM si - 13.077 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `D62A5718187651079ED71C749AEA41A0`.
+---
+
+---
+
+## 43. Se elimina JAL del simulador - 26-10-2026
+
+Japan Airlines no opera en Chile, así que salió de toda la cadena: base, respaldo interno y tráfico automático.
+
+### 43.1 Cambios
+
+| Archivo | Cambio |
+|---|---|
+| `callsign.xml` | se borra `<airline icao="JAL" ... callsign="JAPANAIR"/>`; quedan 39 aerolíneas |
+| `netlify-deploy/callsign.xml` | misma copia (MD5 `4B769EFF1C40E02A42543348BD9A912E`) |
+| `SCEL_ATC_Radar.html` | se borra `JAL` de `_CS_FALLBACK`, la base `JAL` de `AUTO_DEP` (quedan 23) y `JAPANAIR` del texto de ayuda |
+| `tests/hold_test.js` | el test de auto-dep pasa a exigir 23 bases |
+
+### 43.2 Por qué también el respaldo interno
+
+`callsign.xml` manda, pero `_CS_FALLBACK` rellena los ICAO que faltan en el XML. Si solo se borraba el XML, cualquier JAL que quedara en un ejercicio guardado seguía leyéndose "JAPANAIR". Al sacarlo de los dos lados, `resolveCallsign()` cae en el caso genérico y devuelve el código tal cual (`JAL 123` se lee "JAL uno dos tres"), que es lo que corresponde a una línea que no opera en el país.
+
+### 43.3 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| `callsign.xml` | XML válido, 39 aerolíneas + 6 nombres de combate FACH, 0 JAL |
+| Aplicación | `CS_META` = 50 claves, 0 entradas JAL/JAPANAIR; `AUTO_DEP_BASES` = 23 |
+| Test de auto-dep | `SC15:OK (auto dep 17R activo)` con 23 bases |
+| Suite completa | **116 líneas - 0 fallos** |
+| Integridad | 687.407 B - BOM si - 13.076 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `F90888A7DFB862691E5AF461FFE3AEED`.
+
+Queda una mención histórica de JAL en los capítulos 16 y 34 (registro de la base ampliada y tabla de callsigns de esa época); no se reescribe el historial.
+---
+
+---
+
+## 44. Se elimina CPA (Cathay Pacific) - 26-10-2026
+
+Mismo criterio que con JAL: Cathay Pacific no opera en Chile, así que sale de la base, del respaldo y del tráfico automático.
+
+### 44.1 Cambios
+
+| Archivo | Cambio |
+|---|---|
+| `callsign.xml` | se borra `<airline icao="CPA" ... callsign="CATHAY"/>`; quedan 38 aerolíneas |
+| `callsign.xml` (cabecera) | se saca CATHAY de la lista de ejemplos y se elimina el bloque duplicado de "DIFERENCIAS INTENCIONALES" (estaba repetido dos veces) |
+| `netlify-deploy/callsign.xml` | misma copia (MD5 `0DD3D63557373E8E79A10C3A8D55F1A7`) |
+| `SCEL_ATC_Radar.html` | se borra `CPA` de `_CS_FALLBACK`, la base `CPA` de `AUTO_DEP` (quedan 22) y `CATHAY` del texto de ayuda |
+| `tests/hold_test.js` | el test de auto-dep pasa a exigir 22 bases |
+
+### 44.2 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| `callsign.xml` | XML válido, 38 aerolíneas + 6 nombres de combate FACH, 0 CPA/CATHAY |
+| Aplicación | `CS_META` = 49 claves, 0 entradas CPA/CATHAY; `AUTO_DEP_BASES` = 22 |
+| Resolución | `resolveCallsign('CPA123')` devuelve "CPA one two three" (código, sin distintivo inventado) |
+| Test de auto-dep | `SC15:OK (auto dep 17R activo)` con 22 bases |
+| Suite completa | **116 líneas - 0 fallos** |
+| Integridad | 687.290 B - BOM sí - 13.075 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `110D5E4AB623304DA999E35FBEFFCD64`.
+
+---
+
+## 45. El LOC se captura en el IF (SEDPA/TEGEB) o al norte - 26-10-2026
+
+Antes el localizador se capturaba en cuanto la aeronave quedaba dentro de ±0,15 NM del eje y con menos de 45° de diferencia de rumbo, sin importar **dónde** estaba a lo largo de ese eje. Un avión que pasaba por el sur de la pista (o entre el umbral y el IF) y se alineaba, capturaba el LOC y se "pegaba" al eje para luego volar hacia el norte, en vez de seguir con el vector asignado hasta el fix de inicio. La regla del AIP es la contraria: el viraje de interceptación se hace **en el IF** (SEDPA para 17R, TEGEB para 17L) o más al norte, nunca al sur de él.
+
+### 45.1 Regla implementada
+
+| Concepto | Implementación |
+|---|---|
+| Eje de la pista | `ilsThr(rwy)` (umbral) + `rwDx()/rwDy()` (rumbo 177°): distancia sobre el eje positiva al norte del umbral |
+| Desviación lateral | `ilsLatFor(a,rwy)` = componente perpendicular al eje |
+| Avance sobre el eje | `ilsDistFor(a,rwy)` = proyección sobre el eje (positiva al norte del umbral) |
+| IF de cada pista | `ifLocFix(rwy)` = `WPT.SEDPA` (17R) / `WPT.TEGEB` (17L) |
+| Distancia umbral → IF | `ifLocDist(rwy)`; medido: **10,88 NM (17R)** y **10,84 NM (17L)** |
+| Decisión | `locCaptureOk(a,rwy)` = `ilsDistFor(a,rwy) >= ifLocDist(rwy) - 0,25` |
+
+La tolerancia de 0,25 NM absorbe el paso por el fix sin obligar a una captura exacta al décimo de milla. El sector dibujado en pantalla llega a 11,4 / 11,2 NM, es decir algo más al norte del IF, así que toda captura válida ocurre dentro del sector visible.
+
+### 45.2 Dónde se aplica
+
+| Punto | Cambio |
+|---|---|
+| Captura automática del vector final (`vecFinal`, ~L6900) | la condición pasa de `Math.abs(lat)<=0.15` a `Math.abs(lat)<=0.15 && dLoc>=dIF-0.25`; usa `ilsLatFor/ilsDistFor` con la pista del vector (antes `ilsLat(a)` leía `a.locRwy`, que es `null` antes de capturar) |
+| Aviso al piloto | si está alineado pero al sur del IF, una sola vez: "VEC FINAL: alineado pero al SUR de SEDPA (7.9/10.9 NM) - mantiene rumbo hasta el IF"; el flag `a._locWaitIf` evita repetirlo |
+| Comando manual `LOC 17R/17L` (`interceptLoc`, ~L5520) | guarda `if(!locCaptureOk(a,newRwy))` que rechaza la captura y pide mantener el vector; la rama de contingencia por cambio de pista queda igual |
+| Reinicio del flag | `a._locWaitIf=false` al entrar a `vecFinal()` (~L6719), al capturar y en la propia función de captura |
+| Ayuda en pantalla | los tooltips de los botones 17L/17R ahora dicen "…; el LOC se captura en el IF o al norte" |
+
+El `LOC` que llega por la ruta de aproximación publicada (fin de STAR en SEDPA/TEGEB) no necesita la guarda: la aeronave ya está en el IF por construcción.
+
+### 45.3 Incidencia durante la edición
+
+El primer intento de escribir el bloque dejó un salto de línea real dentro de un literal de JavaScript (la flecha del mensaje quedó partida en su propia línea), lo que producía `SyntaxError: Invalid or unexpected token` y dejaba la aplicación sin arrancar (`WPT` y todas las constantes quedaban indefinidas). Se detectó comparando `typeof` de símbolos conocidos y localizando la línea del error con un `appendChild` de prueba; se corrigió uniendo el literal en una sola línea. Lección: al insertar textos con caracteres no ASCII por PowerShell conviene evitarlos en el código y usar solo ASCII en los literales nuevos.
+
+### 45.4 Verificación
+
+| Prueba | Resultado |
+|---|---|
+| `ifLocDist` | 10,88 NM (17R→SEDPA), 10,84 NM (17L→TEGEB) |
+| Simulación, 3 NM al sur del IF, sobre el eje | `locMode=false`, log "alineado pero al SUR de SEDPA (7.9/10.9 NM)" |
+| Simulación, 2 NM al norte del IF | `locMode=true`, `locRwy=17R` |
+| Test nuevo `IFLOC1` | sur del IF y sur del aeropuerto no capturan; en el IF, +6 NM y eje capturan (ambas pistas) |
+| Suite completa | **117 líneas - 0 fallos** (`SUP1` 58 rutas / 284 puntos sigue OK) |
+| Integridad | 689.050 B - BOM sí - 13.096 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `0DC87C08FFBB8742972A8E80BCAEDCB1`.
+
+Pendiente de decisión del usuario: `ssdsd.html` (copia rota con `SyntaxError`) sigue en la carpeta.
+
+---
+
+## 46. Aerovias con trazo continuo y 30% mas delgadas - 26-10-2026
+
+Las aerovias RNAV (UL/UT/UQ) se dibujaban con trazo discontinuo para no confundirlas con las UV convencionales, y el grosor del bloque superior era el doble que el de las aerovias inferiores. A la vista del mapa el resultado era ruidoso: muchas lineas cortadas y bastante gruesas. Ahora todas las aerovias son lineas continuas y ambos bloques bajan un 30% de grosor.
+
+### 46.1 Cambios
+
+| Funcion | Antes | Ahora |
+|---|---|---|
+| `drawAirways()` (AWY-INF) | `lineWidth = 1*DPR`, continua | `lineWidth = 0.7*DPR`, continua |
+| `drawAirwaysSup()` (AWY-SUP) | `lineWidth = 2*DPR`; UV continua y **UL/UT/UQ discontinua** `[8*DPR,6*DPR]` | `lineWidth = 1.4*DPR`; **las 58 rutas continuas** (`setLineDash([])`) |
+
+El resto de la jerarquia visual no se toca: las superiores siguen en azul intenso (`rgba(90,160,255,.55)`) y las inferiores en azul grisaceo muy tenue (`rgba(138,180,216,.18)`). Como ya no hay diferencia de trazo, UV y UL/UT/UQ se distinguen por el designador rotulado a mitad de cada ruta ("U 204", "U 106", etc.).
+
+### 46.2 Textos actualizados
+
+| Ubicacion | Cambio |
+|---|---|
+| Tooltip del boton AWY-SUP (HTML) | "UV ENR 3.1 y UL/UT/UQ ENR 3.2 (RNAV) - lineas continuas, azul tenue" |
+| Cabecera del bloque de datos AWY-SUP (~L3569) | se quita la nota de "trazo discontinuo"; indica que se distinguen por el designador |
+| Cabecera de `drawAirwaysSup()` (~L8148) | idem, con los nuevos grosores (1.4*DPR / 0.7*DPR) |
+| Comentario en linea del `setLineDash` | "todas las aerovias: trazo continuo" |
+
+### 46.3 Verificacion
+
+Comprobado en ejecucion, instrumentando `CanvasRenderingContext2D.prototype.stroke` y forzando `drawAirways()` + `drawAirwaysSup()` con ambos botones activos:
+
+| Familia | Estilos de trazo observados |
+|---|---|
+| AWY-INF | `0.7px · rgba(138,180,216,0.18) · solido` x15 rutas |
+| AWY-SUP | `1.4px · rgba(90,160,255,0.55) · solido` x58 rutas |
+
+Ninguna ruta usa `dash`. El resto de la suite sigue igual:
+
+| Prueba | Resultado |
+|---|---|
+| Suite completa | **117 lineas - 0 fallos** |
+| Integridad | 689.045 B - BOM si - 13.096 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `61DA437A6558AA3B4FE429CE3D99FE38`. Captura de referencia: `capturas/aerovias_continuas.png`.
+
+## 47. Auditoria de las 66 SIDs contra las cartas AIP - 26-10-2026
+
+Reporte del usuario: las salidas "mantienen rumbo" en vez de volar la salida publicada, sobre todo las que deben continuar hacia el norte. Se revisaron las 66 rutas de `SIDS` con dos metodos: (a) volar cada ruta en el motor del simulador y medir la traza, y (b) contrastar la secuencia de fixes con las cartas AIP SID 1-5 y la tabla de coordenadas de SCEL.
+
+### 47.1 Verificacion de vuelo de las 66 rutas
+
+Cada SID se instancio con `mkACwithRoute` y se volo con `update(1)` hasta sobrepasar el ultimo fix. Para cada ruta se comparo la distancia realmente recorrida con la suma de los tramos publicados:
+
+| Metrica | Resultado |
+|---|---|
+| Rutas que alcanzan el ultimo fix | **66 / 66** |
+| Relacion recorrido / suma de tramos | 0.98 - 1.05 en las 66 (sin circulos ni reversas) |
+| Error de seguimiento en cada tramo | 0 grados (el rumbo apunta siempre al fix siguiente) |
+
+La unica ruta con relacion < 1 es `GELUS5B` (0.98), por el primer tramo medido sobre el eje antes del viraje. No se detectaron rutas que "mantengan rumbo" despues del primer fix: todas giran hacia el punto siguiente.
+
+### 47.2 Contraste con las cartas
+
+| Carta | Texto AIP | Estado en el archivo |
+|---|---|---|
+| SID 1 | NEBEG 7A / ALBAL 7A: "R177 PDH/AMB hasta FL130, viraje izquierda directo YESOS / SUPRA" | correcto (`_ax` a FL130 + `FL130_17R/17L`) |
+| SID 1 | ANGOD 8B: "R177 hasta GENPO/ESKUL, viraje derecha R190 AMB a ETEMI-ANGOD" | correcto |
+| SID 2 | LINER 5A 17R: VAGOS y viraje izquierda R175 PDH a LINER; 17L: directo a LINER | correcto |
+| SID 2 | GELUS 6A: VAGOS/DESIT, viraje derecha R079 DGO a KIDUG, izquierda R196 TBN a GELUS | correcto |
+| SID 2 | SABLA 8: VAGOS/DESIT, viraje derecha R079 hasta ARSEV | correcto |
+| SID 3 | DOMINGO 6: R079 DGO hasta KIDUG, luego directo DGO | correcto |
+| SID 3 | VENTANAS 6: "viraje derecha para interceptar R157 (TR337) VTN directo VTN" | correcto: KIDUG cae sobre R157 VTN (158.2 grados) |
+| SID 3 | TABON 6A: "viraje derecha para interceptar R196 (TR016) TBN directo TBN" | correcto: KIDUG cae sobre R196 TBN (197.8 grados) |
+| SID 3 | DONTI 6A: "R157 VTN hasta D26 VTN, viraje derecha R026 DGO hasta DONTI" | **corregido** (47.3) |
+| SID 4 | TENUT 5 / GUVOL 5C: TEMUS/PUMAR, TBN, OLMUE / PABEK, GUVOL | correcto |
+| SID 4 | SANTIAGO 5: "viraje derecha para interceptar R020 AMB (TR200) directo AMB; cruzar D22 AMB FL110-FL140" | **corregido** (47.3) |
+| SID 5 | Tabla RNAV 35R/L: CA 357 a 5000 FT, DF PARKE (RT) FL110+, GENPO 216 FL130+, GELUS 226 FL150+ | correcto (confirma que el viraje al sur de PARKE es el publicado) |
+
+Con esto quedan cerradas las 14 rutas que la entrada del 05-10-2026 dejaba "pendientes de carta oficial": las 8 de 35L/35R con `_ax` a PARKE giran al sur porque la carta RNAV lo publica asi (PARKE esta en 33 27 16 S, al sur del campo), y las de SID 3 / SANTIAGO 5 quedan como se detalla abajo.
+
+### 47.3 Correcciones aplicadas
+
+**1. `D22AMB` estaba en el radial reciproco.** La tabla de fix lo tenia en `(-7.464, -22.203)`, que son 22 NM en el radial **200** de AMB (al sur), mientras su propio comentario y la carta SID 4 piden el radial **020** ("cruzar D22 AMB entre FL110 y FL140" viniendo por TR200 hacia el VOR). Nuevo valor `(7.91, 19.02)`: 22.0 NM a 020.9 grados de AMB.
+
+| | Antes | Ahora |
+|---|---|---|
+| `D22AMB` | `(-7.464,-22.203)` = 22 NM R200 | `(7.91,19.02)` = 22 NM R020 |
+| `SANTIAGO5_35L/35R` | TEMUS/PUMAR -> 43 NM al sur -> 21 NM de vuelta al norte a AMB (~85 NM) | PUMAR/TEMUS -> 9.9 NM al este (100 grados) -> D22 AMB -> 22 NM a 201 grados -> AMB (**53 NM**) |
+
+La traza verificada de `SANTIAGO5_35L` es `(-2,22) -> (9,18) -> (2,2) -> (-1,-4)`: sube por R357, vira a la derecha en PUMAR/TEMUS, intercepta R020, cruza D22 AMB y entra a AMB por TR200, como la carta.
+
+**2. `DONTI6A` viraba 11 NM tarde.** La ruta pasaba por KIDUG (D55 VTN) y desde ahi cortaba directo a DONTI; la carta manda seguir R157 VTN hasta **D26 VTN** y recien ahi virar a R026 DGO. Se agrego el fix `D26VTN` en la tabla WPT: `(-25.86, 15.23)` = 26.0 NM a 158 grados de VTN; desde el a DONTI hay 12.7 NM en 026 grados (coherente con R026 DGO). Las dos variantes (17R y 17L) usan ahora `WPT.D26VTN`.
+
+**3. `VENTANAS6` y `TABON6A` se dejan como estaban**, con la justificacion geometrica anotada en el codigo: KIDUG es la interseccion de R079 DGO con R157 VTN y con R196 TBN, de modo que el dogleg VAGOS/DESIT -> KIDUG -> VTN/TABON es el mismo intercept que publica la carta.
+
+### 47.4 Verificacion
+
+| Prueba | Resultado |
+|---|---|
+| Vuelo de las 66 SIDs | 66/66 al ultimo fix, relacion 0.98-1.05 |
+| `SANTIAGO5_35L` / `_35R` | llega a AMB en 53 / 52 NM (antes ~85) |
+| `DONTI6A_17R` / `_17L` | 59 / 60 NM, vira en D26 VTN y entra a DONTI por 026 |
+| Suite completa | **117 lineas - 0 fallos** |
+| Integridad | 689.654 B - BOM si - 13.103 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `932081016E1DAC6163D1FACEC184B8C6`.
+
+## 48. Auto DEP: una salida cada 2 minutos y una sola pista - 26-10-2026
+
+### 48.1 Pedido
+
+> "las salidas seran cada 2 minutos, por ahora no habra salidas simultaneas de ambas pistas"
+
+Se interpreta como: **un solo despegue por vez, siempre desde la misma pista**, con cadencia fija de 2 minutos. Se elimina por completo el modo `ROTAR`, que era el unico que mezclaba pistas.
+
+### 48.2 Cambios
+
+- **Selector de pista:** quedan solo las cuatro opciones reales (`17R`, `17L`, `35L`, `35R`). Se borro `<option value="ROTAR">` y el tooltip ahora dice "una sola pista a la vez".
+- **`setAutoDepRwy(v)`:** normaliza cualquier valor desconocido a `17R` (`if(v!=='17R'&&v!=='17L'&&v!=='35L'&&v!=='35R')v='17R';`). Aunque alguien inyecte `'ROTAR'` por consola, el modo cae a 17R.
+- **`autoDepRunway()`:** paso de `if(mode==='ROTAR') return AUTO_DEP_RWYS[autoDepSeq%4];` a `return autoDepRwyMode;`. Se elimino la constante `AUTO_DEP_RWYS`.
+- **Etiquetas:** `startAutoDep()` y `setAutoDepRwy()` informan `siempre RWY <pista>` (antes habia un caso especial para `ROTAR`).
+- **Cadencia:** ya era `AUTO_DEP_MS=120000` con cadena de `setTimeout` (un unico temporizador vivo) y piso anti-rafaga `AUTO_DEP_MIN_GAP_MS=10000`; no se toco.
+- **Comentarios:** se reescribio la cabecera del bloque Auto DEP ("Las salidas salen SIEMPRE de una sola pista...") y el comentario del escenario `deps`.
+
+### 48.3 Verificacion
+
+| Prueba | Resultado |
+|---|---|
+| Opciones del selector | `17R, 17L, 35L, 35R` (sin ROTAR) |
+| `setAutoDepRwy('ROTAR')` | queda en `17R` |
+| `AUTO_DEP_MS` / `AUTO_DEP_MIN_GAP_MS` | 120000 ms / 10000 ms |
+| `spawnDep()` x5 | 1 aeronave por llamada, las 5 con `depRwy=17R` |
+| `startAutoDep()` | 1 salida inmediata, temporizador y watchdog activos |
+| Test `SC25` (reescrito) | `pista unica: 8 salidas en 17R 17R 17R 17R 17R 17R 17R 17R` |
+| Test `SC25b` (nuevo) | `ROTAR normaliza a 17R` |
+| Suite completa | **118 lineas - 0 fallos** |
+| Integridad | 689.264 B - BOM si - 13.098 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `85688E8005910BBE91B3B2C99E6D32B0`.
+
+### 48.4 Notas
+
+- El intervalo es de **tiempo real** (temporizador del navegador), no de tiempo simulado: a 4x las salidas se ven cada 8 minutos de simulador. Es el comportamiento que ya tenia el Auto DEP.
+- `autoDepPool('17R')` devuelve el pool curado `AUTO_DEP` de 22 salidas, mientras que 17R tiene 24 SIDs publicadas (24/24/9/9 = 66). Las 2 restantes se pueden volar a mano o agregar al pool si se quiere cubrir el catalogo completo en automatico.
+
+## 49. Interceptacion del LOC con margen de 60 grados y anticipacion de viraje - 26-10-2026
+
+### 49.1 Pedido
+
+> "al dar el rumbo para el localizador, en lugar de margen de 45 grados, ahora tendra un margen de 60 grados respecto al localizador, y si el rumbo asignado por ATC es congruente con el localizador y el margen asignado, la aeronave procedera a interceptar la prolongacion del localizador en el rumbo asignado por ATC."
+
+Antes: `LOC_MAX=45` solo servia de filtro para el boton LOC y para el color de la barra lateral; la captura del vector final esperaba a que la aeronave estuviera a 0.15 NM del eje, sin importar el angulo. Resultado: con un vector a 60 grados la aeronave cruzaba el eje y recien ahi viraba, con sobrevuelo del eje y correccion en S.
+
+### 49.2 Modelo implementado (guiado por manuales de operacion)
+
+- **Margen:** `LOC_MAX=60`. El rumbo asignado no puede exceder 60 grados respecto del curso del LOC (177). Fuera de ese margen el vector NO captura y el sistema lo informa.
+- **La aeronave vuela el rumbo asignado** hasta el punto de anticipacion; no vira antes ni sobre el eje.
+- **Punto de anticipacion (lead):** `lat = R (1 - cos th)`, con `R = v / w` (radio de viraje de regimen, `w = TURN_RATE = 3 grados/s`) y `th` = angulo de intercepcion. Es la geometria clasica de FCTM/AOM: iniciar el viraje a esa distancia lateral hace que el arco termine exactamente sobre el eje, con el rumbo final alineado.
+- **Captura:** dentro del margen, en el IF (SEDPA/TEGEB) o al norte, y **convergente** (`d(lat)/dt = v sen(hdg - 177)` apunta al eje). Al capturar se marca `_locRoll` y se vuela el curso (177) hasta alinear (viraje de regimen); luego manda la ley fina de seguimiento (+-5 grados).
+- **Botón LOC:** ahora **arma** la interceptacion sobre el rumbo actual (no captura al instante). Rechaza rumbos fuera del margen o que no convergen al eje.
+- **Avisos:** "rumbo ... a N grados del eje (>60) - NO captura", "no converge al eje", "al SUR del IF ... mantiene rumbo hasta el IF", "captura LOC 17R con N grados de intercepcion (anticipacion X NM)".
+
+### 49.3 Verificacion (vuelo simulado, `update(1)`)
+
+| Caso | Resultado |
+|---|---|
+| Vector 120 (57 grados), 17R, 220 kt, desde 12 NM al norte | sostiene 120 hasta lat 0.60 NM; captura en 0.51 NM; rueda a lat **0.03 NM**, rumbo **177.1**, GS capturado |
+| Vector 135 (42 grados), 17L, 200 kt | captura en 0.24 NM; rueda a **0.02 NM**, rumbo 177.1 |
+| Boton LOC, 30 grados, 17L | "ARMADO ... captura en 0.16 NM"; captura en 0.10; rueda a **0.025 NM** |
+| Rumbo 240 (63 grados) | **no captura**: aviso "fuera del margen 60" |
+| Rumbo 118 (61 grados) | cruza el eje **sin capturar** |
+| Rumbo divergente (177+60) | no captura |
+| Sobre el eje (lat 0.05, rumbo 177) | captura inmediata |
+| Boton LOC con rumbo paralelo, 1 NM de offset | rechazado: "no converge al eje ... asigna un rumbo de interceptacion" |
+| Suite completa | **120 lineas - 0 fallos** (`LOC60`, `LOCARM`, `IFLOC1`, `SC24/25/25b/26`) |
+| Integridad | 691.830 B - BOM si - 13.130 CRLF - 0 LF suelto - 0 U+FFFD |
+
+Deploy: `SCEL_ATC_Radar.html` = `netlify-deploy/index.html`, MD5 `42CBAB5A2F3C4F8A3871946E048BED0F`.
+
+### 49.4 Notas
+
+- Radios de viraje con TAS: 180 kt -> 0.95 NM; 220 kt -> 1.17 NM; 250 kt -> 1.33 NM. El lead crece con la velocidad, como en operacion real: a 60 grados y 250 kt se empieza el viraje a 0.67 NM del eje.
+- El boton LOC ya no captura de inmediato: si la aeronave esta alineada y cerca del eje captura en el siguiente cuadro, pero si vuela en paralelo con offset pide un rumbo de interceptacion (antes se quedaba esperando a 0.15 NM sin explicacion).
+- Se mantiene la regla del IF (cap. 45): al sur de SEDPA/TEGEB no hay captura.

@@ -102,5 +102,16 @@ COMPARA EL MODELO DE VOZ ACTUAL CON ESTOS PROYECTOS Y DEJA EL MEJOR DE ELLOS htt
 
 https://github.com/coqui-ai/TTS
 
-HAY UN ERROR EN EJECUCION COMANDO DE VOZ , SI BIEN SELECCIONA EL VUELO PERO NO EJECUTA LA INSTRUCCION DE RUMBO , NIVEL O VELOCIDAD , ANTES SI FUNCIONABA EN LA VERSION ANTERIOR C:\openwork\radarnote30 , COMPARA Y MIRA QUE PASO Y ARREGLALO
+DEBES MEJORAR LA VENTANA PLANIDICADOEA DE VUELOS /FRANJA ELECTRONICA ES MUY GRANDE CON MUCHOS ESPACIOS SIN USAR , AUMENTA TAMAÑO DE LETRA EN UN 50% Y PERMITE QUE SE PUEDA MOVER ESTE MODULO DE FRANJAS ELECTRONICA A UNA PANTALLA SECUNDARIA SALIENDO DE LOS MARGENES DE LA PANTALLA DEL SIMULADOR A OTRA PANTALLA LO MISMO DEBERIA ESTAR DISPONIBLE PARA LOS OTROS MODULOS DEL SIMULador radar como el editor offline seccion ayuda planes de vuelo etc
+
+
+otra cosa las aerovias superiores deberan ser de un color mas tenue dentro del terminal de scel , es quiere decir mas tenue a hasta 80 nm al norte de scel y mas tenue las aerovias hasta 80nm al sur de scel asi el terminal se vera mejor
+
+dame la ruta erolo2d que cargaste en el simulador las coordenadas estan aca https://aipchile.dgac.gob.cl/dasa/aip_chile_con_contenido/aipmap/SCEL/SCEL%20Tabla%20de%20coordenadas.pdf
+
+
+
+
+
+
 

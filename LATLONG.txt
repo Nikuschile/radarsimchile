@@ -1,0 +1,85 @@
+EN HTML PRINCIPAL
+
+<div id="latlonBtn" class="cat-btn cyan off" onclick="toggleLatLon()" 
+     title="Mostrar latitud/longitud de la posición del cursor">
+  <span class="dot"></span>LAT/LONG
+</div>
+
+
+JAVASCRIPT QUE CONTROLA LA FUNCION
+
+// ─── Constantes de referencia SCEL ───
+const SCEL_LAT_LL = -33.3942;
+const SCEL_LNG_LL = -70.7856;
+const SCEL_COS_LL = Math.cos(SCEL_LAT_LL * Math.PI/180);
+
+let showLatLon = false;
+
+// Persistencia en localStorage
+try { showLatLon = localStorage.getItem('scel_latlon') === '1'; } catch(e){}
+
+// ─── Toggle principal ───
+function toggleLatLon(){
+  showLatLon = !showLatLon;
+  const b = document.getElementById('latlonBtn');
+  let h = document.getElementById('latlonHud');
+  
+  // Crear HUD si no existe
+  if(!h){
+    h = document.createElement('div');
+    h.id = 'latlonHud';
+    h.style.cssText = 'position:fixed;z-index:2147483647;display:none;pointer-events:none;background:rgba(0,0,0,.9);border:1px solid rgba(0,230,255,.8);color:#00e6ff;font:10px "Share Tech Mono",monospace;padding:2px 6px;border-radius:3px;letter-spacing:1px;white-space:nowrap;text-shadow:0 0 4px rgba(0,230,255,.4);transform:translate(16px,16px)';
+    document.body.appendChild(h);
+  }
+  
+  // Actualizar botón y HUD
+  if(b){
+    b.classList.toggle('on', showLatLon);
+    b.classList.toggle('off', !showLatLon);
+  }
+  if(h) h.style.display = showLatLon ? 'block' : 'none';
+  
+  // Guardar preferencia
+  try { localStorage.setItem('scel_latlon', showLatLon ? '1' : '0'); } catch(e){}
+}
+
+// ─── Formateo DMS (DDMMSS + hemisferio) ───
+function _fmtDMS(v, isLat){
+  const sign = v < 0 ? (isLat ? 'S' : 'W') : (isLat ? 'N' : 'E');
+  const a = Math.abs(v);
+  const d = Math.floor(a);
+  const mFloat = (a - d) * 60;
+  const m = Math.floor(mFloat);
+  const sFloat = (mFloat - m) * 60;
+  const s = Math.round(sFloat);
+  return String(d).padStart(2,'0') + String(m).padStart(2,'0') + String(s).padStart(2,'0') + sign;
+}
+
+// ─── Conversión mouse → geo (usa proyección del radar) ───
+function _mouseToGeo(e){
+  const c = document.getElementById('rc');
+  if(!c) return null;
+  const rect = c.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * DPR;
+  const my = (e.clientY - rect.top) * DPR;
+  const wx = (mx - CX) / nmPx(1) + panX;
+  const wy = (CY - my) / nmPx(1) + panY;
+  const lon = SCEL_LNG_LL + wx / (60 * SCEL_COS_LL);
+  const lat = SCEL_LAT_LL + wy / 60;
+  if(!isFinite(lat) || !isFinite(lon)) return null;
+  return {lat, lon};
+}
+
+// ─── mousemove → actualiza HUD ───
+document.addEventListener('mousemove', function(e){
+  if(!showLatLon) return;
+  // ... crea/actualiza latlonHud con _fmtDMS(ll.lat) + ' ' + _fmtDMS(ll.lon) + ' | ' + decimal
+}, true);
+
+// ─── DOMContentLoaded → restaura estado ───
+document.addEventListener('DOMContentLoaded', function(){
+  const b = document.getElementById('latlonBtn');
+  // ... restaura clase on/off y visibilidad HUD
+});
+
+

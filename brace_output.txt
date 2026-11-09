@@ -1,0 +1,6 @@
+}; at 50334: 2\"S 70°48'07\"W"}, };  const THR_XY = {}; const SCEL_LAT=-3
+}; at 50354: };  const THR_XY = {}; const SCEL_LAT=-33.3942, SCEL_LNG=-70
+}; at 50638: AT) * 60, dms: t.dms};   }); })();  const THR17L_X = THR_XY.
+}; at 51301: EL:false,INDIA:false}; // TMA SCIE (Concepción): límites la
+}; at 56787:  - Ventanas (DVOR) }; // Unión publicada de llegada: EROLO
+}; at 56992: SUKSA2A_17R':'RZ17R'};  // ═══════════════════════════════
